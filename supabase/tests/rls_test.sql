@@ -1,0 +1,168 @@
+-- RLS + household function tests. Any failed assertion raises and aborts with a non-zero exit (ON_ERROR_STOP).
+\set ON_ERROR_STOP on
+set client_min_messages = warning;
+
+-- Users: Ag (caregiver, household A), Wife (patient, invited into A), Eve (household B), Mallory (no invite).
+insert into auth.users values
+  ('00000000-0000-0000-0000-00000000000a', 'ag@example.com'),
+  ('00000000-0000-0000-0000-00000000000b', 'wife@example.com'),
+  ('00000000-0000-0000-0000-00000000000e', 'eve@example.com'),
+  ('00000000-0000-0000-0000-00000000000f', 'mallory@example.com');
+
+create function pg_temp.as_user(uid text) returns void language plpgsql as $$
+begin
+  perform set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated')::text, false);
+  execute 'set role authenticated';
+end $$;
+
+create function pg_temp.check(cond boolean, msg text) returns void language plpgsql as $$
+begin
+  if not coalesce(cond, false) then raise exception 'FAIL: %', msg; end if;
+  raise notice 'ok - %', msg;
+end $$;
+set client_min_messages = notice;
+
+-- 1. Signup hook: the first user is allowed while no household exists.
+reset role;
+select pg_temp.check(public.hook_before_user_created('{"user":{"email":"ag@example.com"}}') = '{}'::jsonb,
+  'hook allows first signup');
+
+-- 2. Ag creates household A as caregiver; defaults are seeded.
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select public.create_household('Our home', 'Ag', 'caregiver') as hh_a \gset
+select set_config('bloom.hh_a', :'hh_a', false);
+select pg_temp.check((select count(*) from public.medications) = 4, 'four default medications');
+select pg_temp.check((select count(*) from public.medication_rules) = 8, 'eight default rules');
+select pg_temp.check((select count(*) from public.work_schedule) = 7, 'seven weekdays of shifts');
+select pg_temp.check((select end_time from public.work_schedule where weekday = 1) = '24:00', 'Monday shift ends at midnight');
+
+-- 3. Hook now blocks strangers but allows invited emails.
+reset role;
+select pg_temp.check(public.hook_before_user_created('{"user":{"email":"mallory@example.com"}}') ? 'error',
+  'hook blocks uninvited signup');
+
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select public.create_invite('Wife@Example.com', 'patient') as token \gset
+reset role;
+select pg_temp.check(public.hook_before_user_created('{"user":{"email":"wife@example.com"}}') = '{}'::jsonb,
+  'hook allows invited email (case-insensitive)');
+
+-- 4. Wrong user can't use the invite; right user can, once.
+-- (psql vars aren't visible inside DO blocks; pass values through GUCs.)
+select set_config('bloom.token', :'token', false);
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000f');
+do $$ begin
+  perform public.accept_invite(current_setting('bloom.token'), 'Mallory');
+  raise exception 'FAIL: mallory accepted wife''s invite';
+exception when insufficient_privilege then raise notice 'ok - invite bound to its email (real token)';
+end $$;
+
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check(public.accept_invite(:'token', 'Love') = :'hh_a'::uuid, 'wife joins household A');
+reset role;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+do $$ begin
+  perform public.accept_invite(current_setting('bloom.token'), 'Again');
+  raise exception 'FAIL: invite reused';
+exception when unique_violation then raise notice 'ok - cannot join twice';
+end $$;
+
+-- 5. Eve (household B, created directly as service setup) sees nothing of household A.
+reset role;
+insert into public.households (id, name) values ('00000000-0000-0000-0000-0000000000bb', 'Other home');
+insert into public.profiles (id, household_id, role, display_name, email)
+  values ('00000000-0000-0000-0000-00000000000e', '00000000-0000-0000-0000-0000000000bb', 'patient', 'Eve', 'eve@example.com');
+select public.seed_household_defaults('00000000-0000-0000-0000-0000000000bb');
+
+-- Wife logs a care day, a meal and a dose in A.
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+insert into public.care_days (household_id, date) values (:'hh_a', '2026-10-19') returning id as cd_a \gset
+select set_config('bloom.cd_a', :'cd_a', false);
+insert into public.meal_logs (household_id, care_day_id, type, eaten_at) values (:'hh_a', :'cd_a', 'lunch', now());
+insert into public.dose_logs (household_id, care_day_id, rule_id, status, taken_at)
+  select :'hh_a', :'cd_a', id, 'taken', now() from public.medication_rules where slug = 'gaviscon-before-lunch';
+select pg_temp.check((select count(*) from public.dose_logs) = 1, 'patient sees her dose');
+select pg_temp.check((select count(*) from public.profiles) = 2, 'patient sees both household members');
+
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000e');
+select pg_temp.check((select count(*) from public.households) = 1, 'eve sees only her household');
+select pg_temp.check((select count(*) from public.medications) = 4, 'eve sees only her 4 medications');
+select pg_temp.check((select count(*) from public.care_days) = 0, 'eve sees no care days from A');
+select pg_temp.check((select count(*) from public.dose_logs) = 0, 'eve sees no doses from A');
+select pg_temp.check((select count(*) from public.profiles) = 1, 'eve sees only herself');
+select pg_temp.check((select count(*) from public.household_invites) = 0, 'eve sees no invites from A');
+
+-- Eve can't write into A, even with A's ids.
+do $$ begin
+  insert into public.care_days (household_id, date) values (current_setting('bloom.hh_a')::uuid, '2026-10-20');
+  raise exception 'FAIL: eve wrote into A';
+exception when insufficient_privilege then raise notice 'ok - eve cannot insert into A';
+end $$;
+
+-- 6. Caregiver is read-only by default; can't flip the switch; patient can.
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select pg_temp.check((select count(*) from public.dose_logs) = 1, 'caregiver reads the dose');
+do $$ begin
+  insert into public.care_days (household_id, date) values (current_setting('bloom.hh_a')::uuid, '2026-10-21');
+  raise exception 'FAIL: caregiver logged while read-only';
+exception when insufficient_privilege then raise notice 'ok - caregiver read-only by default';
+end $$;
+do $$ begin
+  update public.households set settings = jsonb_set(settings, '{caregiver_can_log}', 'true');
+  raise exception 'FAIL: caregiver enabled own logging';
+exception when insufficient_privilege then raise notice 'ok - caregiver cannot enable own logging';
+end $$;
+
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+update public.households set settings = jsonb_set(settings, '{caregiver_can_log}', 'true');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+insert into public.care_days (household_id, date) values (:'hh_a', '2026-10-21');
+select pg_temp.check(true, 'caregiver logs once patient allows it');
+
+-- 7. Column guards: can't move yourself to another household or change role; can't write reminders.
+do $$ begin
+  update public.profiles set household_id = '00000000-0000-0000-0000-0000000000bb' where id = auth.uid();
+  raise exception 'FAIL: changed own household';
+exception when insufficient_privilege then raise notice 'ok - household_id is not updatable';
+end $$;
+do $$ begin
+  update public.profiles set role = 'patient' where id = auth.uid();
+  raise exception 'FAIL: changed own role';
+exception when insufficient_privilege then raise notice 'ok - role is not updatable';
+end $$;
+update public.profiles set display_name = 'Ag ✿' where id = auth.uid();
+select pg_temp.check((select display_name from public.profiles where id = auth.uid()) = 'Ag ✿', 'can edit own display name');
+do $$ begin
+  insert into public.reminders (household_id, kind, recipient_id, channel, due_at, dedupe_key)
+    values (current_setting('bloom.hh_a')::uuid, 'due', auth.uid(), 'push', now(), 'x');
+  raise exception 'FAIL: client wrote a reminder';
+exception when insufficient_privilege then raise notice 'ok - reminders are server-only';
+end $$;
+do $$ begin
+  delete from public.dose_logs;
+  if found then raise exception 'FAIL: deleted a dose log'; end if;
+  raise exception 'FAIL: delete was not rejected';
+exception when insufficient_privilege then raise notice 'ok - logs cannot be deleted';
+end $$;
+
+-- 8. Anonymous users see nothing.
+reset role;
+select set_config('request.jwt.claims', '', false);
+set role anon;
+do $$ begin
+  perform 1 from public.medications;
+  raise exception 'FAIL: anon read medications';
+exception when insufficient_privilege then raise notice 'ok - anon has no table access';
+end $$;
+
+-- 9. Data integrity: a dose can't point at another household's rule.
+reset role;
+do $$ begin
+  insert into public.dose_logs (household_id, care_day_id, rule_id)
+    select current_setting('bloom.hh_a')::uuid, current_setting('bloom.cd_a')::uuid, id
+      from public.medication_rules where household_id = '00000000-0000-0000-0000-0000000000bb' limit 1;
+  raise exception 'FAIL: cross-household rule accepted';
+exception when foreign_key_violation then raise notice 'ok - cross-household rule rejected by FK';
+end $$;
+
+\echo 'ALL RLS TESTS PASSED'

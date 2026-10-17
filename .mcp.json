@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "project-memory": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [".claude/mcp/qdrant-memory.sh"]
+    }
+  }
+}

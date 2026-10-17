@@ -1,0 +1,25 @@
+
+# Project-local Claude memory (Qdrant data, model cache, Python env) stays on this machine
+.claude/mcp/.venv/
+.claude/mcp/models/
+.claude/memory/
+.claude/settings.local.json
+
+# Env files (secrets). Only the empty template is tracked
+.env*
+!.env.example
+
+# Next.js / tooling
+node_modules/
+.next/
+.vercel/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+# Supabase CLI scratch
+supabase/.temp/
+supabase/.branches/

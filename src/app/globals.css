@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* Interim tokens. Phase 4 (Impeccable) replaces the palette and type. */
+:root {
+  --background: #fbf7f1;
+  --foreground: #2b2420;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans-ui), system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1d1916;
+    --foreground: #f1e9df;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
