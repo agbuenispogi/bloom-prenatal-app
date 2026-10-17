@@ -79,6 +79,9 @@ summary at 9:00 AM Manila.
 - Email is optional: `emailEnabled()` (`src/lib/reminders/channels.ts`) is true only when `RESEND_API_KEY` and `EMAIL_FROM` are set. When off, the planner sends no email rows, the caregiver's +30 heads-up is a push, and the 9 AM summary is a push that opens History.
 - Native phone alarms come from a private Calendar subscription: `webcal://…/api/calendar/<signed token>.ics` (`src/lib/calendar/feed.ts`, link from `calendarFeedUrl`). It lists open timed doses for today and tomorrow, each with a VALARM; taken doses drop off. It's offered in Settings → Reminders and in onboarding.
 
+## Baby Snowflake link
+- Contract in `docs/BABY-SNOWFLAKE.md`: Bloom reads the site's `/bloom-feed.json` (latest update + due date fallback) and serves `/api/public/streak` (opt-in, patient-only toggle, gentle line only, CORS to the site). Never expose medicine names, doses, times or misses publicly.
+
 ## Daily summary (Phase 6)
 - `src/lib/summary/daily.ts` (pure): `summaryDue` (from `summary_time` until the care day ends) and `buildSummary` (yesterday's page: %, tally, gentle note, streak, Anmum flag, every row with actual times).
 - `src/lib/summary/send.ts`: runs in the every-minute dispatcher. It snapshots into `daily_summaries`, claims the row, emails each member with email on (`SummaryEmail`), and retries at most 5 times. History shows whether it was sent.

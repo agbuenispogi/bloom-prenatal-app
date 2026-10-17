@@ -80,6 +80,7 @@ export interface HomeView {
   servings: ServingView[];
   canLog: boolean;
   role: "patient" | "caregiver";
+  snowflake: { title: string; week: number | null; dateLabel: string; href: string } | null;
   meals: { meal: MainMeal; eaten: boolean; eatenLabel: string | null; planned: boolean; skipped: boolean; preMealOpen: boolean; leadMin: number }[];
 }
 
@@ -95,7 +96,12 @@ function rowTime(item: DoseItem | MealItem): Date | null {
 export function toHomeView(
   input: EngineInput,
   schedule: DaySchedule,
-  opts: { dueDate: string | null; role: "patient" | "caregiver"; canLog: boolean },
+  opts: {
+    dueDate: string | null;
+    role: "patient" | "caregiver";
+    canLog: boolean;
+    snowflake?: { title: string; week?: number; date: string; href: string } | null;
+  },
 ): HomeView {
   const tz = input.settings.tz;
   const now = input.now;
@@ -228,6 +234,14 @@ export function toHomeView(
     })),
     canLog: opts.canLog,
     role: opts.role,
+    snowflake: opts.snowflake
+      ? {
+          title: opts.snowflake.title,
+          week: opts.snowflake.week ?? null,
+          dateLabel: formatInTimeZone(new Date(`${opts.snowflake.date}T12:00:00Z`), "UTC", "d MMM"),
+          href: opts.snowflake.href,
+        }
+      : null,
     meals: (["breakfast", "lunch", "dinner"] as const).map((meal) => {
       const item = schedule.timeline.find((i): i is MealItem => i.kind === "meal" && i.meal === meal);
       const pre = schedule.timeline.find((i): i is DoseItem => i.kind === "dose" && i.rule.ruleType === "before_meal" && i.rule.anchor === meal);

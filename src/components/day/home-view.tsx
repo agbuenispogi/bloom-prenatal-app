@@ -1,6 +1,7 @@
 "use client";
 
 import { formatInTimeZone } from "date-fns-tz";
+import { Snowflake } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { DayAction, DayActionResult, HomeView as View, NextUpView } from "@/lib/view/home";
 import { AlarmPrompt } from "./alarm-prompt";
@@ -42,6 +43,14 @@ export function HomeView({ view, tz, run, calendarHref, alarmNow = false }: { vi
         <div>
           <h1 className="font-serif text-[1.75rem] leading-tight">{view.dateLabel}</h1>
           {view.weekLabel ? <p className="text-base text-ink-soft">{view.weekLabel}</p> : null}
+          {view.snowflake ? (
+            <a href={view.snowflake.href} target="_blank" rel="noopener" className="mt-1 inline-flex min-h-10 items-center gap-1.5 text-[0.9375rem] text-ink-soft underline decoration-rule underline-offset-4">
+              <Snowflake aria-hidden className="size-4 shrink-0" />
+              <span>
+                Baby Snowflake{view.snowflake.week ? ` · Week ${view.snowflake.week}` : ""}: {view.snowflake.title}
+              </span>
+            </a>
+          ) : null}
         </div>
 
       </header>

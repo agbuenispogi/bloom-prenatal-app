@@ -22,6 +22,7 @@ const schema = z.object({
   summary_time: hhmm.default("09:00"),
   caregiver_can_log: z.boolean().default(false),
   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().default(null),
+  share_streak: z.boolean().default(false),
 });
 
 export interface HouseholdSettings {
@@ -29,6 +30,7 @@ export interface HouseholdSettings {
   summaryTime: string;
   caregiverCanLog: boolean;
   dueDate: string | null;
+  shareStreak: boolean; // publish the gentle streak line for Baby Snowflake (patient's choice, off by default)
 }
 
 export function parseHouseholdSettings(tz: string, raw: unknown): HouseholdSettings {
@@ -50,5 +52,6 @@ export function parseHouseholdSettings(tz: string, raw: unknown): HouseholdSetti
     summaryTime: s.summary_time,
     caregiverCanLog: s.caregiver_can_log,
     dueDate: s.due_date,
+    shareStreak: s.share_streak,
   };
 }

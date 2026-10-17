@@ -254,3 +254,17 @@ export async function saveCaregiverLogging(_prev: ActionState, form: FormData): 
     return failed(e);
   }
 }
+
+// Baby Snowflake: share the gentle streak line publicly. Her data, her choice: patient only.
+export async function saveShareStreak(_prev: ActionState, form: FormData): Promise<ActionState> {
+  try {
+    const { profile } = await requireMember();
+    if (profile.role !== "patient") return { error: "Only she can change this." };
+    const on = checkbox(form.get("shareStreak"));
+    await mergeHouseholdSettings({ share_streak: on });
+    revalidatePath("/settings", "layout");
+    return saved(on ? "Baby Snowflake can now show your caring streak." : "Sharing is off. Baby Snowflake shows nothing from Bloom.");
+  } catch (e) {
+    return failed(e);
+  }
+}
