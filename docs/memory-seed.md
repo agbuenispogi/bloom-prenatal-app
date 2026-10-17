@@ -30,4 +30,5 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Decision: notification Taken/Snooze use HMAC action tokens (key derived from CRON_SECRET). iOS shows no action buttons, so tap opens the app.
 - Vault secret names: bloom_dispatch_url, bloom_cron_secret.
 - Decision: the daily summary is sent by the same per-minute dispatcher (no separate cron). Snapshot in daily_summaries.payload, one email per member, claim + max 5 attempts, and partial delivery counts as sent (no double emails).
+- QA (2026-10-18): 132 unit, 41 e2e (axe 0 violations in light and dark), Lighthouse mobile a11y 100 / best practices 100 / perf 91–100. SEO is low on purpose (noindex). Report in docs/QA.md. Demo routes in prod only with BLOOM_DEMO=1.
 - Open questions: wife's email, Resend sending domain, her due date.

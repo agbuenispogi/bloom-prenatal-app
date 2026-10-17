@@ -13,8 +13,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-8 px-6 py-12">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold">Welcome back</h1>
-        <p className="opacity-70">Sign in once and Bloom keeps you signed in on this phone.</p>
+        <h1 className="font-serif text-[2.125rem] leading-[1.1] text-balance">Welcome back</h1>
+        <p className="text-[1.0625rem] text-pretty text-ink-soft">Sign in once and Bloom keeps you signed in on this phone.</p>
       </header>
       <LoginForm next={next} />
     </main>

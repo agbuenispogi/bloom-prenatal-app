@@ -64,7 +64,7 @@ Changes from the brief's starting point: `household_invites`, `medication_rules`
 | 4 | UI: Home, Done flow, timeline (Impeccable teach → critique/audit per screen) | ✅ Home / Next up / Done / Today shipped (finish review: ship after 1 rebuild + 1 fix round), DESIGN.md written. Then onboarding, log-meal sheet, history + day pages, settings (medicines, shifts, due date, reminders), PWA manifest/icons/service worker: ✅ (review: fix → 7/8 resolved, last 2 regressions fixed and self-checked) |
 | 5 | Reminders: pg_cron → **Next.js route** (your choice), web push + Taken/Snooze, Resend emails, nag/escalation, .ics, in-app alarm | ✅ built + tested locally (126 unit, RLS incl. claiming); end-to-end on a real phone waits on provisioning (SETUP.md §5) |
 | 6 | Daily summary email + History | ✅ 9 AM summary (snapshot + email to both, claimed once, retried) built + tested locally; History shows the email status. Live send waits on provisioning |
-| 7 | QA: Playwright e2e, Lighthouse ≥ 95, `/polish` | report |
+| 7 | QA: Playwright e2e, Lighthouse, mobile visual review | ✅ see docs/QA.md (132 unit, 41 e2e incl. axe 0 violations, Lighthouse a11y 100) |
 | 8 | Deploy + handover | prod URL, Hub + memory updated, handover note |
 
 ## 5. Things Ag needs to provide (you chose to install tools yourself)

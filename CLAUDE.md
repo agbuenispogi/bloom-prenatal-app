@@ -84,6 +84,7 @@ npm install
 npm run dev            # http://localhost:3000
 npm test               # Vitest (engine + helpers)
 npm run test:rls       # migrations + RLS tests on throwaway Postgres (Docker)
+npm run test:e2e       # Playwright: full-day loop + axe a11y on the /dev demos (starts next dev on :3100)
 npm run test:e2e       # Playwright
 npx supabase db push   # apply migrations (setup steps: docs/SETUP.md)
 npx supabase functions deploy dispatch-reminders

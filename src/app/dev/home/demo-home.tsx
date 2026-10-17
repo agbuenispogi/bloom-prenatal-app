@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { HomeView } from "@/components/day/home-view";
-import { AppNav } from "@/components/shell/app-nav";
+import { AppFrame } from "@/components/shell/app-frame";
 import { buildDaySchedule, planMealIntent, wallTime, type EngineInput } from "@/lib/engine";
 import { DEMO_DUE_DATE, SCENARIOS, type ScenarioKey } from "@/lib/demo/scenarios";
 import { toHomeView, type DayAction, type DayActionResult } from "@/lib/view/home";
@@ -56,9 +56,8 @@ export function DemoHome({ scenario, role, alarm = false }: { scenario: Scenario
     return { ok: true };
   };
   return (
-    <div className="relative flex flex-1 flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+    <AppFrame hrefPrefix="/dev">
       <HomeView view={view} tz={input.settings.tz} run={run} alarmNow={alarm} />
-      <AppNav hrefPrefix="/dev" />
-    </div>
+    </AppFrame>
   );
 }

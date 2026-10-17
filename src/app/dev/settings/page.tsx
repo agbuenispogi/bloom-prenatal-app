@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
+import { demoAllowed } from "@/lib/demo/allowed";
 import { SettingsHub } from "@/components/settings/settings-hub";
-import { AppNav } from "@/components/shell/app-nav";
+import { AppFrame } from "@/components/shell/app-frame";
 
 export default function DevSettings() {
-  if (process.env.NODE_ENV === "production") notFound();
+  if (!demoAllowed()) notFound();
   return (
-    <div className="relative flex flex-1 flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+    <AppFrame hrefPrefix="/dev">
       <SettingsHub
         items={[
           { href: "/dev/settings/medications", title: "Medicines", detail: "What you take and when, as your OB set it." },
@@ -16,7 +17,6 @@ export default function DevSettings() {
           { href: "#", title: "Household", detail: "Our home · invites" },
         ]}
       />
-      <AppNav hrefPrefix="/dev" />
-    </div>
+    </AppFrame>
   );
 }

@@ -109,7 +109,7 @@ export function NextUpCard({
     <section
       aria-labelledby={headingId}
       aria-busy={pending}
-      className="cloth settle-in relative flex min-h-[min(55svh,32rem)] flex-col overflow-hidden rounded-[6px] py-6 pr-6 pl-9 text-cloth-ink ring-1 ring-cloth-rule md:min-h-0"
+      className={`cloth settle-in relative flex ${view.kind === "all_done" ? "" : "min-h-[min(55svh,32rem)]"} flex-col overflow-hidden rounded-[6px] py-6 pr-6 pl-9 text-cloth-ink ring-1 ring-cloth-rule md:min-h-0`}
     >
       {/* The cloth spine of the journal, folded over the entry's left edge. */}
       <span aria-hidden className="spine absolute inset-y-0 left-0 w-4" />

@@ -14,7 +14,7 @@ export function LoginForm({ next }: { next: string }) {
       <Field label="Email" name="email" type="email" autoComplete="email" defaultValue={state.values?.email} />
       <Field label="Password" name="password" type="password" autoComplete="current-password" required={false} />
       <label className="flex min-h-12 items-center gap-3 text-base">
-        <input type="checkbox" name="remember" defaultChecked className="size-5" />
+        <input type="checkbox" name="remember" defaultChecked className="size-5 accent-[var(--ribbon-fill)]" />
         Keep me signed in
       </label>
       <FormMessage state={state} />
@@ -22,7 +22,7 @@ export function LoginForm({ next }: { next: string }) {
       <SubmitButton name="intent" value="magic" variant="quiet">
         Email me a sign-in link instead
       </SubmitButton>
-      <p className="text-sm opacity-70">
+      <p className="text-[0.9375rem] text-ink-soft">
         First time here? <Link className="underline" href="/signup">Create the household</Link> or open your invite link.
       </p>
     </form>

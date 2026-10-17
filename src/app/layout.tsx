@@ -4,12 +4,13 @@ import "./globals.css";
 
 // Young Serif: the journal's handset headings. Atkinson Hyperlegible Next: UI and numerals, legible at 1 AM.
 const display = Young_Serif({ variable: "--font-display", weight: "400", subsets: ["latin"] });
-const ui = Atkinson_Hyperlegible_Next({ variable: "--font-ui", subsets: ["latin"] });
+const ui = Atkinson_Hyperlegible_Next({ variable: "--font-ui", subsets: ["latin"], adjustFontFallback: false });
 
 export const metadata: Metadata = {
   title: "Bloom",
   description: "Prenatal medication companion",
   appleWebApp: { capable: true, title: "Bloom", statusBarStyle: "default" },
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {

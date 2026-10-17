@@ -13,8 +13,8 @@ export default async function WelcomePage({ searchParams }: PageProps<"/welcome"
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-8 px-6 py-12">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold">{invite ? "Join your household" : "Set up your household"}</h1>
-        <p className="opacity-70">
+        <h1 className="font-serif text-[2.125rem] leading-[1.1] text-balance">{invite ? "Join your household" : "Set up your household"}</h1>
+        <p className="text-[1.0625rem] text-pretty text-ink-soft">
           {invite
             ? "One last step and you'll see the same reminders and timeline."
             : "We'll add the default regimen and shifts. You can edit everything later in Settings."}

@@ -14,11 +14,11 @@ export function CreateHouseholdForm() {
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1 text-sm font-medium">You are…</legend>
         <label className="flex min-h-12 items-center gap-3">
-          <input type="radio" name="role" value="caregiver" defaultChecked className="size-5" />
+          <input type="radio" name="role" value="caregiver" defaultChecked className="size-5 accent-[var(--ribbon-fill)]" />
           The caregiver (I get reminders and see her timeline)
         </label>
         <label className="flex min-h-12 items-center gap-3">
-          <input type="radio" name="role" value="patient" className="size-5" />
+          <input type="radio" name="role" value="patient" className="size-5 accent-[var(--ribbon-fill)]" />
           The one taking the medications
         </label>
       </fieldset>

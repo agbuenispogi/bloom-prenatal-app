@@ -1,12 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { demoAllowed } from "@/lib/demo/allowed";
 import { publicEnv } from "@/lib/env";
 import type { Database } from "./database.types";
 import { applyRemember, authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "./cookies";
 
 // Paths reachable without a session.
 // /api/ routes authorize themselves (cron bearer, signed tokens, or the session inside the handler).
-const PUBLIC_PREFIXES = ["/login", "/signup", "/auth/", "/offline", "/api/", ...(process.env.NODE_ENV === "production" ? [] : ["/dev"])];
+const PUBLIC_PREFIXES = ["/login", "/signup", "/auth/", "/offline", "/api/", ...(demoAllowed() ? ["/dev"] : [])];
 
 export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`));
