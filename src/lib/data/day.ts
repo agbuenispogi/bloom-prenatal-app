@@ -11,10 +11,11 @@ import {
 } from "@/lib/engine";
 import type { Household, Profile } from "@/lib/auth/session";
 import type { Database } from "@/lib/supabase/database.types";
-import type { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { parseHouseholdSettings, type HouseholdSettings } from "./settings";
 
-type Client = Awaited<ReturnType<typeof createClient>>;
+// Works with the user client (RLS) or the admin client; every query is also scoped to the household explicitly.
+type Client = SupabaseClient<Database>;
 type Row<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
 
 const hhmm = (t: string | null) => (t ? t.slice(0, 5) : null);
@@ -34,11 +35,11 @@ interface Regimen {
   weekly: Row<"work_schedule">[];
 }
 
-async function loadRegimen(supabase: Client): Promise<Regimen> {
+async function loadRegimen(supabase: Client, householdId: string): Promise<Regimen> {
   const [meds, rules, weekly] = await Promise.all([
-    supabase.from("medications").select("*"),
-    supabase.from("medication_rules").select("*"),
-    supabase.from("work_schedule").select("*"),
+    supabase.from("medications").select("*").eq("household_id", householdId),
+    supabase.from("medication_rules").select("*").eq("household_id", householdId),
+    supabase.from("work_schedule").select("*").eq("household_id", householdId),
   ]);
   for (const r of [meds, rules, weekly]) if (r.error) throw r.error;
   return { meds: meds.data!, rules: rules.data!, weekly: weekly.data! };
@@ -109,12 +110,12 @@ export function currentCareDate(household: Household, now: Date): CareDate {
 }
 
 // Loads care days `from`..`to` (inclusive) in a fixed number of queries and runs the engine over each.
-export async function loadDays(supabase: Client, household: Household, profile: Profile, now: Date, from: CareDate, to: CareDate): Promise<LoadedDay[]> {
+export async function loadDays(supabase: Client, household: Household, profile: Pick<Profile, "role"> | null, now: Date, from: CareDate, to: CareDate): Promise<LoadedDay[]> {
   const settings = parseHouseholdSettings(household.tz, household.settings);
   const [regimen, overrides, careDays] = await Promise.all([
-    loadRegimen(supabase),
-    supabase.from("schedule_overrides").select("*").gte("date", from).lte("date", to),
-    supabase.from("care_days").select("*").gte("date", from).lte("date", to),
+    loadRegimen(supabase, household.id),
+    supabase.from("schedule_overrides").select("*").eq("household_id", household.id).gte("date", from).lte("date", to),
+    supabase.from("care_days").select("*").eq("household_id", household.id).gte("date", from).lte("date", to),
   ]);
   if (overrides.error) throw overrides.error;
   if (careDays.error) throw careDays.error;
@@ -122,14 +123,14 @@ export async function loadDays(supabase: Client, household: Household, profile: 
   const ids = careDays.data.map((c) => c.id);
   const [meals, doses] = ids.length
     ? await Promise.all([
-        supabase.from("meal_logs").select("*").in("care_day_id", ids),
-        supabase.from("dose_logs").select("*").in("care_day_id", ids),
+        supabase.from("meal_logs").select("*").eq("household_id", household.id).in("care_day_id", ids),
+        supabase.from("dose_logs").select("*").eq("household_id", household.id).in("care_day_id", ids),
       ])
     : [{ data: [] as Row<"meal_logs">[], error: null }, { data: [] as Row<"dose_logs">[], error: null }];
   if (meals.error) throw meals.error;
   if (doses.error) throw doses.error;
 
-  const canLog = profile.role === "patient" || settings.caregiverCanLog;
+  const canLog = profile?.role === "patient" || settings.caregiverCanLog;
   const out: LoadedDay[] = [];
   for (let day = to; day >= from; day = addCareDays(day, -1)) {
     const careDay = careDays.data.find((c) => c.date === day);
@@ -149,7 +150,7 @@ export async function loadDays(supabase: Client, household: Household, profile: 
 }
 
 // One care day (today by default).
-export async function loadDay(supabase: Client, household: Household, profile: Profile, now: Date, careDate?: CareDate): Promise<LoadedDay> {
+export async function loadDay(supabase: Client, household: Household, profile: Pick<Profile, "role"> | null, now: Date, careDate?: CareDate): Promise<LoadedDay> {
   const day = careDate ?? currentCareDate(household, now);
   const [loaded] = await loadDays(supabase, household, profile, now, day, day);
   return loaded!;

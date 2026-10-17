@@ -484,6 +484,7 @@ export type Database = {
           attempts: number;
           cancelled_at: string | null;
           channel: Database["public"]["Enums"]["reminder_channel"];
+          claimed_at: string | null;
           created_at: string;
           dedupe_key: string;
           dose_log_id: string | null;
@@ -502,6 +503,7 @@ export type Database = {
           attempts?: number;
           cancelled_at?: string | null;
           channel: Database["public"]["Enums"]["reminder_channel"];
+          claimed_at?: string | null;
           created_at?: string;
           dedupe_key: string;
           dose_log_id?: string | null;
@@ -519,6 +521,7 @@ export type Database = {
           attempts?: number;
           cancelled_at?: string | null;
           channel?: Database["public"]["Enums"]["reminder_channel"];
+          claimed_at?: string | null;
           created_at?: string;
           dedupe_key?: string;
           dose_log_id?: string | null;
@@ -643,6 +646,33 @@ export type Database = {
       auth_role: {
         Args: Record<PropertyKey, never>;
         Returns: Database["public"]["Enums"]["profile_role"];
+      };
+      claim_due_reminders: {
+        Args: { p_limit?: number };
+        Returns: {
+          attempts: number;
+          cancelled_at: string | null;
+          channel: Database["public"]["Enums"]["reminder_channel"];
+          claimed_at: string | null;
+          created_at: string;
+          dedupe_key: string;
+          dose_log_id: string | null;
+          due_at: string;
+          household_id: string;
+          id: string;
+          kind: Database["public"]["Enums"]["reminder_kind"];
+          last_error: string | null;
+          meal_log_id: string | null;
+          payload: NonNullable<Json>;
+          recipient_id: string;
+          sent_at: string | null;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "reminders";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
       };
       create_household: {
         Args: {

@@ -8,5 +8,5 @@ export default async function DevHome({ searchParams }: PageProps<"/dev/home">) 
   const params = await searchParams;
   const s = (typeof params.s === "string" && params.s in SCENARIOS ? params.s : "caltrate") as ScenarioKey;
   const role = params.role === "caregiver" ? "caregiver" : "patient";
-  return <DemoHome key={`${s}-${role}`} scenario={s} role={role} />;
+  return <DemoHome key={`${s}-${role}`} scenario={s} role={role} alarm={params.alarm === "1"} />;
 }

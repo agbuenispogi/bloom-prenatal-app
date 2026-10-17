@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { ActionState } from "@/lib/auth/action-state";
 import { requireMember } from "@/lib/auth/session";
 import type { Json } from "@/lib/supabase/database.types";
+import { replanQuietly } from "@/lib/reminders/runtime";
 import { createClient } from "@/lib/supabase/server";
 
 // Settings writes. RLS limits every write to the member's household; these add validation and friendly errors.
@@ -100,6 +101,7 @@ export async function saveMedication(_prev: ActionState, form: FormData): Promis
       const { error: e } = await supabase.from("medication_rules").update(ruleColumns(r)).eq("id", r.id).eq("medication_id", id);
       if (e) throw e;
     }
+    await replanQuietly((await requireMember()).household.id);
     revalidatePath("/", "layout");
     return saved(`${med.name} saved.`);
   } catch (e) {
@@ -127,6 +129,7 @@ export async function addMedication(_prev: ActionState, form: FormData): Promise
       .from("medication_rules")
       .insert({ household_id: household.id, medication_id: med.id, slug: `${slug}-1`, sort: 50, ...ruleColumns(r) });
     if (e) throw e;
+    await replanQuietly((await requireMember()).household.id);
     revalidatePath("/", "layout");
     return saved(`${name} added. It appears on today's page.`);
   } catch (e) {
@@ -151,6 +154,7 @@ export async function saveWeeklyShifts(_prev: ActionState, form: FormData): Prom
     });
     const { error } = await supabase.from("work_schedule").upsert(rows, { onConflict: "household_id,weekday" });
     if (error) throw error;
+    await replanQuietly((await requireMember()).household.id);
     revalidatePath("/", "layout");
     return saved("Shifts saved.");
   } catch (e) {
@@ -173,6 +177,7 @@ export async function addOverride(_prev: ActionState, form: FormData): Promise<A
       .from("schedule_overrides")
       .upsert({ household_id: household.id, date, is_off: off, start_time: start, end_time: end, note }, { onConflict: "household_id,date" });
     if (error) throw error;
+    await replanQuietly((await requireMember()).household.id);
     revalidatePath("/", "layout");
     return saved("Change saved for that day.");
   } catch (e) {
@@ -184,6 +189,7 @@ export async function removeOverride(id: string): Promise<void> {
   await requireMember();
   const supabase = await createClient();
   await supabase.from("schedule_overrides").delete().eq("id", z.string().uuid().parse(id));
+  await replanQuietly((await requireMember()).household.id);
   revalidatePath("/", "layout");
 }
 
@@ -212,6 +218,7 @@ export async function saveReminderTimes(_prev: ActionState, form: FormData): Pro
       escalate_after_min: n("escalateAfter", 10, 240),
       iron_spacing_min: n("ironSpacing", 0, 360),
     });
+    await replanQuietly((await requireMember()).household.id);
     revalidatePath("/", "layout");
     return saved("Reminder timing saved.");
   } catch (e) {
@@ -228,6 +235,7 @@ export async function saveMyNotifications(_prev: ActionState, form: FormData): P
       .update({ notify_push: checkbox(form.get("push")), notify_email: checkbox(form.get("email")) })
       .eq("id", profile.id);
     if (error) throw error;
+    await replanQuietly(profile.household_id);
     revalidatePath("/settings", "layout");
     return saved("Your notifications are saved.");
   } catch (e) {

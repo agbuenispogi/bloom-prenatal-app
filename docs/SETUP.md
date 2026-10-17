@@ -40,3 +40,36 @@ npx supabase gen types typescript --linked --schema public > src/lib/supabase/da
 3. Send her the link. She signs up with that email and joins as the patient.
 
 **iPhone:** an installed Home Screen app has its own cookie jar, separate from Safari. She should sign in *inside the installed app* once. Onboarding (Phase 4) walks her through this.
+
+## 5. Reminders (Phase 5)
+
+How it works: Supabase **pg_cron** runs every minute → **pg_net** POSTs to the app's `/api/reminders/dispatch`
+with `Authorization: Bearer <CRON_SECRET>` → the route re-plans today's reminders from the schedule engine and
+sends whatever is due (Web Push + Resend email). Logging in the app re-plans immediately.
+
+1. **Secrets** (Vercel → Project → Settings → Environment Variables, and `.env.local` for dev):
+   - `SUPABASE_SECRET_KEY`: the server reads and writes reminder rows with it.
+   - `CRON_SECRET`: a long random string. Generate one:
+     ```bash
+     openssl rand -base64 36
+     ```
+   - VAPID keys for Web Push. Generate a pair, then set `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT=mailto:you@yourdomain`:
+     ```bash
+     npx web-push generate-vapid-keys
+     ```
+   - `RESEND_API_KEY` and `EMAIL_FROM` (e.g. `Bloom <bloom@yourdomain.com>`). Verify the domain in Resend first,
+     or Resend will only deliver to your own address.
+   - `NEXT_PUBLIC_APP_URL`: your production URL.
+2. **Enable extensions**: Dashboard → Database → Extensions → enable `pg_cron` and `pg_net` (before `db push`,
+   so migration `…05_reminder_dispatch.sql` can schedule the job).
+3. **Vault secrets** for the cron job (SQL editor; values never go in the repo):
+   ```sql
+   select vault.create_secret('https://<your-app>.vercel.app/api/reminders/dispatch', 'bloom_dispatch_url');
+   select vault.create_secret('<the same CRON_SECRET>', 'bloom_cron_secret');
+   ```
+4. Check it runs: `select * from cron.job_run_details order by start_time desc limit 5;` and the
+   `reminders` table (`sent_at`, `last_error`).
+
+**iPhone notes:** push only reaches her once Bloom is installed to the Home Screen and alarms are turned on
+(Settings → Install & alarms). iOS shows reminder notifications without the Taken/Snooze buttons. Tapping opens
+Bloom, where Done is one tap. Android and desktop show the buttons.

@@ -48,6 +48,7 @@ describe("isPublicPath", () => {
     ["/signup", true],
     ["/auth/confirm", true],
     ["/offline", true],
+    ["/api/reminders/dispatch", true],
     ["/", false],
     ["/loginx", false],
     ["/settings/household", false],

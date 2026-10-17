@@ -68,6 +68,12 @@ summary at 9:00 AM Manila.
 - App icons are procedural: `python3 scripts/gen-icons.py`. The service worker is `public/sw.js` (push display now; Taken/Snooze actions in Phase 5).
 - Cloth textures are procedural: `python3 scripts/gen-textures.py`, then re-embed provenance.
 
+## Reminders (Phase 5)
+- Planner `src/lib/reminders/plan.ts` (pure): schedule → the exact reminder rows wanted now. `sync.ts` makes the DB match (cancel / revive / insert by `dedupe_key`). It runs after every in-app log and settings save (`replanQuietly`) and every minute in the dispatcher.
+- Dispatcher core `dispatch.ts` (I/O via deps, tested with fakes). Route `src/app/api/reminders/dispatch` (bearer `CRON_SECRET`) wires Supabase (`claim_due_reminders`, SKIP LOCKED), web-push and Resend. Reminders over 30 min late are withdrawn, not sent.
+- Notification buttons → `public/sw.js` → `/api/notify-action` with an HMAC token (`token.ts`). `.ics` downloads come from `/api/ics?t=` (email) and `/api/ics/next` (signed in).
+- In-app alarm: `AlarmPrompt` (full screen + synthesized chime) when a timed dose comes due while the app is open.
+
 ## Run / test / deploy
 ```bash
 npm install

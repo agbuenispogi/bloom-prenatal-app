@@ -29,5 +29,5 @@ function run(a: DayAction): Promise<DayActionResult> {
 }
 
 export function HomeLive({ view, tz }: { view: View; tz: string }) {
-  return <HomeView view={view} tz={tz} run={run} />;
+  return <HomeView view={view} tz={tz} run={run} calendarHref="/api/ics/next" />;
 }

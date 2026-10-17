@@ -44,7 +44,7 @@ function apply(input: EngineInput, a: DayAction): EngineInput {
   return next;
 }
 
-export function DemoHome({ scenario, role }: { scenario: ScenarioKey; role: "patient" | "caregiver" }) {
+export function DemoHome({ scenario, role, alarm = false }: { scenario: ScenarioKey; role: "patient" | "caregiver"; alarm?: boolean }) {
   const [input, setInput] = useState<EngineInput>(() => SCENARIOS[scenario].input());
   const view = useMemo(
     () => toHomeView(input, buildDaySchedule(input), { dueDate: DEMO_DUE_DATE, role, canLog: role === "patient" }),
@@ -57,7 +57,7 @@ export function DemoHome({ scenario, role }: { scenario: ScenarioKey; role: "pat
   };
   return (
     <div className="relative flex flex-1 flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-      <HomeView view={view} tz={input.settings.tz} run={run} />
+      <HomeView view={view} tz={input.settings.tz} run={run} alarmNow={alarm} />
       <AppNav hrefPrefix="/dev" />
     </div>
   );

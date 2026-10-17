@@ -62,7 +62,7 @@ Changes from the brief's starting point: `household_invites`, `medication_rules`
 | 2 | Schema + RLS + auth + seed migration | ✅ migrations, `npm run test:rls` green; live login waits on the Supabase project |
 | 3 | Schedule engine + Vitest | ✅ 96 tests, ~99% engine coverage, reviewer pass after 2 fix rounds |
 | 4 | UI: Home, Done flow, timeline (Impeccable teach → critique/audit per screen) | ✅ Home / Next up / Done / Today shipped (finish review: ship after 1 rebuild + 1 fix round), DESIGN.md written. Then onboarding, log-meal sheet, history + day pages, settings (medicines, shifts, due date, reminders), PWA manifest/icons/service worker: ✅ (review: fix → 7/8 resolved, last 2 regressions fixed and self-checked) |
-| 5 | Reminders: pg_cron → edge fn, push, Resend, nag/escalation, .ics | end-to-end alarm on a real phone |
+| 5 | Reminders: pg_cron → **Next.js route** (your choice), web push + Taken/Snooze, Resend emails, nag/escalation, .ics, in-app alarm | ✅ built + tested locally (126 unit, RLS incl. claiming); end-to-end on a real phone waits on provisioning (SETUP.md §5) |
 | 6 | Daily summary email + History | 9 AM email received |
 | 7 | QA: Playwright e2e, Lighthouse ≥ 95, `/polish` | report |
 | 8 | Deploy + handover | prod URL, Hub + memory updated, handover note |

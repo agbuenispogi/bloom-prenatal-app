@@ -5,7 +5,8 @@ import type { Database } from "./database.types";
 import { applyRemember, authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "./cookies";
 
 // Paths reachable without a session.
-const PUBLIC_PREFIXES = ["/login", "/signup", "/auth/", "/offline", ...(process.env.NODE_ENV === "production" ? [] : ["/dev"])];
+// /api/ routes authorize themselves (cron bearer, signed tokens, or the session inside the handler).
+const PUBLIC_PREFIXES = ["/login", "/signup", "/auth/", "/offline", "/api/", ...(process.env.NODE_ENV === "production" ? [] : ["/dev"])];
 
 export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`));

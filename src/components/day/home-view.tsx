@@ -3,12 +3,13 @@
 import { formatInTimeZone } from "date-fns-tz";
 import { useEffect, useState } from "react";
 import type { DayAction, DayActionResult, HomeView as View, NextUpView } from "@/lib/view/home";
+import { AlarmPrompt } from "./alarm-prompt";
 import { LogMealSheet } from "./log-meal-sheet";
 import { INK_MS, NextUpCard } from "./next-up-card";
 import { ServingsStrip } from "./servings-strip";
 import { TodayPage } from "./today-page";
 
-export function HomeView({ view, tz, run }: { view: View; tz: string; run: (a: DayAction) => Promise<DayActionResult> }) {
+export function HomeView({ view, tz, run, calendarHref, alarmNow = false }: { view: View; tz: string; run: (a: DayAction) => Promise<DayActionResult>; calendarHref?: string; alarmNow?: boolean }) {
   const nowLabel = formatInTimeZone(new Date(view.now), tz, "h:mm a");
   // While the check is being inked, keep showing the card she tapped; then the next item settles in.
   const [ink, setInk] = useState<{ view: NextUpView; label: string } | null>(null);
@@ -18,6 +19,21 @@ export function HomeView({ view, tz, run }: { view: View; tz: string; run: (a: D
     return () => window.clearTimeout(id);
   }, [ink]);
   const shown = ink?.view ?? view.nextUp;
+
+  // In-app alarm: when the next timed dose comes due while Bloom is open, ring once for it.
+  const [alarmFor, setAlarmFor] = useState<string | null>(alarmNow && view.nextUp.kind === "take" ? view.nextUp.key : null);
+  const [rung, setRung] = useState<Set<string>>(() => new Set(alarmNow ? [view.nextUp.key] : []));
+  useEffect(() => {
+    const n = view.nextUp;
+    if (n.kind !== "take" || !n.at || rung.has(n.key)) return;
+    const wait = new Date(n.at).getTime() - new Date(view.now).getTime();
+    if (wait <= 0) return; // already due when the page opened: the card itself says so
+    const id = window.setTimeout(() => {
+      setRung((s) => new Set(s).add(n.key));
+      setAlarmFor(n.key);
+    }, Math.min(wait, 2 ** 31 - 1));
+    return () => window.clearTimeout(id);
+  }, [view.nextUp, view.now, rung]);
   return (
     // Full-width wrapper clips the ribbon exactly at the page edge.
     <div className="w-full overflow-x-clip">
@@ -41,12 +57,14 @@ export function HomeView({ view, tz, run }: { view: View; tz: string; run: (a: D
             run={run}
             inked={ink?.label ?? null}
             onInk={(label) => setInk(label ? { view: view.nextUp, label } : null)}
+            calendarHref={calendarHref}
           />
         </div>
         <TodayPage rows={view.rows} ribbonBefore={view.ribbonBefore} nowLabel={nowLabel} action={<LogMealSheet view={view} tz={tz} run={run} />}>
           <ServingsStrip servings={view.servings} canLog={view.canLog} run={run} />
         </TodayPage>
       </div>
+      {alarmFor && alarmFor === view.nextUp.key ? <AlarmPrompt view={view.nextUp} run={run} onClose={() => setAlarmFor(null)} /> : null}
     </div>
     </div>
   );

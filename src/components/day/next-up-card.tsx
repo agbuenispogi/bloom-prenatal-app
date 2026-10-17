@@ -55,6 +55,7 @@ export function NextUpCard({
   run,
   inked,
   onInk,
+  calendarHref,
 }: {
   view: NextUpView;
   serverNow: string;
@@ -63,6 +64,7 @@ export function NextUpCard({
   run: RunAction;
   inked: string | null;
   onInk: (label: string | null) => void;
+  calendarHref?: string;
 }) {
   const headingId = useId();
   const [panel, setPanel] = useState<Panel>("none");
@@ -174,6 +176,11 @@ export function NextUpCard({
                     Skip
                   </QuietButton>
                 </div>
+              ) : null}
+              {panel === "none" && calendarHref && view.at && new Date(view.at) > new Date(serverNow) ? (
+                <a href={calendarHref} className="flex min-h-12 items-center justify-center text-base text-cloth-soft underline">
+                  Add an alarm to my calendar
+                </a>
               ) : null}
               {panel === "snooze" ? (
                 <fieldset className="flex flex-col gap-2">

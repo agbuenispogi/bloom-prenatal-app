@@ -25,4 +25,8 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Decision: the Home UI is shared between live (server actions) and the dev demo (/dev/home, the engine in the browser) via the pure view model src/lib/view/home.ts.
 - Decision: settings copy is viewer-aware (you/your for the patient, she/her when the caregiver reads). The caregiver is always named by display name; no pronouns are assumed.
 - Decision: History computes summaries live from the engine (summarizeDay / streak / gentleNote). The daily_summaries table is filled by the Phase 6 email job.
-- Open questions: wife's email, Resend sending domain, her due date, VAPID keys (Phase 5).
+- Decision (Ag, 2026-10-18): the dispatcher is a Next.js route on Vercel (/api/reminders/dispatch), called by pg_cron → pg_net every minute with Bearer CRON_SECRET. Not a Supabase Edge Function.
+- Decision: the reminder planner is pure (schedule → desired rows). Sync reconciles by dedupe_key; claiming uses claim_due_reminders (SKIP LOCKED, service_role only). Reminders >30 min late are withdrawn.
+- Decision: notification Taken/Snooze use HMAC action tokens (key derived from CRON_SECRET). iOS shows no action buttons, so tap opens the app.
+- Vault secret names: bloom_dispatch_url, bloom_cron_secret.
+- Open questions: wife's email, Resend sending domain, her due date.

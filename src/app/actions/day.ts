@@ -5,6 +5,7 @@ import { z } from "zod";
 import { careDayBounds, planMealIntent, wallTime, type DoseItem, type MainMeal } from "@/lib/engine";
 import { requireMember } from "@/lib/auth/session";
 import { loadDay, type LoadedDay } from "@/lib/data/day";
+import { replanQuietly } from "@/lib/reminders/runtime";
 import { createClient } from "@/lib/supabase/server";
 
 // Every action re-reads the day on the server, authorizes, writes, and revalidates Home.
@@ -42,6 +43,8 @@ async function withDay(work: (ctx: { supabase: Awaited<ReturnType<typeof createC
     console.error("day action failed", e);
     return { ok: false, error: "That didn't save. Check your connection and try again." };
   }
+  // Withdraw nags for what she just logged and schedule the next item's reminders (target: under 2 s).
+  await replanQuietly(household.id);
   revalidatePath("/");
   return { ok: true };
 }

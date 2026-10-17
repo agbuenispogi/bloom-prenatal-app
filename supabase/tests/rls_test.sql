@@ -165,4 +165,21 @@ do $$ begin
 exception when foreign_key_violation then raise notice 'ok - cross-household rule rejected by FK';
 end $$;
 
+-- 10. Reminder claiming is server-only and atomic.
+reset role;
+insert into public.reminders (household_id, kind, recipient_id, channel, due_at, dedupe_key)
+  values (current_setting('bloom.hh_a')::uuid, 'due', '00000000-0000-0000-0000-00000000000b', 'push', now() - interval '1 minute', 'k-due'),
+         (current_setting('bloom.hh_a')::uuid, 'due', '00000000-0000-0000-0000-00000000000b', 'push', now() + interval '1 hour', 'k-later');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+do $$ begin
+  perform public.claim_due_reminders(10);
+  raise exception 'FAIL: a member claimed reminders';
+exception when insufficient_privilege then raise notice 'ok - members cannot claim reminders';
+end $$;
+reset role;
+set role service_role;
+select pg_temp.check((select count(*) from public.claim_due_reminders(10)) = 1, 'service role claims only the due row');
+select pg_temp.check((select count(*) from public.claim_due_reminders(10)) = 0, 'a claimed row is not claimed again within 2 minutes');
+reset role;
+
 \echo 'ALL RLS TESTS PASSED'
