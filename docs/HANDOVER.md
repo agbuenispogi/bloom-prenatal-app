@@ -25,7 +25,11 @@ iPhone only allows web-app alarms when Bloom is opened from the **Home Screen** 
    separate from Safari. Leave **Keep me signed in** ticked.
 4. Bloom's setup screen walks her through **Turn on alarms** → **Allow**, then **Send a test alarm**. Lock
    the phone to see it arrive.
-5. If she uses Focus or Sleep modes at night, add **Bloom** to the allowed apps so bedtime reminders come through.
+5. Tap **Also add Calendar alarms (backup)** → **Subscribe**. A private "Bloom" calendar now rings a native
+   alert for each upcoming timed dose, even if a notification is missed. Taken doses drop off by themselves.
+   For quick updates, set iPhone **Settings → Calendar → Accounts → Fetch New Data** to every 15 minutes.
+   This is also in Bloom under Settings → Reminders.
+6. If she uses Focus or Sleep modes at night, add **Bloom** to the allowed apps so bedtime reminders come through.
 
 Do the same on your own phone (steps 2–4) so you get the same alarms. Desktop Chrome works too.
 
@@ -44,12 +48,15 @@ Do the same on your own phone (steps 2–4) so you get the same alarms. Desktop 
 
 Late is always fine. Bloom shows how late, kindly, and never nags in a scolding way.
 
-## 4. What you get
+## 4. What you get (phone notifications, email on hold)
 
-- The same push and email at each dose time, and a gentle repeat push after 15 minutes if it isn't logged.
-- An **email just to you** if a dose is still unlogged after 30 minutes: a heads-up to check in kindly.
-- **Every morning at 9:00**: "Yesterday's page" for both of you, with each dose and meal and its time, how much
-  was on time, Anmum, and a gentle note.
+- The same push alarm at each dose time, and a gentle repeat after 15 minutes if it isn't logged.
+- A **heads-up push just to you** if a dose is still unlogged after 30 minutes, so you can check in kindly.
+- **Every morning at 9:00**: a "Yesterday: …" notification on both phones that opens History, with each dose
+  and meal and its time, how much was on time, Anmum, and a gentle note.
+- Your own "Bloom" calendar (Settings → Reminders → Add to my phone's Calendar) for native alerts.
+- For one specific dose, **Add an alarm to my calendar** under Next up adds just that one.
+- When you add Resend later, the same things also arrive by email (see DEPLOY.md, Step 3).
 - Her page, read-only. She can let you log for her: **her** Settings → Reminders → *Let Ag log doses for me*.
 
 ## 5. Editing medicines (when her OB changes the plan)
@@ -83,7 +90,7 @@ the OB. It never moves a dose by itself. Settings → Reminders → *Iron spacin
 |---|---|
 | No alarms on her iPhone | Open Bloom **from the Home Screen icon**. iPhone Settings → Notifications → Bloom → Allow. Check Focus modes. Settings → Install & alarms → test again |
 | She got signed out | Sign in again **inside the Home Screen app** with *Keep me signed in* ticked |
-| No emails | Check spam once and mark it "not spam". Settings → Reminders → *Emails* is on |
+| Calendar alerts don't update | iPhone Settings → Calendar → Accounts → Fetch New Data → every 15 min. Remove and re-add the subscription from Settings → Reminders if needed |
 | A dose shows at the wrong time | Check Work shifts (one-off changes) and the medicine's timing in Settings → Medicines |
 | Something else | `reminders` and `daily_summaries` in Supabase show what was sent and any `last_error` |
 

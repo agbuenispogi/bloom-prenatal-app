@@ -70,7 +70,7 @@ function Quiet({ onClick, children }: { onClick: () => void; children: React.Rea
   );
 }
 
-export function OnboardingFlow({ name, vapidKey, save, todayHref = "/" }: { name: string; vapidKey: string | null; save: SaveSubscription | null; todayHref?: string }) {
+export function OnboardingFlow({ name, vapidKey, save, todayHref = "/", calendarUrl = null }: { name: string; vapidKey: string | null; save: SaveSubscription | null; todayHref?: string; calendarUrl?: string | null }) {
   const { isIOS, standalone } = useDevice();
   const [step, setStep] = useState<Step>("install");
   const [alarm, setAlarm] = useState<AlarmState>("idle");
@@ -225,6 +225,11 @@ export function OnboardingFlow({ name, vapidKey, save, todayHref = "/" }: { name
                 Turn on alarms
               </Primary>
             )}
+            {calendarUrl ? (
+              <a href={calendarUrl} className="flex min-h-12 w-full items-center justify-center rounded-[8px] border border-rule px-5 text-base font-medium text-ink">
+                {alarm === "on" ? "Also add Calendar alarms (backup)" : "Use Calendar alarms instead"}
+              </a>
+            ) : null}
             {alarm !== "on" ? <Quiet onClick={() => setStep("done")}>Skip for now</Quiet> : null}
           </div>
         </section>

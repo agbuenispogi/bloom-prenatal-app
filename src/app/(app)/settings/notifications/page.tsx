@@ -3,6 +3,8 @@ import { SettingsPage } from "@/components/settings/settings-page";
 import { requireMember } from "@/lib/auth/session";
 import { parseHouseholdSettings } from "@/lib/data/settings";
 import { createClient } from "@/lib/supabase/server";
+import { calendarFeedUrl } from "@/lib/calendar/link";
+import { emailEnabled } from "@/lib/reminders/channels";
 import { saveCaregiverLogging, saveMyNotifications, saveReminderTimes } from "../actions";
 
 export const metadata = { title: "Reminders · Bloom" };
@@ -30,6 +32,8 @@ export default async function Notifications() {
         saveMine={saveMyNotifications}
         saveTimes={saveReminderTimes}
         saveCaregiver={saveCaregiverLogging}
+        emailEnabled={emailEnabled()}
+        calendarUrl={calendarFeedUrl(household.id, profile.id)}
       />
     </SettingsPage>
   );

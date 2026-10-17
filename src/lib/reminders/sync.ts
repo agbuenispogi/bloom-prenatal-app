@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Recipient } from "@/lib/engine";
 import type { LoadedDay } from "@/lib/data/day";
 import type { Database, Json } from "@/lib/supabase/database.types";
+import { emailEnabled } from "./channels";
 import { desiredReminders } from "./plan";
 
 type Admin = SupabaseClient<Database>;
@@ -18,7 +19,7 @@ export async function householdRecipients(admin: Admin, householdId: string): Pr
 // and inserts new ones. Idempotent: dedupe_key is unique.
 export async function syncReminders(admin: Admin, householdId: string, day: LoadedDay, now: Date) {
   const recipients = await householdRecipients(admin, householdId);
-  const desired = desiredReminders(day.input, day.schedule, recipients, now);
+  const desired = desiredReminders(day.input, day.schedule, recipients, now, { emailEnabled: emailEnabled() });
   const want = new Map(desired.map((d) => [d.dedupeKey, d]));
 
   const { data: existing, error } = await admin

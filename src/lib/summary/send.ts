@@ -5,7 +5,9 @@ import type { Household } from "@/lib/auth/session";
 import { loadDays } from "@/lib/data/day";
 import { parseHouseholdSettings } from "@/lib/data/settings";
 import { publicEnv } from "@/lib/env";
-import { sendSummaryEmail } from "@/lib/reminders/senders";
+import { summarySubject } from "@/emails/summary-email";
+import { emailEnabled } from "@/lib/reminders/channels";
+import { sendSummaryEmail, sendWebPush } from "@/lib/reminders/senders";
 import type { Database, Json } from "@/lib/supabase/database.types";
 import { buildSummary, summaryDue } from "./daily";
 
@@ -13,7 +15,8 @@ type Admin = SupabaseClient<Database>;
 const MAX_ATTEMPTS = 5;
 
 // Runs every minute from the dispatcher. For each household whose summary time has passed: builds yesterday's
-// page from the engine, stores the snapshot (History shows it), and emails it once to each member who wants email.
+// page from the engine, stores the snapshot (History shows it), and sends it once to each member: by email when
+// Resend is configured, otherwise as a push to their phones that opens History.
 export async function summaryPass(admin: Admin, now: Date) {
   const { data: households, error } = await admin.from("households").select("*");
   if (error) throw error;
@@ -56,12 +59,21 @@ export async function summaryPass(admin: Admin, now: Date) {
       .select("id");
     if (!claimed?.length) continue;
 
-    const { data: people } = await admin.from("profiles").select("id, email, display_name, notify_email").eq("household_id", h.id);
-    const recipients = (people ?? []).filter((p) => p.notify_email && p.email);
+    const byEmail = emailEnabled();
+    const { data: people } = await admin.from("profiles").select("id, email, display_name, notify_email, notify_push").eq("household_id", h.id);
+    const recipients = (people ?? []).filter((p) => (byEmail ? p.notify_email && p.email : p.notify_push));
     const failures: string[] = [];
     for (const p of recipients) {
       try {
-        await sendSummaryEmail({ email: p.email, displayName: p.display_name }, summary, publicEnv.appUrl(), `summary-${careDate}-${p.id}`);
+        if (byEmail) {
+          await sendSummaryEmail({ email: p.email, displayName: p.display_name }, summary, publicEnv.appUrl(), `summary-${careDate}-${p.id}`);
+        } else {
+          const { data: subs } = await admin.from("push_subscriptions").select("id, endpoint, p256dh, auth").eq("profile_id", p.id);
+          const message = { title: summarySubject(summary), body: summary.note, url: "/history", tag: `summary:${careDate}`, requireInteraction: false, actions: [], data: {} };
+          const results = await Promise.all((subs ?? []).map((s) => sendWebPush(s, message)));
+          await Promise.all((subs ?? []).map((s, i) => (results[i] === "gone" ? admin.from("push_subscriptions").delete().eq("id", s.id) : Promise.resolve())));
+          if (subs?.length && !results.includes("ok")) throw new Error("push failed on every device");
+        }
       } catch (e) {
         failures.push(e instanceof Error ? e.message : "send failed");
       }

@@ -46,7 +46,7 @@ function fanOut(
 // Reminders for one due dose:
 //   at due        → push + email to both
 //   +nag (15)     → gentle push to both, if still not logged
-//   +escalate (30)→ email to the caregiver only
+//   +escalate (30)→ to the caregiver only (email, or push while email is off)
 // Logging the dose cancels whatever hasn't been sent yet.
 export function planDoseReminders(
   careDate: CareDate,
@@ -54,12 +54,13 @@ export function planDoseReminders(
   dueAt: Date,
   recipients: Recipient[],
   settings: Pick<EngineSettings, "nagAfterMin" | "escalateAfterMin">,
+  escalationChannel: Channel = "email",
 ): PlannedReminder[] {
   const caregivers = recipients.filter((r) => r.role === "caregiver");
   return [
     ...fanOut(careDate, itemKey, "due", dueAt, recipients, ["push", "email"]),
     ...fanOut(careDate, itemKey, "nag", addMinutes(dueAt, settings.nagAfterMin), recipients, ["push"]),
-    ...fanOut(careDate, itemKey, "escalation", addMinutes(dueAt, settings.escalateAfterMin), caregivers, ["email"]),
+    ...fanOut(careDate, itemKey, "escalation", addMinutes(dueAt, settings.escalateAfterMin), caregivers, [escalationChannel]),
   ];
 }
 

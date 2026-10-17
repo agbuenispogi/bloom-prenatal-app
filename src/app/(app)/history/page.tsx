@@ -4,6 +4,7 @@ import { requireMember } from "@/lib/auth/session";
 import { formatInTimeZone } from "date-fns-tz";
 import { currentCareDate, loadDays } from "@/lib/data/day";
 import { parseHouseholdSettings } from "@/lib/data/settings";
+import { emailEnabled } from "@/lib/reminders/channels";
 import { createClient } from "@/lib/supabase/server";
 import { toHistoryView } from "@/lib/view/history";
 
@@ -25,9 +26,10 @@ export default async function History() {
   if (days[0]?.careDayId) {
     const { data: sent } = await supabase.from("daily_summaries").select("sent_at").eq("care_day_id", days[0].careDayId).maybeSingle();
     const summaryTime = parseHouseholdSettings(household.tz, household.settings).summaryTime;
+    const how = emailEnabled() ? "emailed" : "sent to your phones";
     emailNote = sent?.sent_at
-      ? `This page was emailed at ${formatInTimeZone(new Date(sent.sent_at), household.tz, "h:mm a")}.`
-      : `This page is emailed each morning at ${formatInTimeZone(new Date(`2000-01-01T${summaryTime}:00Z`), "UTC", "h:mm a")}.`;
+      ? `This page was ${how} at ${formatInTimeZone(new Date(sent.sent_at), household.tz, "h:mm a")}.`
+      : `This page is ${how} each morning at ${formatInTimeZone(new Date(`2000-01-01T${summaryTime}:00Z`), "UTC", "h:mm a")}.`;
   }
   return <HistoryPage view={view} hrefFor={(d) => `/history/${d}`} emailNote={emailNote} />;
 }

@@ -2,7 +2,7 @@
 
 The Qdrant server loads on the next session in this folder. Store each line below with `qdrant-store`, then delete this file.
 
-- Decision: minute-level reminders use Supabase pg_cron → pg_net → the dispatch-reminders edge function with a CRON_SECRET header, not Vercel cron (Hobby runs only once a day).
+- Decision: minute-level reminders use Supabase pg_cron → pg_net → the Next.js route /api/reminders/dispatch with a CRON_SECRET bearer, not Vercel cron (Hobby runs only once a day).
 - Decision: the care day runs 04:00–03:59 Asia/Manila. Timestamps are stored as UTC timestamptz.
 - Decision: the schedule engine is pure TS in src/lib/engine. `now` is a parameter. Medications are data, seeded in a migration.
 - Decision: medications (what) are split from medication_rules (when). dose_logs are unique on (care_day_id, rule_id, occurrence). Reminders use a unique dedupe_key.
@@ -32,5 +32,8 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Decision: the daily summary is sent by the same per-minute dispatcher (no separate cron). Snapshot in daily_summaries.payload, one email per member, claim + max 5 attempts, and partial delivery counts as sent (no double emails).
 - QA (2026-10-18): 132 unit, 41 e2e (axe 0 violations in light and dark), Lighthouse mobile a11y 100 / best practices 100 / perf 91–100. SEO is low on purpose (noindex). Report in docs/QA.md. Demo routes in prod only with BLOOM_DEMO=1.
 - Deploy (2026-10-18): docs/DEPLOY.md is the ordered guide. Supabase Auth must use Resend SMTP, because the built-in mailer only delivers to the team. Vercel functions are pinned to sin1 (vercel.json). The .env.local secrets were pre-generated (CRON_SECRET, VAPID). Check with `npm run check:env`.
-- Pending: production URL, Supabase project ref, GitHub repo URL. Record them here and in the Project Hub once deployed.
-- Open questions: wife's email, Resend sending domain, her due date.
+- GitHub repo: https://github.com/agbuenispogi/bloom-prenatal-app (private; remote origin over SSH).
+- Vercel team: agbuenispogis-projects (https://vercel.com/agbuenispogis-projects). Ag has a Cloudflare account, planned for the email domain + DNS (not confirmed yet).
+- Pending: production URL, Supabase project ref. Record them here and in the Project Hub once deployed.
+- Decision (Ag, 2026-10-18): email is on hold. Phones get everything: push (incl. caregiver +30 heads-up and the 9 AM summary) plus a subscribed Calendar feed with native alarms. Email switches on automatically when RESEND_API_KEY + EMAIL_FROM are set. While on hold, Supabase "Confirm email" must be OFF (the built-in mailer only reaches the team).
+- Open questions: wife's email, her due date, when or if to enable email (domain + Resend).

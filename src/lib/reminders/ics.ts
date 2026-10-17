@@ -26,14 +26,9 @@ function fold(line: string): string {
   return out.join("\r\n");
 }
 
-export function buildIcs(e: IcsEvent): string {
+function eventLines(e: IcsEvent): string[] {
   const end = new Date(e.start.getTime() + (e.durationMin ?? 15) * 60_000);
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Bloom//Prenatal companion//EN",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
+  return [
     "BEGIN:VEVENT",
     `UID:${e.uid}`,
     `DTSTAMP:${stamp(e.now)}`,
@@ -48,6 +43,24 @@ export function buildIcs(e: IcsEvent): string {
     "TRIGGER:PT0M",
     "END:VALARM",
     "END:VEVENT",
+  ];
+}
+
+const HEADER = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Bloom//Prenatal companion//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
+
+export function buildIcs(e: IcsEvent): string {
+  return [...HEADER, ...eventLines(e), "END:VCALENDAR"].map(fold).join("\r\n") + "\r\n";
+}
+
+// A subscribable calendar (the phone's Calendar app re-fetches it). Each event rings a native alert on time.
+export function buildCalendar(name: string, events: IcsEvent[]): string {
+  const lines = [
+    ...HEADER,
+    `X-WR-CALNAME:${escape(name)}`,
+    "X-WR-TIMEZONE:Asia/Manila",
+    "REFRESH-INTERVAL;VALUE=DURATION:PT15M",
+    "X-PUBLISHED-TTL:PT15M",
+    ...events.flatMap(eventLines),
     "END:VCALENDAR",
   ];
   return lines.map(fold).join("\r\n") + "\r\n";

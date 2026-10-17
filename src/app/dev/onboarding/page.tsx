@@ -7,7 +7,7 @@ export default function DevOnboarding() {
   if (!demoAllowed()) notFound();
   return (
     <AppFrame nav={false}>
-      <OnboardingFlow name="Love" vapidKey={null} save={null} todayHref="/dev/home" />
+      <OnboardingFlow name="Love" vapidKey={null} save={null} todayHref="/dev/home" calendarUrl="#calendar-demo" />
     </AppFrame>
   );
 }

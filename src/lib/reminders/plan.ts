@@ -51,7 +51,18 @@ function payloadFor(r: PlannedReminder, d: DoseItem, careDate: string, tz: strin
   }
 }
 
-export function desiredReminders(input: EngineInput, schedule: DaySchedule, recipients: Recipient[], now: Date): DesiredReminder[] {
+// `emailEnabled: false` (no Resend configured): nothing is planned by email, and the caregiver's heads-up
+// becomes a push, so every reminder still reaches a phone.
+export function desiredReminders(
+  input: EngineInput,
+  schedule: DaySchedule,
+  allRecipients: Recipient[],
+  now: Date,
+  opts: { emailEnabled?: boolean } = {},
+): DesiredReminder[] {
+  const emailEnabled = opts.emailEnabled ?? true;
+  const recipients = emailEnabled ? allRecipients : allRecipients.map((r) => ({ ...r, email: false }));
+  const escalationChannel = emailEnabled ? "email" : "push";
   const { tz, nagAfterMin, escalateAfterMin } = input.settings;
   const careDate = schedule.careDate;
   const out: DesiredReminder[] = [];
@@ -73,7 +84,7 @@ export function desiredReminders(input: EngineInput, schedule: DaySchedule, reci
       continue;
     }
 
-    for (const r of planDoseReminders(careDate, item.key, dueAt, recipients, { nagAfterMin, escalateAfterMin })) {
+    for (const r of planDoseReminders(careDate, item.key, dueAt, recipients, { nagAfterMin, escalateAfterMin }, escalationChannel)) {
       out.push({ ...r, payload: payloadFor(r, item, careDate, tz) });
     }
   }

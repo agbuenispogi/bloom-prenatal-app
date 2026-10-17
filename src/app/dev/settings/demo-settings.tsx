@@ -78,6 +78,8 @@ export function DemoSettings({ section }: { section: string }) {
         saveTimes={ok}
         saveCaregiver={ok}
         installHref="/dev/onboarding"
+        emailEnabled={false}
+        calendarUrl="#calendar-demo"
       />
     </SettingsPage>
   );

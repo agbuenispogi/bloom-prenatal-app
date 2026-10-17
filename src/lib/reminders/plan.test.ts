@@ -60,6 +60,13 @@ describe("desiredReminders", () => {
     expect(desired(makeInput({ doses: [taken("r-anmum", at(TUE, "15:00"))], now: at(TUE, "20:00") })).some((r) => r.kind === "anmum")).toBe(false);
   });
 
+  it("with email off, nothing goes by email and the caregiver's heads-up is a push", () => {
+    const input = makeInput({ ...lunch(), now: at(TUE, "12:45") });
+    const rows = desiredReminders(input, buildDaySchedule(input), people, input.now, { emailEnabled: false }).filter((r) => r.payload.itemKey === "caltrate-after-lunch#1");
+    expect(rows.some((r) => r.channel === "email")).toBe(false);
+    expect(rows.map((r) => `${r.kind}:${r.recipientId}:${r.channel}`).sort()).toEqual(["due:ag:push", "due:wife:push", "escalation:ag:push", "nag:ag:push", "nag:wife:push"].sort());
+  });
+
   it("never plans anything already in the past (nothing stale fires)", () => {
     const rows = desired(makeInput({ ...lunch(), now: at(TUE, "14:20") }));
     expect(rows.every((r) => r.dueAt.getTime() > at(TUE, "14:18").getTime())).toBe(true);

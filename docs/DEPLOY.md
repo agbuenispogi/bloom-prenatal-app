@@ -15,9 +15,10 @@ npm run check:env
 
 ## Step 0 · What you need
 
-- Accounts: **GitHub**, **Supabase**, **Vercel** (Hobby is fine), **Resend**.
-- **A domain you control** (e.g. from Cloudflare or Namecheap) for sending email. Resend only delivers to
-  your own address until a domain is verified, and Supabase needs it for her sign-up email too.
+- Accounts: **GitHub**, **Supabase**, **Vercel** (Hobby is fine).
+- **Email is on hold.** Bloom sends everything to your phones instead: push alarms, the caregiver heads-up and
+  the 9 AM summary, plus native alarms through a subscribed **Calendar**. Resend and a domain can be added any
+  time later (Step 3); email switches on by itself once `RESEND_API_KEY` and `EMAIL_FROM` are set.
 - Her email address (for the invite). You type it into Bloom, never into a file.
 
 ## Step 1 · Private GitHub repo
@@ -55,25 +56,30 @@ npm run check:env
 green "RLS enabled" badge. **Integrations → Cron** shows `bloom-dispatch-reminders`. It will fail until
 Step 6, which is expected.
 
-## Step 3 · Resend (email)
+## Step 3 · Resend (email): on hold, skip for now
+
+Skip this step until you want email. When you do, add the two variables in Vercel and redeploy.
 
 1. resend.com → **Domains → Add domain** (e.g. `yourdomain.com`) → add the DNS records it shows at your
    registrar → wait for **Verified**.
 2. **API Keys → Create** (permission: Sending access) → `RESEND_API_KEY` in `.env.local`.
-3. In `.env.local`:
-   - `EMAIL_FROM=Bloom <bloom@yourdomain.com>`
-   - `VAPID_SUBJECT=mailto:you@yourdomain.com`
-✔ Check: `npm run check:env` now only lists the Vercel URL as missing (or nothing).
+3. In `.env.local`: `EMAIL_FROM=Bloom <bloom@yourdomain.com>`, then set up Supabase SMTP (the box below).
+
+**Do this now, even with email on hold:** in `.env.local` set `VAPID_SUBJECT=mailto:<any email you read>` (your
+Gmail is fine). Push services use it only as a contact address.
+✔ Check: `npm run check:env` shows Resend as "off (optional)" and nothing else missing.
 
 ## Step 4 · Supabase Auth settings
 
 Dashboard → **Authentication**:
 
-1. **Emails → SMTP Settings → Enable custom SMTP.** *Required*: Supabase's built-in mailer only delivers to
-   your own team, so her sign-up email would never arrive.
-   - Host `smtp.resend.com` · Port `465` · Username `resend` · Password: your Resend API key
-   - Sender email `bloom@yourdomain.com` · Sender name `Bloom`
-2. **Emails → Templates**:
+1. **While email is on hold: Sign In / Providers → Email → turn OFF "Confirm email".** Supabase's built-in
+   mailer only delivers to your own team, so her confirmation email would never arrive. With this off she signs
+   up straight from the invite link. Sign-up is still invite-only (the hook in item 3), and passwords are
+   required. Magic-link sign-in won't reach her, so she uses her password.
+   *Later, with Resend:* Emails → SMTP Settings → host `smtp.resend.com`, port `465`, user `resend`, password =
+   the Resend API key, sender `bloom@yourdomain.com`. Then you can turn "Confirm email" back on.
+2. **Emails → Templates** (only matters once SMTP is set up):
    - *Confirm signup*: set the link to `<a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Confirm your email</a>`
    - *Magic Link*: set the link to `<a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Sign in to Bloom</a>`
 3. **Hooks → Add hook → Before User Created → Postgres → `public.hook_before_user_created`**. This makes sign-up
@@ -81,8 +87,8 @@ Dashboard → **Authentication**:
 4. **URL Configuration**: for now, Site URL `http://localhost:3000` and Redirect URL `http://localhost:3000/**`.
    You'll add the Vercel URL in Step 5.
 5. **Sessions**: leave refresh tokens without a time limit. That's what keeps her signed in for weeks.
-✔ Check (optional, local): `npm run dev`, open http://localhost:3000, and sign up as yourself. The
-confirmation email arrives from your domain. You can also do this after deploying.
+✔ Check (optional, local): `npm run dev`, open http://localhost:3000, and sign up as yourself. With "Confirm
+email" off you go straight to "Set up your household".
 
 ## Step 5 · Vercel (deploy)
 
@@ -129,21 +135,24 @@ You should see `200` and `{"ok":true,…}`. A `401` means the Vault secret doesn
 3. Invite her and set up her iPhone. See [HANDOVER.md](HANDOVER.md).
 ✔ Final checks (the brief's acceptance criteria):
 - [ ] On her iPhone, from the Home Screen icon, the test alarm arrives.
+- [ ] Settings → Reminders → **Add to my phone's Calendar** → Subscribe. A "Bloom" calendar shows her next
+      timed doses with alerts (do this on your phone too).
 - [ ] She taps **Done** and the next item appears straight away. In Supabase → `reminders`, new rows exist for
-      the next dose: push + email for both of you, a +15 nag, and a +30 email to you.
-- [ ] At a dose's time, push arrives on both phones and the email lands in both inboxes within about a minute.
+      the next dose: push to both of you, a +15 nag, and a +30 heads-up push to you.
+- [ ] At a dose's time, push arrives on both phones within about a minute, and the Calendar alert rings.
 - [ ] A bedtime dose taken after midnight shows under the previous day in History.
-- [ ] Next morning at 9:00, both of you get "Yesterday's page" listing every dose and meal with times. A day
-      without Anmum says so.
+- [ ] Next morning at 9:00, both phones get a "Yesterday: …" notification that opens History, which lists every
+      dose and meal with times. A day without Anmum says so.
 - [ ] Weeks later, she's still signed in.
 
 ## If something's off
 
 | Symptom | Likely cause |
 |---|---|
-| Her confirmation email never arrives | Step 4.1 SMTP not set, or the Resend domain isn't verified yet |
+| Her sign-up says to check email | "Confirm email" is still on (Step 4.1). Turn it off while email is on hold |
+| No Calendar alerts | Calendar subscribed? iPhone Settings → Calendar → Accounts → Fetch New Data → every 15 min; Calendar notifications allowed |
 | "Bloom is invite-only" on her sign-up | She used a different email than the invite, or the invite is older than 7 days. Create a new one |
 | No alarms on iPhone | Not opened from the Home Screen icon, notifications not allowed (iPhone Settings → Notifications → Bloom), or a Focus mode |
 | `net._http_response` shows 401 | The Vault `bloom_cron_secret` doesn't match Vercel's `CRON_SECRET` |
 | Reminders rows have `last_error` | Read it: VAPID or Resend configuration is usually named there |
-| Emails only reach you, not her | The Resend domain isn't verified |
+| (Later) Emails only reach you, not her | The Resend domain isn't verified |
