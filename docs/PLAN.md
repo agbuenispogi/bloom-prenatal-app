@@ -65,7 +65,7 @@ Changes from the brief's starting point: `household_invites`, `medication_rules`
 | 5 | Reminders: pg_cron → **Next.js route** (your choice), web push + Taken/Snooze, Resend emails, nag/escalation, .ics, in-app alarm | ✅ built + tested locally (126 unit, RLS incl. claiming); end-to-end on a real phone waits on provisioning (SETUP.md §5) |
 | 6 | Daily summary email + History | ✅ 9 AM summary (snapshot + email to both, claimed once, retried) built + tested locally; History shows the email status. Live send waits on provisioning |
 | 7 | QA: Playwright e2e, Lighthouse, mobile visual review | ✅ see docs/QA.md (132 unit, 41 e2e incl. axe 0 violations, Lighthouse a11y 100) |
-| 8 | Deploy + handover | prod URL, Hub + memory updated, handover note |
+| 8 | Deploy + handover | 🟡 ready: step-by-step docs/DEPLOY.md (you run the account steps), docs/HANDOVER.md, `npm run check:env`, secrets pre-generated in .env.local. Production URL pending |
 
 ## 5. Things Ag needs to provide (you chose to install tools yourself)
 

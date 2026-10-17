@@ -1,5 +1,7 @@
 # Supabase setup (Ag does these once)
 
+> The complete, ordered walkthrough (GitHub → Supabase → Resend → Vercel → cron → first run) is **[DEPLOY.md](DEPLOY.md)**. This file keeps the Supabase details.
+
 You chose to install and sign in to tools yourself. These are the exact steps. Nothing here goes into the repo.
 
 ## 1. Create the project

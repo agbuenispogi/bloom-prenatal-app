@@ -31,4 +31,6 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Vault secret names: bloom_dispatch_url, bloom_cron_secret.
 - Decision: the daily summary is sent by the same per-minute dispatcher (no separate cron). Snapshot in daily_summaries.payload, one email per member, claim + max 5 attempts, and partial delivery counts as sent (no double emails).
 - QA (2026-10-18): 132 unit, 41 e2e (axe 0 violations in light and dark), Lighthouse mobile a11y 100 / best practices 100 / perf 91–100. SEO is low on purpose (noindex). Report in docs/QA.md. Demo routes in prod only with BLOOM_DEMO=1.
+- Deploy (2026-10-18): docs/DEPLOY.md is the ordered guide. Supabase Auth must use Resend SMTP, because the built-in mailer only delivers to the team. Vercel functions are pinned to sin1 (vercel.json). The .env.local secrets were pre-generated (CRON_SECRET, VAPID). Check with `npm run check:env`.
+- Pending: production URL, Supabase project ref, GitHub repo URL. Record them here and in the Project Hub once deployed.
 - Open questions: wife's email, Resend sending domain, her due date.

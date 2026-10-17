@@ -13,7 +13,8 @@
     "test:e2e": "playwright test",
     "test:rls": "sh supabase/tests/run-rls.sh",
     "test:coverage": "vitest run --coverage",
-    "db:types:local": "sh supabase/tests/gen-types-local.sh"
+    "db:types:local": "sh supabase/tests/gen-types-local.sh",
+    "check:env": "node --env-file-if-exists=.env.local scripts/check-env.mjs"
   },
   "dependencies": {
     "@react-email/components": "^1.0.12",
