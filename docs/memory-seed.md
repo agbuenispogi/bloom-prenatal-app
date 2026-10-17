@@ -16,4 +16,8 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Env var names: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, SUPABASE_SECRET_KEY, NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT, RESEND_API_KEY, EMAIL_FROM, CRON_SECRET, NEXT_PUBLIC_APP_URL.
 - Preference: Ag installs the Supabase/Vercel/MCP tooling; Claude gives exact commands.
 - Project Hub entry: ~/.local/share/project-hub/corpus/bloom-prenatal-app/folder.md (update the status lines at each phase).
-- Open questions: wife's email, Resend sending domain, bedtime default.
+- Decision: the bedtime default is 01:00, treated as an estimate until she taps "going to bed". It ties to a snack only when the snack is after dinner.
+- Decision: nextUp is the earliest open candidate (take/prep_meal/eat/bedtime) and is never all_done while Anmum is below its minimum. An unlogged lunch/dinner is "passed" once a later meal or bedtime exists.
+- Decision: pre-meal dose targets use the planned meal time (no false "late"). After-meal targets use the eaten time.
+- Decision: household settings gained late_grace_min, meal_lead_min and shift_prep_min (migration 0004). Overnight shifts (end < start) are not supported (DB check).
+- Open questions: wife's email, Resend sending domain.

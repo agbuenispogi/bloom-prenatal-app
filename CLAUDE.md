@@ -53,6 +53,14 @@ summary at 9:00 AM Manila.
 - A dose can be Taken, Skipped (optional reason) or Snoozed (10/20/30). Late doses show actual vs. target.
 - Reminders per due item: push + email to both at due time → gentle nag at +15 if not logged → escalation email to caregiver only at +30. Logging cancels pending nags.
 
+## Schedule engine (`src/lib/engine`)
+- Entry point: `buildDaySchedule(input)` → `{ careDate, timeline, nextUp, anmum, warnings }`. Also `planMealIntent` ("eating in ~N min"), `resolveShift`, `careDateOf`, `describeNextUp` (card/push/email copy), `planDoseReminders` / `planEatNudge` / `planAnmumReminder`.
+- `nextUp` is exactly one of `take | prep_meal | eat | bedtime | all_done`: the earliest open candidate wins. It is never `all_done` while an Anmum minimum is unmet.
+- Unlogged lunch/dinner is "passed" (missed) once she moves on (a later meal or bedtime tap), so it never blocks the day.
+- Bedtime: default 01:00 is an *estimate* until she taps "going to bed". It ties to a snack only if the snack is after dinner.
+- Pre-meal doses target the planned meal time; after-meal doses target the eaten time.
+- Tests: `src/lib/engine/__tests__/` (scenarios, edge cases, reviewer regressions). Coverage ~99%.
+
 ## Run / test / deploy
 ```bash
 npm install

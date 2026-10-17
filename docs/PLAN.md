@@ -60,7 +60,7 @@ Changes from the brief's starting point: `household_invites`, `medication_rules`
 |---|---|---|
 | 1 | Setup: `.claude/` isolation, memory, Project Hub, repo, env names | ✅ |
 | 2 | Schema + RLS + auth + seed migration | ✅ migrations, `npm run test:rls` green; live login waits on the Supabase project |
-| 3 | Schedule engine + Vitest | all listed scenarios pass, `schedule-engine-reviewer` = pass |
+| 3 | Schedule engine + Vitest | ✅ 96 tests, ~99% engine coverage, reviewer pass after 2 fix rounds |
 | 4 | UI: Home, Done flow, timeline (Impeccable teach → critique/audit per screen) | screenshots at 390/1280, light/dark |
 | 5 | Reminders: pg_cron → edge fn, push, Resend, nag/escalation, .ics | end-to-end alarm on a real phone |
 | 6 | Daily summary email + History | 9 AM email received |
@@ -79,4 +79,4 @@ Changes from the brief's starting point: `household_invites`, `medication_rules`
 1. Your wife's email address (for the invite, entered by you in Settings, not stored in the repo).
 2. Sending domain for Resend?
 3. ~~Caregiver logging~~ Built as read-only by default; only the patient can switch on `caregiver_can_log`.
-4. Bedtime: a fixed default (e.g. 01:00 after shift) or always "tap when going to bed"?
+4. ~~Bedtime~~ Default 01:00 as an estimate; she taps "going to bed" to confirm.
