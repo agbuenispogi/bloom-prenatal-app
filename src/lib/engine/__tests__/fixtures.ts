@@ -1,7 +1,8 @@
 import { fromZonedTime } from "date-fns-tz";
 import type { DoseLog, EngineInput, EngineSettings, MealLog, Medication, MedicationRule, Shift, WeeklyShift } from "../types";
 
-// Mirrors supabase/migrations/…_household_functions.sql (seed_household_defaults).
+// Engine test data based on the seeded regimen. It keeps iron + folic acid as one combined 17:00 dose (the
+// engine logic is the same); the real seed has them as two medicines (migration 0007).
 export const TZ = "Asia/Manila";
 
 export const settings: EngineSettings = {

@@ -24,8 +24,11 @@ const MEDS: MedData[] = [
     { id: "13", label: "after lunch", ruleType: "after_meal", anchor: "lunch", minutes: 60, fixedTime: null, minPerDay: 1, maxPerDay: 1, deadline: null, active: true },
     { id: "16", label: "after dinner", ruleType: "after_meal", anchor: "dinner", minutes: 60, fixedTime: null, minPerDay: 1, maxPerDay: 1, deadline: null, active: true },
   ] },
-  { id: "3", name: "Ferrous sulfate + Folic acid", doseLabel: "1 + 1 tablet", color: "clay", active: true, rules: [
+  { id: "3", name: "Ferrous sulfate", doseLabel: "1 tablet", color: "clay", active: true, rules: [
     { id: "14", label: "afternoon dose", ruleType: "fixed_time", anchor: null, minutes: 0, fixedTime: "17:00", minPerDay: 1, maxPerDay: 1, deadline: null, active: true },
+  ] },
+  { id: "5", name: "Folic acid", doseLabel: "1 tablet", color: "oat", active: true, rules: [
+    { id: "19", label: "afternoon dose", ruleType: "fixed_time", anchor: null, minutes: 0, fixedTime: "17:00", minPerDay: 1, maxPerDay: 1, deadline: null, active: true },
   ] },
   { id: "4", name: "Anmum Materna", doseLabel: "1 glass", color: "blush", active: true, rules: [
     { id: "18", label: "once or twice a day", ruleType: "daily_count", anchor: null, minutes: 0, fixedTime: null, minPerDay: 1, maxPerDay: 2, deadline: "21:00", active: true },

@@ -32,7 +32,7 @@ test.describe("the care-day loop", () => {
       await expect(cardTitle(page)).not.toHaveText(title === "Going to bed?" ? "Going to bed?" : "\u0000");
     }
     expect(seen.at(-1)).toBe("All done for today");
-    expect(seen).toEqual(expect.arrayContaining(["Caltrate", "Eating dinner soon?", "Ferrous sulfate + Folic acid", "Anmum Materna", "Going to bed?", "Gaviscon"]));
+    expect(seen).toEqual(expect.arrayContaining(["Caltrate", "Eating dinner soon?", "Ferrous sulfate", "Folic acid", "Anmum Materna", "Going to bed?", "Gaviscon"]));
 
     // The finished page: nothing due, the bedtime dose is inked, Anmum counted.
     await expect(page.getByText("Due now")).toHaveCount(0);

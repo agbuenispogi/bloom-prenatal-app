@@ -26,8 +26,8 @@ set client_min_messages = notice;
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
 select bloom.create_household('Our home', 'Ag', 'caregiver') as hh_a \gset
 select set_config('bloom.hh_a', :'hh_a', false);
-select pg_temp.check((select count(*) from bloom.medications) = 4, 'four default medications');
-select pg_temp.check((select count(*) from bloom.medication_rules) = 8, 'eight default rules');
+select pg_temp.check((select count(*) from bloom.medications) = 5, 'five default medications (ferrous sulfate and folic acid separate)');
+select pg_temp.check((select count(*) from bloom.medication_rules) = 9, 'nine default rules');
 select pg_temp.check((select count(*) from bloom.work_schedule) = 7, 'seven weekdays of shifts');
 select pg_temp.check((select end_time from bloom.work_schedule where weekday = 1) = '24:00', 'Monday shift ends at midnight');
 
@@ -82,7 +82,7 @@ select pg_temp.check((select count(*) from bloom.profiles) = 2, 'patient sees bo
 
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000e');
 select pg_temp.check((select count(*) from bloom.households) = 1, 'eve sees only her household');
-select pg_temp.check((select count(*) from bloom.medications) = 4, 'eve sees only her 4 medications');
+select pg_temp.check((select count(*) from bloom.medications) = 5, 'eve sees only her 5 medications');
 select pg_temp.check((select count(*) from bloom.care_days) = 0, 'eve sees no care days from A');
 select pg_temp.check((select count(*) from bloom.dose_logs) = 0, 'eve sees no doses from A');
 select pg_temp.check((select count(*) from bloom.profiles) = 1, 'eve sees only herself');
