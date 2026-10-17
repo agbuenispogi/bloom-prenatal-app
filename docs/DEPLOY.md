@@ -55,7 +55,10 @@ other app:
    ```
    This avoids `supabase db push`, which would compare against the other app's migration history. The bundle
    runs in one transaction: it either fully succeeds or changes nothing.
-4. **Project Settings → Data API → Exposed schemas**: add **`bloom`** (keep the existing ones) → Save.
+4. **Expose the `bloom` schema**: open
+   `https://supabase.com/dashboard/project/uhwrolvwvuouajxgkkwv/settings/api`. Under **Data API Settings**, in
+   **Exposed schemas**, add **`bloom`** (keep the existing ones) → **Save**. If that page has no
+   "Exposed schemas" box, use the left sidebar: **Integrations → Data API → Settings**.
    Without this the app gets "schema must be one of …" errors.
 ✔ Check: **Table Editor → schema `bloom`** lists `households`, `medications`, `dose_logs`, `reminders`…, each
 with RLS enabled. The `public` tables of the other app are unchanged. **Integrations → Cron** (or
@@ -75,21 +78,21 @@ Skip this step until you want email. When you do, add the two variables in Verce
 Gmail is fine). Push services use it only as a contact address.
 ✔ Check: `npm run check:env` shows Resend as "off (optional)" and nothing else missing.
 
-## Step 4 · Supabase Auth: almost nothing to change
+## Step 4 · Supabase Auth: nothing to change (skip)
 
-Because the project is shared, Bloom deliberately leaves project-wide auth settings alone: no hook, no "Confirm
-email" change, no SMTP, no Site URL change. Bloom creates and confirms its own accounts on the server.
+Bloom leaves the shared project's auth settings alone: no hook, no "Confirm email", no SMTP, no Site URL, and
+no Redirect URLs. Accounts are created and confirmed by Bloom's server, and sign-in uses a password, so nothing
+here needs changing while email is on hold.
 
-The only addition is **Authentication → URL Configuration → Redirect URLs**: **add**
-`http://localhost:3000/**` now (and the Vercel URL in Step 5). Adding entries doesn't affect the other app.
+Only once email is turned on later (magic-link sign-in) add the app's address to the redirect list: open
+`https://supabase.com/dashboard/project/uhwrolvwvuouajxgkkwv/auth/url-configuration` → **Redirect URLs** →
+**Add URL** → `https://<your-app>.vercel.app/**`.
 
 Good to know:
 - Someone who already has an account in this project (e.g. from the other app) signs in to Bloom with that
   same password. Bloom then asks for an invite before showing anything.
 - Session length is project-wide. The default (no refresh-token time limit) is what keeps her signed in for
   weeks.
-✔ Check (optional, local): `npm run dev` → http://localhost:3000 → **Create the household** (sign up as
-yourself) → you go straight to "Set up your household".
 
 ## Step 5 · Vercel (deploy)
 
@@ -99,8 +102,6 @@ yourself) → you go straight to "Set up your household".
    - `NEXT_PUBLIC_APP_URL` → your production URL, e.g. `https://bloom-prenatal-app.vercel.app`
    - **Never** add `BLOOM_DEMO`.
 3. **Deploy.** Functions run in Tokyo (`vercel.json`, `hnd1`), next to the database.
-4. Back in Supabase → **Authentication → URL Configuration → Redirect URLs**: **add**
-   `https://<your-app>.vercel.app/**`. Leave the Site URL as the other app has it.
 ✔ Check: opening `https://<your-app>.vercel.app` redirects to **Sign in**. `/dev/home` must also redirect to
 sign in (the demo is off in production).
 

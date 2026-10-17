@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { z } from "zod";
 import { publicEnv } from "@/lib/env";
 import type { ActionState } from "@/lib/auth/action-state";
@@ -20,6 +21,10 @@ export async function inviteMember(_prev: InviteState, form: FormData): Promise<
   if (error || !token) {
     return { error: error?.message.includes("patient") ? "This household already has a patient." : "Couldn't create the invite." };
   }
-  const link = `${publicEnv.appUrl()}/signup?invite=${token}&email=${encodeURIComponent(parsed.data.email)}`;
+  // Build the link from the address she's actually using, so it's always right (production or local).
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const origin = host ? `${h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")}://${host}` : publicEnv.appUrl();
+  const link = `${origin}/signup?invite=${token}&email=${encodeURIComponent(parsed.data.email)}`;
   return { message: "Invite ready. Send this link by text or chat. It works for 7 days, once.", link };
 }

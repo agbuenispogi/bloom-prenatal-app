@@ -35,6 +35,7 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - GitHub repo: https://github.com/agbuenispogi/bloom-prenatal-app (private; remote origin over SSH).
 - Vercel team: agbuenispogis-projects (https://vercel.com/agbuenispogis-projects). Ag has a Cloudflare account, planned for the email domain + DNS (not confirmed yet).
 - Supabase: reusing Ag's existing project uhwrolvwvuouajxgkkwv (ap-northeast-1 Tokyo), which another app also uses. Bloom lives in the `bloom` schema (exposed via Data API). It's installed by pasting supabase/bloom-install.sql (npm run db:bundle), not db push. Vercel region hnd1.
-- Pending: production URL. Record them here and in the Project Hub once deployed.
+- Production: https://bloom-prenatal-app.vercel.app (Vercel hnd1). The first deploy 500ed because it was built before the env vars existed; redeploying fixed it.
+- Note: the Supabase secret key was briefly exposed in a screenshot on 2026-10-18; Ag was asked to rotate it (new key bloom-2). Record them here and in the Project Hub once deployed.
 - Decision (Ag, 2026-10-18): email is on hold. Phones get everything: push (incl. caregiver +30 heads-up and the 9 AM summary) plus a subscribed Calendar feed with native alarms. Email switches on automatically when RESEND_API_KEY + EMAIL_FROM are set. While on hold, Supabase "Confirm email" must be OFF (the built-in mailer only reaches the team).
 - Open questions: wife's email, her due date, when or if to enable email (domain + Resend).
