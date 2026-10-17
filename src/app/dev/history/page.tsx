@@ -11,7 +11,7 @@ export default function DevHistory() {
   const days = demoPastDays().map((input) => ({ input, schedule: buildDaySchedule(input) }));
   return (
     <div className="relative flex flex-1 flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-      <HistoryPage view={toHistoryView(days, DEMO_DUE_DATE)} hrefFor={(d) => `/dev/history/${d}`} />
+      <HistoryPage view={toHistoryView(days, DEMO_DUE_DATE)} hrefFor={(d) => `/dev/history/${d}`} emailNote="This page was emailed at 9:00 AM." />
       <AppNav hrefPrefix="/dev" />
     </div>
   );

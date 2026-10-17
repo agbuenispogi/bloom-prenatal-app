@@ -45,10 +45,13 @@ export type Database = {
       daily_summaries: {
         Row: {
           adherence_pct: number | null;
+          attempts: number;
           care_day_id: string;
+          claimed_at: string | null;
           created_at: string;
           household_id: string;
           id: string;
+          last_error: string | null;
           payload: NonNullable<Json>;
           sent_at: string | null;
           streak: number;
@@ -56,20 +59,26 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           adherence_pct?: number | null;
+          attempts?: number;
           care_day_id: string;
+          claimed_at?: string | null;
           created_at?: string;
           household_id: string;
           id?: string;
+          last_error?: string | null;
           payload: NonNullable<Json>;
           sent_at?: string | null;
           streak?: number;
         };
         Update: {
           adherence_pct?: number | null;
+          attempts?: number;
           care_day_id?: string;
+          claimed_at?: string | null;
           created_at?: string;
           household_id?: string;
           id?: string;
+          last_error?: string | null;
           payload?: NonNullable<Json>;
           sent_at?: string | null;
           streak?: number;

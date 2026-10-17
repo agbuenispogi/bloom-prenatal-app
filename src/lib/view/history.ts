@@ -52,3 +52,22 @@ export function toHistoryView(days: { input: EngineInput; schedule: DaySchedule 
 export function dayRows(input: EngineInput, schedule: DaySchedule): TimelineRow[] {
   return toHomeView(input, schedule, { dueDate: null, role: "caregiver", canLog: false }).rows;
 }
+
+// What happened, in the list rows' voice: "6 on time · none late, skipped or missed".
+export function tally(card: DayCard): string {
+  const s = card.summary;
+  const rest = [
+    s.late ? `${s.late} late` : null,
+    s.skipped ? `${s.skipped} skipped` : null,
+    s.missed ? `${s.missed} missed` : null,
+  ].filter(Boolean);
+  return `${s.onTime} on time · ${rest.length ? rest.join(" · ") : "none late, skipped or missed"}`;
+}
+
+// The list-row form, short enough for one line at 390px: "All 6 on time", "5 of 6 on time · 1 late".
+export function shortTally(card: DayCard): string {
+  const s = card.summary;
+  if (s.onTime === s.scheduled) return `All ${s.scheduled} on time`;
+  const rest = [s.late ? `${s.late} late` : null, s.skipped ? `${s.skipped} skipped` : null, s.missed ? `${s.missed} missed` : null].filter(Boolean);
+  return [`${s.onTime} of ${s.scheduled} on time`, ...rest].join(" · ");
+}

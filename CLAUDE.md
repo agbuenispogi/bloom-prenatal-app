@@ -74,6 +74,10 @@ summary at 9:00 AM Manila.
 - Notification buttons → `public/sw.js` → `/api/notify-action` with an HMAC token (`token.ts`). `.ics` downloads come from `/api/ics?t=` (email) and `/api/ics/next` (signed in).
 - In-app alarm: `AlarmPrompt` (full screen + synthesized chime) when a timed dose comes due while the app is open.
 
+## Daily summary (Phase 6)
+- `src/lib/summary/daily.ts` (pure): `summaryDue` (from `summary_time` until the care day ends) and `buildSummary` (yesterday's page: %, tally, gentle note, streak, Anmum flag, every row with actual times).
+- `src/lib/summary/send.ts`: runs in the every-minute dispatcher. It snapshots into `daily_summaries`, claims the row, emails each member with email on (`SummaryEmail`), and retries at most 5 times. History shows whether it was sent.
+
 ## Run / test / deploy
 ```bash
 npm install

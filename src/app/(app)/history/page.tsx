@@ -1,7 +1,9 @@
 import { HistoryPage } from "@/components/history/history-page";
 import { addDays } from "@/lib/engine";
 import { requireMember } from "@/lib/auth/session";
+import { formatInTimeZone } from "date-fns-tz";
 import { currentCareDate, loadDays } from "@/lib/data/day";
+import { parseHouseholdSettings } from "@/lib/data/settings";
 import { createClient } from "@/lib/supabase/server";
 import { toHistoryView } from "@/lib/view/history";
 
@@ -17,5 +19,15 @@ export default async function History() {
   const yesterday = addDays(today, -1);
   const days = yesterday >= from ? await loadDays(supabase, household, profile, now, from, yesterday) : [];
   const view = toHistoryView(days, days[0]?.settings.dueDate ?? null);
-  return <HistoryPage view={view} hrefFor={(d) => `/history/${d}`} />;
+
+  // The 9 AM email is the same page; say whether it has gone out.
+  let emailNote: string | null = null;
+  if (days[0]?.careDayId) {
+    const { data: sent } = await supabase.from("daily_summaries").select("sent_at").eq("care_day_id", days[0].careDayId).maybeSingle();
+    const summaryTime = parseHouseholdSettings(household.tz, household.settings).summaryTime;
+    emailNote = sent?.sent_at
+      ? `This page was emailed at ${formatInTimeZone(new Date(sent.sent_at), household.tz, "h:mm a")}.`
+      : `This page is emailed each morning at ${formatInTimeZone(new Date(`2000-01-01T${summaryTime}:00Z`), "UTC", "h:mm a")}.`;
+  }
+  return <HistoryPage view={view} hrefFor={(d) => `/history/${d}`} emailNote={emailNote} />;
 }

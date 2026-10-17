@@ -1,24 +1,7 @@
-import type { DayCard } from "@/lib/view/history";
+import { tally, type DayCard } from "@/lib/view/history";
+
+export { shortTally, tally } from "@/lib/view/history";
 import { AdherenceRing } from "./adherence-ring";
-
-// What happened, in the list rows' voice: "6 on time · none late, skipped or missed".
-export function tally(card: DayCard): string {
-  const s = card.summary;
-  const rest = [
-    s.late ? `${s.late} late` : null,
-    s.skipped ? `${s.skipped} skipped` : null,
-    s.missed ? `${s.missed} missed` : null,
-  ].filter(Boolean);
-  return `${s.onTime} on time · ${rest.length ? rest.join(" · ") : "none late, skipped or missed"}`;
-}
-
-// The list-row form, short enough for one line at 390px: "All 6 on time", "5 of 6 on time · 1 late".
-export function shortTally(card: DayCard): string {
-  const s = card.summary;
-  if (s.onTime === s.scheduled) return `All ${s.scheduled} on time`;
-  const rest = [s.late ? `${s.late} late` : null, s.skipped ? `${s.skipped} skipped` : null, s.missed ? `${s.missed} missed` : null].filter(Boolean);
-  return [`${s.onTime} of ${s.scheduled} on time`, ...rest].join(" · ");
-}
 
 // The summary block for one finished care day: the same content the 9 AM email carries.
 export function DaySummaryBlock({ card }: { card: DayCard }) {

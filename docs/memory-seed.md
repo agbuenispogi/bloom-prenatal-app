@@ -29,4 +29,5 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Decision: the reminder planner is pure (schedule → desired rows). Sync reconciles by dedupe_key; claiming uses claim_due_reminders (SKIP LOCKED, service_role only). Reminders >30 min late are withdrawn.
 - Decision: notification Taken/Snooze use HMAC action tokens (key derived from CRON_SECRET). iOS shows no action buttons, so tap opens the app.
 - Vault secret names: bloom_dispatch_url, bloom_cron_secret.
+- Decision: the daily summary is sent by the same per-minute dispatcher (no separate cron). Snapshot in daily_summaries.payload, one email per member, claim + max 5 attempts, and partial delivery counts as sent (no double emails).
 - Open questions: wife's email, Resend sending domain, her due date.

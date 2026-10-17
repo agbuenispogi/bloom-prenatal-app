@@ -4,7 +4,7 @@ import type { HistoryView } from "@/lib/view/history";
 import { AdherenceRing } from "./adherence-ring";
 import { DaySummaryBlock, shortTally } from "./day-summary";
 
-export function HistoryPage({ view, hrefFor }: { view: HistoryView; hrefFor: (date: string) => string }) {
+export function HistoryPage({ view, hrefFor, emailNote }: { view: HistoryView; hrefFor: (date: string) => string; emailNote?: string | null }) {
   return (
     <div className="mx-auto w-full max-w-[720px] px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-10 sm:px-6">
       <header className="pb-6">
@@ -27,6 +27,7 @@ export function HistoryPage({ view, hrefFor }: { view: HistoryView; hrefFor: (da
             {view.yesterday.weekLabel ? ` · ${view.yesterday.weekLabel}` : ""}
           </p>
           <DaySummaryBlock card={view.yesterday} />
+          {emailNote ? <p className="text-[0.9375rem] text-ink-soft">{emailNote}</p> : null}
         </section>
       ) : (
         <p className="pb-8 text-[1.0625rem] text-ink-soft">Yesterday&apos;s summary will appear here after your first full day with Bloom.</p>
