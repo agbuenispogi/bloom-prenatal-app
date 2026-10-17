@@ -43,5 +43,5 @@ export async function acceptInvite(_prev: ActionState, form: FormData): Promise<
     if (error.message.includes("already")) return { error: "You're already in a household." };
     return { error: "This invite has expired or was already used. Ask for a new link." };
   }
-  redirect("/");
+  redirect("/onboarding");
 }

@@ -64,7 +64,8 @@ summary at 9:00 AM Manila.
 ## Design (Impeccable)
 - Product truth: `PRODUCT.md`. Visual system: `DESIGN.md` + `.impeccable/design.json` (the Keepsake Pregnancy Journal: oat paper, blush book-cloth Next up entry, one satin ribbon accent, inked checks, warm plum-brown night pages).
 - Home's direction contract: `.impeccable/surfaces/src-app-page-tsx.md`. Roll record: `.impeccable/decision/roll.md`.
-- Dev-only preview with synthetic data (no Supabase): `/dev/home?s=morning|caltrate|overdue|afternoon|night|anmum|done[&role=caregiver]`. Review captures: `node scripts/capture-review.mjs` (dev server running).
+- Dev-only previews with synthetic data (no Supabase): `/dev/home?s=morning|caltrate|overdue|afternoon|night|anmum|done[&role=caregiver]`, `/dev/history`, `/dev/settings[/medications|shifts|pregnancy|notifications]`, `/dev/onboarding`. Review captures: `node scripts/capture-review.mjs` and `node scripts/capture-screens.mjs` (dev server running).
+- App icons are procedural: `python3 scripts/gen-icons.py`. The service worker is `public/sw.js` (push display now; Taken/Snooze actions in Phase 5).
 - Cloth textures are procedural: `python3 scripts/gen-textures.py`, then re-embed provenance.
 
 ## Run / test / deploy

@@ -10,8 +10,8 @@ export type DayAction =
   | { type: "snooze"; ruleId: string; occurrence: number; minutes: 10 | 20 | 30 }
   | { type: "skip"; ruleId: string; occurrence: number; reason?: string }
   | { type: "intend"; meal: MainMeal; minutes?: number }
-  | { type: "eat"; meal: MainMeal }
-  | { type: "snack" }
+  | { type: "eat"; meal: MainMeal; time?: string } // time: "HH:mm" earlier today (care day), default now
+  | { type: "snack"; time?: string }
   | { type: "skipBreakfast" }
   | { type: "bed" }
   | { type: "serving"; ruleId: string };
@@ -80,6 +80,7 @@ export interface HomeView {
   servings: ServingView[];
   canLog: boolean;
   role: "patient" | "caregiver";
+  meals: { meal: MainMeal; eaten: boolean; eatenLabel: string | null; planned: boolean; skipped: boolean; preMealOpen: boolean; leadMin: number }[];
 }
 
 const TABS: ReadonlySet<string> = new Set(["mint", "sky", "clay", "blush", "oat"]);
@@ -227,5 +228,18 @@ export function toHomeView(
     })),
     canLog: opts.canLog,
     role: opts.role,
+    meals: (["breakfast", "lunch", "dinner"] as const).map((meal) => {
+      const item = schedule.timeline.find((i): i is MealItem => i.kind === "meal" && i.meal === meal);
+      const pre = schedule.timeline.find((i): i is DoseItem => i.kind === "dose" && i.rule.ruleType === "before_meal" && i.rule.anchor === meal);
+      return {
+        meal,
+        eaten: item?.state === "done",
+        eatenLabel: item?.eatenAt ? clock(item.eatenAt) : null,
+        planned: Boolean(item?.plannedAt && !item.eatenAt),
+        skipped: item?.state === "skipped",
+        preMealOpen: Boolean(pre && (pre.state === "upcoming" || pre.state === "due" || pre.state === "snoozed")),
+        leadMin: pre ? Math.abs(pre.rule.offsetMin) : input.settings.mealLeadMin,
+      };
+    }),
   };
 }

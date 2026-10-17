@@ -23,4 +23,6 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Decision: the visual direction is the Keepsake Pregnancy Journal (user's pick from Impeccable roll a76f4478, code-led). DESIGN.md records the system. Fonts are Young Serif + Atkinson Hyperlegible Next.
 - Decision: the patient uses an iPhone, the copy is English, Bloom shows the pregnancy week from households.settings.due_date, and motion stays minimal (she is nausea-sensitive).
 - Decision: the Home UI is shared between live (server actions) and the dev demo (/dev/home, the engine in the browser) via the pure view model src/lib/view/home.ts.
-- Open questions: wife's email, Resend sending domain, her due date.
+- Decision: settings copy is viewer-aware (you/your for the patient, she/her when the caregiver reads). The caregiver is always named by display name; no pronouns are assumed.
+- Decision: History computes summaries live from the engine (summarizeDay / streak / gentleNote). The daily_summaries table is filled by the Phase 6 email job.
+- Open questions: wife's email, Resend sending domain, her due date, VAPID keys (Phase 5).

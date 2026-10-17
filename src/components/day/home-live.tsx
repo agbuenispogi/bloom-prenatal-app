@@ -16,9 +16,9 @@ function run(a: DayAction): Promise<DayActionResult> {
     case "intend":
       return intendMeal({ meal: a.meal, minutes: a.minutes });
     case "eat":
-      return eatMeal({ meal: a.meal });
+      return eatMeal({ meal: a.meal, time: a.time });
     case "snack":
-      return logSnack();
+      return logSnack({ time: a.time });
     case "skipBreakfast":
       return skipBreakfast();
     case "bed":

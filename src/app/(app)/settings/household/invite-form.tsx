@@ -14,10 +14,10 @@ export function InviteForm({ defaultRole }: { defaultRole: "patient" | "caregive
       <FormMessage state={state} />
       {state.link ? (
         <div className="flex flex-col gap-2">
-          <output className="break-all rounded-xl bg-foreground/5 p-3 font-mono text-sm">{state.link}</output>
+          <output className="block rounded-[12px] border border-rule p-3 text-[0.875rem] break-all text-ink">{state.link}</output>
           <button
             type="button"
-            className="min-h-12 rounded-xl border border-foreground/25 px-5"
+            className="min-h-12 rounded-[8px] border border-rule px-5 text-base font-medium"
             onClick={async () => {
               await navigator.clipboard.writeText(state.link!);
               setCopied(true);

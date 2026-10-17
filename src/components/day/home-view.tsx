@@ -1,15 +1,14 @@
 "use client";
 
-import { Settings2 } from "lucide-react";
-import Link from "next/link";
 import { formatInTimeZone } from "date-fns-tz";
 import { useEffect, useState } from "react";
 import type { DayAction, DayActionResult, HomeView as View, NextUpView } from "@/lib/view/home";
+import { LogMealSheet } from "./log-meal-sheet";
 import { INK_MS, NextUpCard } from "./next-up-card";
 import { ServingsStrip } from "./servings-strip";
 import { TodayPage } from "./today-page";
 
-export function HomeView({ view, tz, run, settingsHref = "/settings/household" }: { view: View; tz: string; run: (a: DayAction) => Promise<DayActionResult>; settingsHref?: string }) {
+export function HomeView({ view, tz, run }: { view: View; tz: string; run: (a: DayAction) => Promise<DayActionResult> }) {
   const nowLabel = formatInTimeZone(new Date(view.now), tz, "h:mm a");
   // While the check is being inked, keep showing the card she tapped; then the next item settles in.
   const [ink, setInk] = useState<{ view: NextUpView; label: string } | null>(null);
@@ -28,9 +27,7 @@ export function HomeView({ view, tz, run, settingsHref = "/settings/household" }
           <h1 className="font-serif text-[1.75rem] leading-tight">{view.dateLabel}</h1>
           {view.weekLabel ? <p className="text-base text-ink-soft">{view.weekLabel}</p> : null}
         </div>
-        <Link href={settingsHref} aria-label="Settings" className="-mr-2 flex size-12 items-center justify-center rounded-full text-ink-soft">
-          <Settings2 aria-hidden className="size-6" />
-        </Link>
+
       </header>
 
       <div className="grid gap-7 md:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] md:items-start md:gap-10 md:px-6">
@@ -46,7 +43,7 @@ export function HomeView({ view, tz, run, settingsHref = "/settings/household" }
             onInk={(label) => setInk(label ? { view: view.nextUp, label } : null)}
           />
         </div>
-        <TodayPage rows={view.rows} ribbonBefore={view.ribbonBefore} nowLabel={nowLabel}>
+        <TodayPage rows={view.rows} ribbonBefore={view.ribbonBefore} nowLabel={nowLabel} action={<LogMealSheet view={view} tz={tz} run={run} />}>
           <ServingsStrip servings={view.servings} canLog={view.canLog} run={run} />
         </TodayPage>
       </div>

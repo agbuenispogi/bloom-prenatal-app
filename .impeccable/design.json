@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-17T16:00:13+00:00",
+  "generatedAt": "2026-10-17T16:22:00+00:00",
   "title": "Design System: Bloom",
   "extensions": {
     "colorMeta": {
@@ -598,7 +598,15 @@
       },
       "label": {
         "displayName": "Tabular Label",
-        "purpose": "Times, notes, counts, ribbon text; tabular lining numerals."
+        "purpose": "Times, notes, counts, ribbon text, list-row details; tabular lining numerals."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "Margin notes, field and toggle hints, field sub-labels; faded ink."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Phone tab-bar labels and the 'Logged' line on a logged meal chip; the smallest step."
       },
       "action": {
         "displayName": "Primary Action",
@@ -631,6 +639,11 @@
         "name": "ink-veil",
         "value": "var(--cloth) at 85%",
         "purpose": "Covers the entry while the inked check draws."
+      },
+      {
+        "name": "sheet-scrim",
+        "value": "rgb(28 23 25 / 0.45) (night-paper at 45%)",
+        "purpose": "Backdrop behind the log-meal bottom sheet; tinted with the night cover, never black."
       }
     ],
     "focus": {
@@ -673,12 +686,12 @@
       {
         "name": "sm",
         "value": "640px",
-        "purpose": "Gutter grows to 24px."
+        "purpose": "Gutter grows to 24px; the log-meal sheet centres with all corners rounded."
       },
       {
         "name": "md",
         "value": "768px",
-        "purpose": "Two columns: sticky Next up (max 26rem) and Today, 40px gap, 1120px container."
+        "purpose": "Two columns: sticky Next up (max 26rem) and Today, 40px gap, 1120px container. The bottom tab bar becomes top-right links on each section's page column."
       }
     ],
     "openItems": [
@@ -686,7 +699,26 @@
       "Medicine swatches are flat rounded pills, not cloth index tabs.",
       "No desktop journal spread; desktop is two columns on one page.",
       "Atkinson Hyperlegible Next's slashed zeros show in small numerals."
-    ]
+    ],
+    "layout": {
+      "pageColumns": {
+        "home": "1120px",
+        "history": "720px",
+        "settings": "640px",
+        "onboarding": "448px"
+      },
+      "tabBarReserve": "calc(4rem + env(safe-area-inset-bottom)) below 768px"
+    },
+    "icons": {
+      "source": "scripts/gen-icons.py",
+      "description": "Procedural blush book-cloth journal with a folded spine and a satin swallowtail ribbon on oat paper.",
+      "files": [
+        "public/icons/icon-192.png",
+        "public/icons/icon-512.png",
+        "public/icons/icon-maskable-512.png",
+        "src/app/apple-icon.png"
+      ]
+    }
   },
   "components": [
     {
@@ -746,12 +778,28 @@
       "css": ".ds-strip { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--rule, #d6c6ad); border-radius: 16px; background: var(--paper, #f4ecdf); color: var(--ink, #3b2b2a); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; } .ds-strip-tab { width: 10px; height: 24px; border-radius: 3px; background: var(--tab-blush, #edb7c0); flex-shrink: 0; } .ds-strip-body { flex: 1; min-width: 0; } .ds-strip-name { margin: 0; font-weight: 500; } .ds-strip-count { margin: 0; font-size: 0.9375rem; color: var(--ink-soft, #6b5650); font-variant-numeric: tabular-nums lining-nums; } .ds-strip-btn { display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 14px; border: 1px solid var(--rule, #d6c6ad); border-radius: 12px; background: transparent; color: inherit; font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1rem; font-weight: 500; white-space: nowrap; cursor: pointer; } .ds-strip-btn:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
     },
     {
-      "name": "Page Header",
+      "name": "App Navigation",
       "kind": "nav",
-      "refersTo": "",
-      "description": "Serif date, pregnancy week in faded ink, and a 48px settings target.",
-      "html": "<header class=\"ds-header\"><div><h1 class=\"ds-header-date\">Tuesday, 20 October</h1><p class=\"ds-header-week\">Week 24 · day 4</p></div><a href=\"#\" class=\"ds-header-settings\" aria-label=\"Settings\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 7h-9\"/><path d=\"M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/></svg></a></header>",
-      "css": ".ds-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 20px 16px; background: var(--paper, #f4ecdf); color: var(--ink, #3b2b2a); } .ds-header-date { margin: 0; font-family: var(--font-display, 'Young Serif'), Georgia, serif; font-weight: 400; font-size: 1.75rem; line-height: 1.25; } .ds-header-week { margin: 0; font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1rem; color: var(--ink-soft, #6b5650); } .ds-header-settings { display: flex; width: 48px; height: 48px; margin-right: -8px; align-items: center; justify-content: center; border-radius: 9999px; color: var(--ink-soft, #6b5650); } .ds-header-settings:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
+      "refersTo": "nav-tab",
+      "description": "Phone bottom tab bar (Today / History / Settings), 64px targets, active by form; from 768px quiet top-right links on the page column.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main\"><ul><li><a href=\"#\" class=\"ds-nav-tab\" aria-current=\"page\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 7v14\"/><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"/></svg><span>Today</span></a></li><li><a href=\"#\" class=\"ds-nav-tab\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/><path d=\"M8 14h.01\"/><path d=\"M12 14h.01\"/><path d=\"M16 14h.01\"/><path d=\"M8 18h.01\"/><path d=\"M12 18h.01\"/><path d=\"M16 18h.01\"/></svg><span>History</span></a></li><li><a href=\"#\" class=\"ds-nav-tab\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 7h-9\"/><path d=\"M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/></svg><span>Settings</span></a></li></ul></nav>",
+      "css": ".ds-nav { border-top: 1px solid var(--rule, #d6c6ad); background: var(--paper, #f4ecdf); padding-bottom: env(safe-area-inset-bottom); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; } .ds-nav ul { display: flex; max-width: 28rem; margin: 0 auto; padding: 0; list-style: none; } .ds-nav li { flex: 1; } .ds-nav-tab { display: flex; min-height: 64px; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 0.8125rem; color: var(--ink-soft, #6b5650); text-decoration: none; } .ds-nav-tab[aria-current=page] { font-weight: 600; color: var(--ink, #3b2b2a); } .ds-nav-tab[aria-current=page] span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; } .ds-nav-tab:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; border-radius: 6px; }"
+    },
+    {
+      "name": "Choice Chip",
+      "kind": "chip",
+      "refersTo": "choice-chip",
+      "description": "Radio chips in the log-meal sheet: page-rule outline, selected is woven book-cloth, logged is faded with a check and time.",
+      "html": "<div class=\"ds-chips\"><label class=\"ds-chip ds-chip-on\"><input type=\"radio\" name=\"m\" checked>Lunch</label><label class=\"ds-chip\"><input type=\"radio\" name=\"m\">Dinner</label><label class=\"ds-chip ds-chip-off\"><input type=\"radio\" name=\"m\" disabled><span class=\"ds-chip-stack\"><span><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg> Breakfast</span><span class=\"ds-chip-logged\">Logged 8:05 AM</span></span></label><label class=\"ds-chip\"><input type=\"radio\" name=\"m\">Snack</label></div>",
+      "css": ".ds-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 16px; background: var(--paper, #f4ecdf); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; } .ds-chip { display: flex; min-height: 48px; align-items: center; justify-content: center; padding: 0 12px; border: 1px solid var(--rule, #d6c6ad); border-radius: 8px; font-size: 1rem; color: var(--ink, #3b2b2a); cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; } .ds-chip-on { background: var(--cloth, #ebc0b3) var(--cloth-texture, none); background-size: 192px 192px; border-color: var(--cloth-rule, #d49f92); color: var(--cloth-ink, #3b2226); font-weight: 600; } .ds-chip-off { opacity: 0.7; cursor: not-allowed; } .ds-chip-stack { display: flex; flex-direction: column; align-items: center; line-height: 1.25; } .ds-chip-stack > span:first-child { display: flex; align-items: center; gap: 4px; } .ds-chip-logged { font-size: 0.8125rem; color: var(--ink-soft, #6b5650); font-variant-numeric: tabular-nums lining-nums; } .ds-chip:has(:focus-visible) { outline: 2px solid var(--ribbon, #8c2f55); outline-offset: 2px; }"
+    },
+    {
+      "name": "Adherence Ring",
+      "kind": "custom",
+      "refersTo": "adherence-ring",
+      "description": "History's on-time share in ink on a page-rule track (not satin), beside the serif gentle note and the tabular tally.",
+      "html": "<div class=\"ds-sum\"><div class=\"ds-sum-top\"><svg width=\"88\" height=\"88\" viewBox=\"0 0 36 36\" role=\"img\" aria-label=\"83% of doses on time\"><circle cx=\"18\" cy=\"18\" r=\"15.5\" fill=\"none\" stroke=\"var(--rule, #d6c6ad)\" stroke-width=\"2.5\"/><circle cx=\"18\" cy=\"18\" r=\"15.5\" fill=\"none\" stroke=\"var(--ink, #3b2b2a)\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-dasharray=\"80.8 97.4\" transform=\"rotate(-90 18 18)\"/><text x=\"18\" y=\"18\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--ink, #3b2b2a)\" font-size=\"8.5\" font-weight=\"600\" style=\"font-variant-numeric: tabular-nums\">83%</text></svg><p class=\"ds-sum-note\">A steady day. One dose ran late, and it still counted.</p></div><p class=\"ds-sum-tally\">5 on time · 1 late</p><p class=\"ds-sum-anmum\">Anmum Materna: not taken this day</p></div>",
+      "css": ".ds-sum { display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--paper, #f4ecdf); color: var(--ink, #3b2b2a); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; } .ds-sum-top { display: flex; align-items: center; gap: 20px; } .ds-sum-top svg { flex-shrink: 0; } .ds-sum-note { margin: 0; font-family: var(--font-display, 'Young Serif'), Georgia, serif; font-weight: 400; font-size: 1.25rem; line-height: 1.375; text-wrap: pretty; } .ds-sum-tally { margin: 0; padding-top: 12px; border-top: 1px solid var(--rule, #d6c6ad); font-size: 1.0625rem; font-variant-numeric: tabular-nums lining-nums; } .ds-sum-anmum { margin: 0; font-size: 1.0625rem; color: var(--ribbon, #8c2f55); }"
     }
   ],
   "narrative": {

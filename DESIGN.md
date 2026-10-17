@@ -71,6 +71,15 @@ typography:
     fontWeight: 400
     lineHeight: 1.4
     fontFeature: "tnum, lnum"
+  note:
+    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  caption:
+    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
+    fontSize: "0.8125rem"
+    fontWeight: 400
   action:
     fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
     fontSize: "1.1875rem"
@@ -129,6 +138,48 @@ components:
   ribbon-bookmark:
     textColor: "{colors.ribbon-fill-ink}"
     height: "32px"
+  button-primary-form:
+    backgroundColor: "{colors.ribbon}"
+    textColor: "{colors.ribbon-fill-ink}"
+    rounded: "{rounded.primary}"
+    padding: "0 24px"
+    height: "56px"
+  button-quiet-page:
+    textColor: "{colors.ink}"
+    rounded: "{rounded.quiet}"
+    padding: "0 20px"
+    height: "48px"
+  nav-tab:
+    textColor: "{colors.ink-soft}"
+    typography: "{typography.caption}"
+    height: "64px"
+  nav-tab-active:
+    textColor: "{colors.ink}"
+  sheet:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.strip}"
+    padding: "20px 20px 24px"
+  choice-chip:
+    textColor: "{colors.ink}"
+    rounded: "{rounded.quiet}"
+    padding: "0 12px"
+    height: "48px"
+  choice-chip-selected:
+    backgroundColor: "{colors.cloth}"
+    textColor: "{colors.cloth-ink}"
+  adherence-ring:
+    textColor: "{colors.ink}"
+    size: "88px"
+  adherence-ring-list:
+    textColor: "{colors.ink}"
+    size: "44px"
+  tab-picker-option:
+    rounded: "{rounded.quiet}"
+    size: "48px"
+  toggle:
+    backgroundColor: "{colors.ribbon}"
+    size: "24px"
 ---
 
 # Design System: Bloom
@@ -170,7 +221,7 @@ A warm, low-glare paper-and-cloth palette with a single deep satin accent, mirro
 ### Neutral
 - **Oat Paper** (paper): the page; also the browser theme colour.
 - **Warm-Brown Ink** (ink): body text, the done check.
-- **Faded Ink** (ink-soft): secondary lines, times that are estimates, quiet state marks, the settings glyph.
+- **Faded Ink** (ink-soft): secondary lines, times that are estimates, quiet state marks, inactive navigation, sub-page back links and intros.
 - **Page Rule** (rule): row dividers (at 70%), servings-strip and its button borders, scrollbar.
 - **Margin Rule** (margin): the vertical margin line through Today and the hairline above a margin note.
 - **Selection Blush** (selection): text selection.
@@ -193,7 +244,9 @@ A warm, low-glare paper-and-cloth palette with a single deep satin accent, mirro
 - **Title** (400, 1.75rem, tight): the page date at the top. The inked confirmation line uses the serif at 1.5rem.
 - **Section** (400, 1.5rem): section headings such as "Today". Meal rows set their name in the serif at 1.125rem so meals read as page headings between doses.
 - **Body** (400, 1.0625rem, 1.5): base text, row titles (500 for medicine names), Next up's why line.
-- **Label** (400, 0.9375rem, tabular lining numerals): times, row notes, counts, the ribbon text (600, 0.01em). Margin notes run at 0.875rem.
+- **Label** (400, 0.9375rem, tabular lining numerals): times, row notes, counts, the ribbon text (600, 0.01em), list-row details in History and Settings.
+- **Note** (400, 0.875rem, 1.5): margin notes, field hints, toggle hints and field sub-labels, always in faded ink.
+- **Caption** (400, 0.8125rem): the phone tab-bar labels and the "Logged 11:42 AM" line on a logged meal chip (tabular there). The smallest step; nothing she must act on is set this small.
 - **Action** (600, 1.1875rem): the primary action label; quiet actions use 1rem at 500.
 
 ### Named Rules
@@ -209,6 +262,8 @@ From 768px the page becomes two columns inside a 1120px container: Next up at up
 
 Today is a three-column grid: a 4.5rem right-aligned time column, a 22px state-mark column, and the entry, with 14px between them and 12px of vertical padding per row. The margin rule runs down through the mark column; each mark sits on a paper cut-out so the rule passes behind it. Stacks of controls use 12px gaps. The header respects the safe-area insets.
 
+Each section keeps its own page column: Home 1120px, History 720px, Settings 640px, Onboarding 448px, all with the same 20px/24px gutter and a 1.25rem (or safe-area) top. On a phone the page reserves 4rem plus the bottom safe-area inset for the tab bar; from 768px that reserve drops and navigation moves into the page's top-right corner, aligned to that section's column edge.
+
 ## Elevation & Depth
 
 Bloom has no drop shadows. Depth comes from material: hairlines (a 1px cloth-rule ring around the entry, 1px rules between rows), the woven cloth texture tiled at 192px, and shading that lives inside an object: the spine's fold gradient (light at the outer edge, darkening to a hard crease) and the ribbon's satin gradient (shade, fill, off-centre sheen, fill, shade). The inked confirmation lays an 85% cloth veil over the entry rather than raising anything.
@@ -218,7 +273,7 @@ Bloom has no drop shadows. Depth comes from material: hairlines (a 1px cloth-rul
 
 ## Shapes
 
-Small, book-like corners that scale with the object's role: index tabs 3px, the cloth entry 6px (a bound board, nearly square), quiet actions 8px, the primary action 10px, inline fields and confirm buttons 12px, the servings strip 16px. The only round shapes are the 48px settings target and the state marks. The ribbon bookmark is cut with a swallowtail notch at the page edge and runs off the other edge of the viewport; it is clipped by the page, never contained in a box.
+Small, book-like corners that scale with the object's role: index tabs 3px, the cloth entry 6px (a bound board, nearly square), quiet actions 8px, the primary action 10px, inline fields and confirm buttons 12px, the servings strip 16px. The only round shapes are the 48px close and remove targets, the state marks and the adherence ring. The log-meal sheet rounds only its top corners (16px) on a phone, all four from 640px. The ribbon bookmark is cut with a swallowtail notch at the page edge and runs off the other edge of the viewport; it is clipped by the page, never contained in a box.
 
 ## Components
 
@@ -231,6 +286,14 @@ Tactile and quiet, with one confident action per entry.
 - **Confirm (destructive-ish):** the skip confirmation inverts to a cloth-ink fill with cloth text, 12px corners.
 - **Text link:** "Never mind" is an underlined cloth-soft line at 48px height.
 - **Focus:** a 2.5px satin outline, offset 3px, 6px corners, on every focusable element.
+
+- **Form primary:** on paper forms (sign-in, welcome, a single settings form, an opened medicine) the satin primary drops to 56px with 1.0625rem 600 text.
+- **Quiet on paper:** off the cloth, quiet actions are 48px, 8px corners, a page-rule border, ink text at 1rem 500, no fill.
+
+### Chips
+- **Style:** choice chips in the log-meal sheet are 48px tall, 8px corners, a page-rule border and ink text at 1rem, laid out two-up or in a row of equal widths. They are radio inputs; focus shows the satin outline on the chip.
+- **Selected:** woven blush book-cloth with a cloth-rule border and semibold cloth-ink text, the same material as the Next up entry rather than a satin fill.
+- **Disabled / already logged:** 70% opacity with a small check before the name and a faded caption line beneath ("Logged 11:42 AM").
 
 ### Inputs / Fields
 - **Style:** 48px tall, 12px corners, cloth-rule border over a 60% paper tint, ink text, faded-ink placeholder, the label stacked above in cloth-soft.
@@ -254,8 +317,34 @@ Rows: right-aligned time (prefixed "~" and faded when estimated, "Any time" when
 ### Servings Strip
 Any-time items (counts toward a daily range) sit above the timeline in a 16px-cornered strip with a page-rule border: index tab, name, "1 of 1–2 today · By 9:00 PM", and an outlined "+ Had a glass" button (12px corners, 48px). Past the deadline the count line turns satin with a gentle prompt.
 
+### Log-Meal Sheet
+A native dialog that rises as a bottom sheet: paper ground, 16px top corners, a page-rule hairline along its top edge (a full border and centred, max 28rem, from 640px), over a scrim of the night paper at 45%. Inside, 20px padding (24px or the safe-area at the bottom) and 24px between groups: a serif "Log a meal" title with a 48px round close target, the meal chips, the when chips, an optional time field, then one satin primary with a leading 24px icon. The form settles in on open. No shadow; the scrim and the hairline do the separating.
+
+### Adherence Ring (History)
+The share of doses taken on time, drawn in ink on a page-rule track (2.5px stroke on a 36-unit box, round cap, from 12 o'clock) with the percentage in 600 tabular ink at its centre. It is deliberately ink, not satin: a finished day is a record, and satin stays reserved for now. 88px in the day summary, 44px in list rows; a day with nothing logged shows a dashed page-rule circle with a dash instead.
+
+### History Pages
+The page subtitle under the serif "History" states the streak once ("6 clean days in a row") and nowhere else. The day summary pairs the large ring with a gentle note in the serif at 1.25rem (snug, pretty wrap), then a hairline and a one-line tabular tally in full form ("6 on time · none late, skipped or missed"), then the Anmum line, which turns satin only when it was not taken. List rows (64px, page-rule dividers at 70%) carry the small ring, the date in the serif at 1.125rem, the short tally in faded label text ("All 6 on time", "5 of 6 on time · 1 late") and a faded chevron. Past pages speak in the past tense.
+
+### Settings
+- **Sub-page chrome:** a 48px faded-ink back link with a leading chevron, the serif page title (1.75rem), and an optional faded intro line beneath.
+- **Hub rows:** 64px rows between page-rule hairlines (70%): a serif title at 1.125rem, a faded detail line beneath, a faded chevron at the right. Medicine rows lead with their index tab and open in place.
+- **Colour-tab picker:** 48px squares with 8px corners and a page-rule border, each holding the 10px by 24px index swatch; the checked square takes an ink border.
+- **Toggles:** a 24px native checkbox filled with the satin fill tone (the night fill at night), its label in body ink and an optional faded note beneath.
+- **Saves:** a page of several always-open sections (Notifications) gives each section a quiet-on-paper save, so no satin competes down the page; a single form or an opened medicine takes the form primary.
+- **Voice:** copy addresses whoever is reading: "you/your" for her, "she/her" when the caregiver reads, and the caregiver is always named by display name.
+
+### Onboarding Progress
+Three steps (install, alarms, test) shown with the existing state marks in a row: done steps take the ink check, the current step the satin due ring, later steps the dashed upcoming ring, each with its word for screen readers. Steps use the headline serif (2.125rem) over a faded body intro, with the satin primary and any quiet-on-paper action pushed to the bottom.
+
 ### Navigation
-The header holds only the serif date, the pregnancy week beneath it in faded ink, and a 48px round settings target with a 24px outline glyph in faded ink.
+The page header holds only the serif date and the pregnancy week beneath it in faded ink; it carries no settings control.
+- **Phone:** a bottom tab bar (Today, History, Settings) on the paper ground with a page-rule hairline along its top and safe-area padding beneath. Each tab is a 64px target stacking a 24px outline icon over a caption-sized label.
+- **Active:** shown by form, not colour: semibold ink, a heavier icon stroke, and a 2px underline under the label. Inactive tabs are faded ink.
+- **From 768px:** the bar becomes quiet top-right links (48px, icon beside a 1rem label, 1px underline when active), on no ground, ending on the right edge of the current section's page column.
+
+### App Icon
+Procedural, drawn from the materials: a blush book-cloth journal with a satin swallowtail ribbon hanging past its lower edge, set on oat paper, with a maskable variant that keeps the journal inside the safe zone.
 
 ## Do's and Don'ts
 

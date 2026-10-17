@@ -36,7 +36,7 @@ const rules: MedicationRule[] = [
 const taken = (ruleId: string, t: Date, occurrence = 1): DoseLog => ({ ruleId, occurrence, status: "taken", takenAt: t, snoozedUntil: null });
 const ate = (type: MealLog["type"], t: Date, plannedAt: Date | null = null): MealLog => ({ type, eatenAt: t, plannedAt });
 
-function base(now: Date, extra: Partial<EngineInput> & { breakfastSkipped?: boolean; bedtimeAt?: Date | null } = {}): EngineInput {
+function base(now: Date, extra: Partial<EngineInput> & { breakfastSkipped?: boolean; bedtimeAt?: Date | null; date?: string } = {}): EngineInput {
   return {
     settings: {
       tz: TZ, careDayStarts: "04:00",
@@ -46,7 +46,7 @@ function base(now: Date, extra: Partial<EngineInput> & { breakfastSkipped?: bool
     },
     medications, rules,
     shift: { start: "14:00", end: "24:00" },
-    careDay: { date: TUE, breakfastSkipped: extra.breakfastSkipped ?? false, bedtimeAt: extra.bedtimeAt ?? null },
+    careDay: { date: extra.date ?? TUE, breakfastSkipped: extra.breakfastSkipped ?? false, bedtimeAt: extra.bedtimeAt ?? null },
     meals: extra.meals ?? [],
     doses: extra.doses ?? [],
     now,
@@ -66,3 +66,38 @@ export const SCENARIOS = {
 } as const;
 
 export type ScenarioKey = keyof typeof SCENARIOS;
+
+// Ten finished days before Tuesday 20 Oct for /dev/history: mostly good, one late, one rough day, one blank.
+const nextDay = (d: string) => new Date(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8) + 1)).toISOString().slice(0, 10);
+export function demoPastDays(): EngineInput[] {
+  const out: EngineInput[] = [];
+  for (let i = 1; i <= 10; i++) {
+    const date = new Date(Date.UTC(2026, 9, 20 - i)).toISOString().slice(0, 10);
+    const next = nextDay(date);
+    const now = at(WED, "09:00");
+    if (i === 7) {
+      out.push(base(now, { date }));
+      continue;
+    }
+    const late = i === 2;
+    const rough = i === 4;
+    const doses: DoseLog[] = [
+      taken(R.gavL, at(date, "11:10")),
+      taken(R.calL, at(date, late ? "13:05" : "12:40")),
+      taken(R.iron, at(date, "17:05")),
+      taken(R.gavD, at(date, "18:30")),
+      ...(rough ? [] : [taken(R.calD, at(date, "20:00")), taken(R.anmum, at(date, "15:00"))]),
+      taken(R.bed, at(next, "00:50")),
+    ];
+    out.push(
+      base(now, {
+        date,
+        breakfastSkipped: true,
+        bedtimeAt: at(next, "00:48"),
+        meals: [ate("lunch", at(date, "11:40"), at(date, "11:40")), ate("dinner", at(date, "19:00"), at(date, "19:00"))],
+        doses,
+      }),
+    );
+  }
+  return out;
+}

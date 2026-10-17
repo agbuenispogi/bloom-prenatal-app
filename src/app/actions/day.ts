@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { planMealIntent, type DoseItem, type MainMeal } from "@/lib/engine";
+import { careDayBounds, planMealIntent, wallTime, type DoseItem, type MainMeal } from "@/lib/engine";
 import { requireMember } from "@/lib/auth/session";
 import { loadDay, type LoadedDay } from "@/lib/data/day";
 import { createClient } from "@/lib/supabase/server";
@@ -38,6 +38,7 @@ async function withDay(work: (ctx: { supabase: Awaited<ReturnType<typeof createC
   try {
     await work({ supabase, day, profileId: profile.id, householdId: household.id, now, careDayId });
   } catch (e) {
+    if (e instanceof RangeError) return { ok: false, error: "Pick a time earlier today, not in the future." };
     console.error("day action failed", e);
     return { ok: false, error: "That didn't save. Check your connection and try again." };
   }
@@ -137,20 +138,34 @@ export async function intendMeal(ref: { meal: MainMeal; minutes?: number }): Pro
   });
 }
 
-export async function eatMeal(ref: { meal: MainMeal }): Promise<DayActionResult> {
+const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+
+// "HH:mm" within the current care day → instant. Must not be in the future (a minute of slack for clocks).
+function resolveTime(day: LoadedDay, now: Date, time?: string): Date {
+  if (!time) return now;
+  const { tz, careDayStarts } = day.input.settings;
+  const at = wallTime(day.input.careDay.date, hhmm.parse(time), tz, careDayStarts);
+  const { start } = careDayBounds(day.input.careDay.date, tz, careDayStarts);
+  if (at < start || at.getTime() > now.getTime() + 60_000) throw new RangeError("time outside today");
+  return at;
+}
+
+export async function eatMeal(ref: { meal: MainMeal; time?: string }): Promise<DayActionResult> {
   const meal = mainMeal.parse(ref.meal);
   return withDay(async (ctx) => {
-    await upsertMainMeal(ctx, meal, { eaten_at: ctx.now.toISOString() });
+    const at = resolveTime(ctx.day, ctx.now, ref.time);
+    await upsertMainMeal(ctx, meal, { eaten_at: at.toISOString() });
   });
 }
 
-export async function logSnack(): Promise<DayActionResult> {
+export async function logSnack(ref: { time?: string } = {}): Promise<DayActionResult> {
   return withDay(async (ctx) => {
+    const at = resolveTime(ctx.day, ctx.now, ref.time);
     const { error } = await ctx.supabase.from("meal_logs").insert({
       household_id: ctx.householdId,
       care_day_id: await ctx.careDayId(),
       type: "snack",
-      eaten_at: ctx.now.toISOString(),
+      eaten_at: at.toISOString(),
       logged_by: ctx.profileId,
     });
     if (error) throw error;

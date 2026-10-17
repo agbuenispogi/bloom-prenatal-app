@@ -38,23 +38,40 @@ function Row({ row }: { row: TimelineRow }) {
   );
 }
 
-export function TodayPage({ rows, ribbonBefore, nowLabel, children }: { rows: TimelineRow[]; ribbonBefore: string | null; nowLabel: string; children?: ReactNode }) {
+export function TodayPage({
+  rows,
+  ribbonBefore,
+  nowLabel,
+  children,
+  action,
+  title = "Today",
+}: {
+  rows: TimelineRow[];
+  ribbonBefore: string | null;
+  nowLabel: string | null;
+  children?: ReactNode;
+  action?: ReactNode;
+  title?: string;
+}) {
   return (
     <section aria-labelledby="today-heading" className="px-5 sm:px-6">
-      <h2 id="today-heading" className="mb-3 font-serif text-2xl">
-        Today
-      </h2>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 id="today-heading" className="font-serif text-2xl">
+          {title}
+        </h2>
+        {action}
+      </div>
       {children ? <div className="mb-3">{children}</div> : null}
       <ol className="relative divide-y divide-rule/70">
         {/* The journal's margin rule, running down the page between the times and the entries. */}
         <span aria-hidden className="absolute inset-y-0 left-[calc(4.5rem+0.875rem+10px)] w-px bg-margin" />
         {rows.map((row) => (
           <Fragment key={row.key}>
-            {ribbonBefore === row.key ? <Ribbon label={nowLabel} /> : null}
+            {nowLabel && ribbonBefore === row.key ? <Ribbon label={nowLabel} /> : null}
             <Row row={row} />
           </Fragment>
         ))}
-        {ribbonBefore === null ? <Ribbon label={nowLabel} /> : null}
+        {nowLabel && ribbonBefore === null ? <Ribbon label={nowLabel} /> : null}
       </ol>
     </section>
   );

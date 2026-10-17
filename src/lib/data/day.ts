@@ -1,5 +1,6 @@
 import "server-only";
 import {
+  addDays as addCareDays,
   buildDaySchedule,
   careDateOf,
   resolveShift,
@@ -9,10 +10,12 @@ import {
   type MealType,
 } from "@/lib/engine";
 import type { Household, Profile } from "@/lib/auth/session";
+import type { Database } from "@/lib/supabase/database.types";
 import type { createClient } from "@/lib/supabase/server";
 import { parseHouseholdSettings, type HouseholdSettings } from "./settings";
 
 type Client = Awaited<ReturnType<typeof createClient>>;
+type Row<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
 
 const hhmm = (t: string | null) => (t ? t.slice(0, 5) : null);
 const date = (t: string | null) => (t ? new Date(t) : null);
@@ -25,33 +28,35 @@ export interface LoadedDay {
   canLog: boolean;
 }
 
-// Loads one care day for the household (RLS-scoped) and runs the engine over it.
-export async function loadDay(supabase: Client, household: Household, profile: Profile, now: Date, careDate?: CareDate): Promise<LoadedDay> {
-  const settings = parseHouseholdSettings(household.tz, household.settings);
-  const day = careDate ?? careDateOf(now, household.tz, settings.engine.careDayStarts);
+interface Regimen {
+  meds: Row<"medications">[];
+  rules: Row<"medication_rules">[];
+  weekly: Row<"work_schedule">[];
+}
 
-  const [meds, rules, weekly, overrides, careDay] = await Promise.all([
+async function loadRegimen(supabase: Client): Promise<Regimen> {
+  const [meds, rules, weekly] = await Promise.all([
     supabase.from("medications").select("*"),
     supabase.from("medication_rules").select("*"),
     supabase.from("work_schedule").select("*"),
-    supabase.from("schedule_overrides").select("*").eq("date", day),
-    supabase.from("care_days").select("*").eq("date", day).maybeSingle(),
   ]);
-  for (const r of [meds, rules, weekly, overrides, careDay]) if (r.error) throw r.error;
+  for (const r of [meds, rules, weekly]) if (r.error) throw r.error;
+  return { meds: meds.data!, rules: rules.data!, weekly: weekly.data! };
+}
 
-  const careDayId = careDay.data?.id ?? null;
-  const [meals, doses] = careDayId
-    ? await Promise.all([
-        supabase.from("meal_logs").select("*").eq("care_day_id", careDayId),
-        supabase.from("dose_logs").select("*").eq("care_day_id", careDayId),
-      ])
-    : [{ data: [], error: null }, { data: [], error: null }];
-  if (meals.error) throw meals.error;
-  if (doses.error) throw doses.error;
-
-  const input: EngineInput = {
+function toInput(
+  settings: HouseholdSettings,
+  regimen: Regimen,
+  day: CareDate,
+  overrides: Row<"schedule_overrides">[],
+  careDay: Row<"care_days"> | undefined,
+  meals: Row<"meal_logs">[],
+  doses: Row<"dose_logs">[],
+  now: Date,
+): EngineInput {
+  return {
     settings: settings.engine,
-    medications: meds.data!.map((m) => ({
+    medications: regimen.meds.map((m) => ({
       id: m.id,
       slug: m.slug,
       name: m.name,
@@ -60,7 +65,7 @@ export async function loadDay(supabase: Client, household: Household, profile: P
       spacingClass: m.spacing_class,
       active: m.active,
     })),
-    rules: rules.data!.map((r) => ({
+    rules: regimen.rules.map((r) => ({
       id: r.id,
       medicationId: r.medication_id,
       slug: r.slug,
@@ -77,16 +82,16 @@ export async function loadDay(supabase: Client, household: Household, profile: P
     })),
     shift: resolveShift(
       day,
-      weekly.data!.map((w) => ({ weekday: w.weekday, start: hhmm(w.start_time), end: hhmm(w.end_time) })),
-      overrides.data!.map((o) => ({ date: o.date, isOff: o.is_off, start: hhmm(o.start_time), end: hhmm(o.end_time) })),
+      regimen.weekly.map((w) => ({ weekday: w.weekday, start: hhmm(w.start_time), end: hhmm(w.end_time) })),
+      overrides.map((o) => ({ date: o.date, isOff: o.is_off, start: hhmm(o.start_time), end: hhmm(o.end_time) })),
     ),
     careDay: {
       date: day,
-      breakfastSkipped: careDay.data?.breakfast_skipped ?? false,
-      bedtimeAt: date(careDay.data?.bedtime_at ?? null),
+      breakfastSkipped: careDay?.breakfast_skipped ?? false,
+      bedtimeAt: date(careDay?.bedtime_at ?? null),
     },
-    meals: meals.data!.map((m) => ({ type: m.type as MealType, plannedAt: date(m.planned_at), eatenAt: date(m.eaten_at) })),
-    doses: doses.data!.map((d) => ({
+    meals: meals.map((m) => ({ type: m.type as MealType, plannedAt: date(m.planned_at), eatenAt: date(m.eaten_at) })),
+    doses: doses.map((d) => ({
       ruleId: d.rule_id,
       occurrence: d.occurrence,
       status: d.status,
@@ -96,12 +101,56 @@ export async function loadDay(supabase: Client, household: Household, profile: P
     })),
     now,
   };
+}
 
-  return {
-    input,
-    schedule: buildDaySchedule(input),
-    settings,
-    careDayId,
-    canLog: profile.role === "patient" || settings.caregiverCanLog,
-  };
+export function currentCareDate(household: Household, now: Date): CareDate {
+  const settings = parseHouseholdSettings(household.tz, household.settings);
+  return careDateOf(now, household.tz, settings.engine.careDayStarts);
+}
+
+// Loads care days `from`..`to` (inclusive) in a fixed number of queries and runs the engine over each.
+export async function loadDays(supabase: Client, household: Household, profile: Profile, now: Date, from: CareDate, to: CareDate): Promise<LoadedDay[]> {
+  const settings = parseHouseholdSettings(household.tz, household.settings);
+  const [regimen, overrides, careDays] = await Promise.all([
+    loadRegimen(supabase),
+    supabase.from("schedule_overrides").select("*").gte("date", from).lte("date", to),
+    supabase.from("care_days").select("*").gte("date", from).lte("date", to),
+  ]);
+  if (overrides.error) throw overrides.error;
+  if (careDays.error) throw careDays.error;
+
+  const ids = careDays.data.map((c) => c.id);
+  const [meals, doses] = ids.length
+    ? await Promise.all([
+        supabase.from("meal_logs").select("*").in("care_day_id", ids),
+        supabase.from("dose_logs").select("*").in("care_day_id", ids),
+      ])
+    : [{ data: [] as Row<"meal_logs">[], error: null }, { data: [] as Row<"dose_logs">[], error: null }];
+  if (meals.error) throw meals.error;
+  if (doses.error) throw doses.error;
+
+  const canLog = profile.role === "patient" || settings.caregiverCanLog;
+  const out: LoadedDay[] = [];
+  for (let day = to; day >= from; day = addCareDays(day, -1)) {
+    const careDay = careDays.data.find((c) => c.date === day);
+    const input = toInput(
+      settings,
+      regimen,
+      day,
+      overrides.data.filter((o) => o.date === day),
+      careDay,
+      careDay ? meals.data!.filter((m) => m.care_day_id === careDay.id) : [],
+      careDay ? doses.data!.filter((d) => d.care_day_id === careDay.id) : [],
+      now,
+    );
+    out.push({ input, schedule: buildDaySchedule(input), settings, careDayId: careDay?.id ?? null, canLog });
+  }
+  return out; // newest first
+}
+
+// One care day (today by default).
+export async function loadDay(supabase: Client, household: Household, profile: Profile, now: Date, careDate?: CareDate): Promise<LoadedDay> {
+  const day = careDate ?? currentCareDate(household, now);
+  const [loaded] = await loadDays(supabase, household, profile, now, day, day);
+  return loaded!;
 }
