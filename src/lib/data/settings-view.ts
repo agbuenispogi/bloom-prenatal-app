@@ -3,7 +3,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import type { MedData, OverrideData, RuleData, ShiftDay, Tab } from "@/components/settings/types";
 import type { Database } from "@/lib/supabase/database.types";
 
-type Row<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
+type Row<T extends keyof Database["bloom"]["Tables"]> = Database["bloom"]["Tables"][T]["Row"];
 const hhmm = (t: string | null) => (t ? t.slice(0, 5) : null);
 const TABS = new Set(["mint", "sky", "clay", "blush", "oat"]);
 

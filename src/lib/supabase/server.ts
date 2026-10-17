@@ -11,7 +11,8 @@ export async function createClient(opts: { remember?: boolean } = {}) {
   const store = await cookies();
   const remember = opts.remember ?? wantsRemember(store.get(REMEMBER_COOKIE)?.value);
 
-  return createServerClient<Database>(publicEnv.supabaseUrl(), publicEnv.supabasePublishableKey(), {
+  return createServerClient<Database, "bloom">(publicEnv.supabaseUrl(), publicEnv.supabasePublishableKey(), {
+    db: { schema: "bloom" },
     cookieOptions: authCookieOptions,
     cookies: {
       getAll: () => store.getAll(),

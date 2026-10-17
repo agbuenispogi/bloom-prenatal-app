@@ -16,6 +16,7 @@ summary at 9:00 AM Manila.
 - Tests: Vitest (schedule engine), Playwright (core flows)
 
 ## Conventions
+- **Shared Supabase project** (`uhwrolvwvuouajxgkkwv`, Tokyo): every Bloom object lives in the `bloom` schema; clients are created with `db: { schema: "bloom" }`. Never touch `public`, auth hooks, SMTP or the Site URL. Install and upgrade with `npm run db:bundle` → SQL Editor, not `supabase db push`. Sign-up is server-side (admin `createUser`, confirmed) after an invite check. Only the first household can be created.
 - Next.js 16: read `node_modules/next/dist/docs/` before using an API (see `AGENTS.md`). `cacheComponents` is **off** on purpose: all data is live and per-household.
 - Supabase keys: publishable (`sb_publishable_…`) + secret (`sb_secret_…`), not the legacy anon/service_role names.
 - DB access: `createClient()` from `src/lib/supabase/server.ts` (RLS as the user). `createAdminClient()` only after authorizing the caller. Household membership changes only via the `create_household` / `create_invite` / `accept_invite` RPCs.

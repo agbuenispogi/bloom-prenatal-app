@@ -33,62 +33,63 @@ npm run check:env
    ```
 ✔ Check: the repo shows the commits, and there's **no** `.env.local` in it.
 
-## Step 2 · Supabase project + database
+## Step 2 · Supabase: your existing project (shared with another app)
 
-1. supabase.com → **New project** → region **Southeast Asia (Singapore)** → a strong database password (keep it
-   in your password manager).
-2. **Project Settings → API Keys** → copy into `.env.local`:
-   - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
+Bloom reuses **agbuenispogi's Project** (`uhwrolvwvuouajxgkkwv`, Tokyo `ap-northeast-1`) and keeps clear of the
+other app:
+- Everything Bloom creates lives in its own **`bloom` schema**. It never touches `public`.
+- There's **no** project-wide auth hook, and no changes to email settings or the Site URL.
+- Accounts are created by Bloom's server, already confirmed, after it checks the invite.
+
+1. **Project Settings → API Keys** → copy into `.env.local`:
+   - Project URL (`https://uhwrolvwvuouajxgkkwv.supabase.co`) → `NEXT_PUBLIC_SUPABASE_URL`
    - Publishable key (`sb_publishable_…`) → `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-   - A **secret** key (`sb_secret_…`) → `SUPABASE_SECRET_KEY`
-3. **Database → Extensions**: turn on **pg_cron** and **pg_net**.
-4. Apply the migrations (log in, link to the project ref from the dashboard URL, then push):
+   - Create a **new secret key just for Bloom** (`sb_secret_…`) → `SUPABASE_SECRET_KEY`. You can revoke it
+     without affecting the other app.
+2. **Database → Extensions**: make sure **pg_cron** and **pg_net** are on (turning them on doesn't change the
+   other app).
+3. **Install the database** (once). Build the bundle, then paste `supabase/bloom-install.sql` into
+   **SQL Editor → New query → Run**:
    ```bash
-   npx supabase login
+   npm run db:bundle
    ```
-   ```bash
-   npx supabase link --project-ref <your-project-ref>
-   ```
-   ```bash
-   npx supabase db push
-   ```
-✔ Check: **Table Editor** lists `households`, `medications`, `dose_logs`, `reminders`, etc., each with a
-green "RLS enabled" badge. **Integrations → Cron** shows `bloom-dispatch-reminders`. It will fail until
-Step 6, which is expected.
+   This avoids `supabase db push`, which would compare against the other app's migration history. The bundle
+   runs in one transaction: it either fully succeeds or changes nothing.
+4. **Project Settings → Data API → Exposed schemas**: add **`bloom`** (keep the existing ones) → Save.
+   Without this the app gets "schema must be one of …" errors.
+✔ Check: **Table Editor → schema `bloom`** lists `households`, `medications`, `dose_logs`, `reminders`…, each
+with RLS enabled. The `public` tables of the other app are unchanged. **Integrations → Cron** (or
+`select jobname from cron.job;`) shows `bloom-dispatch-reminders`. It will fail until Step 6, which is expected.
 
 ## Step 3 · Resend (email): on hold, skip for now
 
 Skip this step until you want email. When you do, add the two variables in Vercel and redeploy.
 
-1. resend.com → **Domains → Add domain** (e.g. `yourdomain.com`) → add the DNS records it shows at your
-   registrar → wait for **Verified**.
+1. resend.com → **Domains → Add domain** (e.g. `yourdomain.com`) → add the DNS records it shows in
+   Cloudflare → DNS → wait for **Verified**.
 2. **API Keys → Create** (permission: Sending access) → `RESEND_API_KEY` in `.env.local`.
-3. In `.env.local`: `EMAIL_FROM=Bloom <bloom@yourdomain.com>`, then set up Supabase SMTP (the box below).
+3. In `.env.local` and Vercel: `EMAIL_FROM=Bloom <bloom@yourdomain.com>`. Bloom sends through Resend's API
+   directly. Don't change the shared project's Supabase SMTP settings (that would change the other app's emails).
 
 **Do this now, even with email on hold:** in `.env.local` set `VAPID_SUBJECT=mailto:<any email you read>` (your
 Gmail is fine). Push services use it only as a contact address.
 ✔ Check: `npm run check:env` shows Resend as "off (optional)" and nothing else missing.
 
-## Step 4 · Supabase Auth settings
+## Step 4 · Supabase Auth: almost nothing to change
 
-Dashboard → **Authentication**:
+Because the project is shared, Bloom deliberately leaves project-wide auth settings alone: no hook, no "Confirm
+email" change, no SMTP, no Site URL change. Bloom creates and confirms its own accounts on the server.
 
-1. **While email is on hold: Sign In / Providers → Email → turn OFF "Confirm email".** Supabase's built-in
-   mailer only delivers to your own team, so her confirmation email would never arrive. With this off she signs
-   up straight from the invite link. Sign-up is still invite-only (the hook in item 3), and passwords are
-   required. Magic-link sign-in won't reach her, so she uses her password.
-   *Later, with Resend:* Emails → SMTP Settings → host `smtp.resend.com`, port `465`, user `resend`, password =
-   the Resend API key, sender `bloom@yourdomain.com`. Then you can turn "Confirm email" back on.
-2. **Emails → Templates** (only matters once SMTP is set up):
-   - *Confirm signup*: set the link to `<a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Confirm your email</a>`
-   - *Magic Link*: set the link to `<a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Sign in to Bloom</a>`
-3. **Hooks → Add hook → Before User Created → Postgres → `public.hook_before_user_created`**. This makes sign-up
-   invite-only: the first person, then only invited emails.
-4. **URL Configuration**: for now, Site URL `http://localhost:3000` and Redirect URL `http://localhost:3000/**`.
-   You'll add the Vercel URL in Step 5.
-5. **Sessions**: leave refresh tokens without a time limit. That's what keeps her signed in for weeks.
-✔ Check (optional, local): `npm run dev`, open http://localhost:3000, and sign up as yourself. With "Confirm
-email" off you go straight to "Set up your household".
+The only addition is **Authentication → URL Configuration → Redirect URLs**: **add**
+`http://localhost:3000/**` now (and the Vercel URL in Step 5). Adding entries doesn't affect the other app.
+
+Good to know:
+- Someone who already has an account in this project (e.g. from the other app) signs in to Bloom with that
+  same password. Bloom then asks for an invite before showing anything.
+- Session length is project-wide. The default (no refresh-token time limit) is what keeps her signed in for
+  weeks.
+✔ Check (optional, local): `npm run dev` → http://localhost:3000 → **Create the household** (sign up as
+yourself) → you go straight to "Set up your household".
 
 ## Step 5 · Vercel (deploy)
 
@@ -97,10 +98,9 @@ email" off you go straight to "Set up your household".
    **Production**, except:
    - `NEXT_PUBLIC_APP_URL` → your production URL, e.g. `https://bloom-prenatal-app.vercel.app`
    - **Never** add `BLOOM_DEMO`.
-3. **Deploy.** Functions run in Singapore (`vercel.json`), next to the database.
-4. Back in Supabase → **Authentication → URL Configuration**:
-   - Site URL: `https://<your-app>.vercel.app`
-   - Redirect URLs: add `https://<your-app>.vercel.app/**` (keep the localhost one for development)
+3. **Deploy.** Functions run in Tokyo (`vercel.json`, `hnd1`), next to the database.
+4. Back in Supabase → **Authentication → URL Configuration → Redirect URLs**: **add**
+   `https://<your-app>.vercel.app/**`. Leave the Site URL as the other app has it.
 ✔ Check: opening `https://<your-app>.vercel.app` redirects to **Sign in**. `/dev/home` must also redirect to
 sign in (the demo is off in production).
 
@@ -149,9 +149,10 @@ You should see `200` and `{"ok":true,…}`. A `401` means the Vault secret doesn
 
 | Symptom | Likely cause |
 |---|---|
-| Her sign-up says to check email | "Confirm email" is still on (Step 4.1). Turn it off while email is on hold |
+| "schema must be one of …" / 406 errors | Step 2.4: add `bloom` to Exposed schemas |
+| Her sign-up says the email already has an account | She has an account in this project already. Tap **Sign in instead** and use that password |
 | No Calendar alerts | Calendar subscribed? iPhone Settings → Calendar → Accounts → Fetch New Data → every 15 min; Calendar notifications allowed |
-| "Bloom is invite-only" on her sign-up | She used a different email than the invite, or the invite is older than 7 days. Create a new one |
+| "Bloom is invite-only" / "different email" on her sign-up | She must use the exact invited email, within 7 days. Create a new invite if needed |
 | No alarms on iPhone | Not opened from the Home Screen icon, notifications not allowed (iPhone Settings → Notifications → Bloom), or a Focus mode |
 | `net._http_response` shows 401 | The Vault `bloom_cron_secret` doesn't match Vercel's `CRON_SECRET` |
 | Reminders rows have `last_error` | Read it: VAPID or Resend configuration is usually named there |

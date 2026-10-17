@@ -8,7 +8,7 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Decision: medications (what) are split from medication_rules (when). dose_logs are unique on (care_day_id, rule_id, occurrence). Reminders use a unique dedupe_key.
 - Decision: Next.js 16 uses src/proxy.ts (renamed middleware). cacheComponents is off because all data is live.
 - Decision: auth cookies are httpOnly and all Supabase access is server-side. "Keep me signed in" off = the bloom-remember=0 cookie strips maxAge.
-- Decision: invite-only signup via the Supabase "Before User Created" hook public.hook_before_user_created (first user, or an email with a pending invite).
+- Decision (2026-10-18, shared project): there's no auth hook. Invite-only is enforced in Bloom: create_household works only when no household exists, and sign-up is a server action that checks the invite hash/email and then calls admin createUser(email_confirm: true).
 - Decision: the caregiver is read-only by default. Only the patient can turn on settings.caregiver_can_log (DB trigger).
 - Decision: RLS is verified by npm run test:rls (plain Postgres 17 + auth stub in Docker).
 - Decision: the iron spacing guardrail only warns (default 120 min vs. calcium/antacid) and never moves doses.
@@ -31,9 +31,10 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Vault secret names: bloom_dispatch_url, bloom_cron_secret.
 - Decision: the daily summary is sent by the same per-minute dispatcher (no separate cron). Snapshot in daily_summaries.payload, one email per member, claim + max 5 attempts, and partial delivery counts as sent (no double emails).
 - QA (2026-10-18): 132 unit, 41 e2e (axe 0 violations in light and dark), Lighthouse mobile a11y 100 / best practices 100 / perf 91–100. SEO is low on purpose (noindex). Report in docs/QA.md. Demo routes in prod only with BLOOM_DEMO=1.
-- Deploy (2026-10-18): docs/DEPLOY.md is the ordered guide. Supabase Auth must use Resend SMTP, because the built-in mailer only delivers to the team. Vercel functions are pinned to sin1 (vercel.json). The .env.local secrets were pre-generated (CRON_SECRET, VAPID). Check with `npm run check:env`.
+- Deploy (2026-10-18): docs/DEPLOY.md is the ordered guide (shared Supabase project: bloom schema, SQL bundle, no project-wide auth changes). Vercel functions are pinned to hnd1 (vercel.json). The .env.local secrets were pre-generated (CRON_SECRET, VAPID). Check with `npm run check:env`.
 - GitHub repo: https://github.com/agbuenispogi/bloom-prenatal-app (private; remote origin over SSH).
 - Vercel team: agbuenispogis-projects (https://vercel.com/agbuenispogis-projects). Ag has a Cloudflare account, planned for the email domain + DNS (not confirmed yet).
-- Pending: production URL, Supabase project ref. Record them here and in the Project Hub once deployed.
+- Supabase: reusing Ag's existing project uhwrolvwvuouajxgkkwv (ap-northeast-1 Tokyo), which another app also uses. Bloom lives in the `bloom` schema (exposed via Data API). It's installed by pasting supabase/bloom-install.sql (npm run db:bundle), not db push. Vercel region hnd1.
+- Pending: production URL. Record them here and in the Project Hub once deployed.
 - Decision (Ag, 2026-10-18): email is on hold. Phones get everything: push (incl. caregiver +30 heads-up and the 9 AM summary) plus a subscribed Calendar feed with native alarms. Email switches on automatically when RESEND_API_KEY + EMAIL_FROM are set. While on hold, Supabase "Confirm email" must be OFF (the built-in mailer only reaches the team).
 - Open questions: wife's email, her due date, when or if to enable email (domain + Resend).

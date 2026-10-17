@@ -5,7 +5,7 @@
 You chose to install and sign in to tools yourself. These are the exact steps. Nothing here goes into the repo.
 
 ## 1. Create the project
-1. supabase.com → New project. Region: **Southeast Asia (Singapore)**.
+1. (Bloom now reuses the existing Tokyo project; see DEPLOY.md Step 2.) For a dedicated project: supabase.com → New project.
 2. Project Settings → API Keys: copy the **URL**, the **publishable key** (`sb_publishable_…`) and a **secret key** (`sb_secret_…`).
 3. Put them in `.env.local` (copy `.env.example`) and later in Vercel env vars.
 
@@ -28,7 +28,7 @@ npx supabase gen types typescript --linked --schema public > src/lib/supabase/da
 
 ## 3. Auth settings (Dashboard → Authentication)
 - **URL Configuration** → Site URL: your Vercel URL. Redirect URLs: `http://localhost:3000/**` and `https://<your-vercel-domain>/**`.
-- **Hooks** → *Before User Created* → Postgres → `public.hook_before_user_created`. This makes signup invite-only: only the very first user, or an email with a pending invite, can sign up.
+- (Removed) There's no auth hook: invite-only is enforced inside Bloom (only the first household can be created, and sign-up is checked server-side). Bloom shares a Supabase project, so it changes no project-wide auth settings. **DEPLOY.md is the current guide.**
 - **Sessions**: leave refresh-token expiry off/unlimited and keep "Detect and revoke compromised refresh tokens" on. The app's proxy refreshes the session on every visit, so she stays signed in for weeks.
 - **Email Templates** (so links work even if her email app opens a different browser):
   - *Confirm signup*: `<a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Confirm your email</a>`

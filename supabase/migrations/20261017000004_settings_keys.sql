@@ -1,6 +1,6 @@
 -- Engine settings that were hardcoded at first: lead time for "eating in ~N min" without a pre-meal rule,
 -- and how long before a shift to suggest finishing a meal.
-alter table public.households alter column settings set default (
+alter table bloom.households alter column settings set default (
   '{
     "anmum_deadline": "21:00",
     "summary_time": "09:00",
@@ -21,5 +21,5 @@ alter table public.households alter column settings set default (
   }'::jsonb
 );
 
-update public.households
+update bloom.households
    set settings = '{"late_grace_min": 15, "meal_lead_min": 30, "shift_prep_min": 30}'::jsonb || settings;

@@ -11,7 +11,7 @@ import { sendReminderEmail, sendWebPush } from "./senders";
 import { syncReminders } from "./sync";
 import { signAction } from "./token";
 
-type Admin = SupabaseClient<Database>;
+type Admin = SupabaseClient<Database, "bloom">;
 
 export function cronSecret(): string {
   const s = process.env.CRON_SECRET;

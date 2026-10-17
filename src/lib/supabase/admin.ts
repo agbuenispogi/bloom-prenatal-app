@@ -7,7 +7,8 @@ import type { Database } from "./database.types";
 export function createAdminClient() {
   const key = process.env.SUPABASE_SECRET_KEY;
   if (!key) throw new Error("Missing env var SUPABASE_SECRET_KEY. See .env.example.");
-  return createClient<Database>(publicEnv.supabaseUrl(), key, {
+  return createClient<Database, "bloom">(publicEnv.supabaseUrl(), key, {
+    db: { schema: "bloom" },
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }

@@ -1,7 +1,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  public: {
+  bloom: {
     Tables: {
       care_days: {
         Row: {
@@ -103,7 +103,7 @@ export type Database = {
           reason: string | null;
           rule_id: string;
           snoozed_until: string | null;
-          status: Database["public"]["Enums"]["dose_status"];
+          status: Database["bloom"]["Enums"]["dose_status"];
           taken_at: string | null;
           target_at: string | null;
           updated_at: string;
@@ -118,7 +118,7 @@ export type Database = {
           reason?: string | null;
           rule_id: string;
           snoozed_until?: string | null;
-          status?: Database["public"]["Enums"]["dose_status"];
+          status?: Database["bloom"]["Enums"]["dose_status"];
           taken_at?: string | null;
           target_at?: string | null;
           updated_at?: string;
@@ -132,7 +132,7 @@ export type Database = {
           reason?: string | null;
           rule_id?: string;
           snoozed_until?: string | null;
-          status?: Database["public"]["Enums"]["dose_status"];
+          status?: Database["bloom"]["Enums"]["dose_status"];
           taken_at?: string | null;
           target_at?: string | null;
           updated_at?: string;
@@ -171,7 +171,7 @@ export type Database = {
           household_id: string;
           id: string;
           invited_by: string;
-          role: Database["public"]["Enums"]["profile_role"];
+          role: Database["bloom"]["Enums"]["profile_role"];
           token_hash: string;
         };
         ComputedFields: never;
@@ -184,7 +184,7 @@ export type Database = {
           household_id: string;
           id?: string;
           invited_by: string;
-          role: Database["public"]["Enums"]["profile_role"];
+          role: Database["bloom"]["Enums"]["profile_role"];
           token_hash: string;
         };
         Update: {
@@ -196,7 +196,7 @@ export type Database = {
           household_id?: string;
           id?: string;
           invited_by?: string;
-          role?: Database["public"]["Enums"]["profile_role"];
+          role?: Database["bloom"]["Enums"]["profile_role"];
           token_hash?: string;
         };
         Relationships: [
@@ -250,7 +250,7 @@ export type Database = {
           id: string;
           logged_by: string | null;
           planned_at: string | null;
-          type: Database["public"]["Enums"]["meal_type"];
+          type: Database["bloom"]["Enums"]["meal_type"];
         };
         ComputedFields: never;
         Insert: {
@@ -261,7 +261,7 @@ export type Database = {
           id?: string;
           logged_by?: string | null;
           planned_at?: string | null;
-          type: Database["public"]["Enums"]["meal_type"];
+          type: Database["bloom"]["Enums"]["meal_type"];
         };
         Update: {
           care_day_id?: string;
@@ -271,7 +271,7 @@ export type Database = {
           id?: string;
           logged_by?: string | null;
           planned_at?: string | null;
-          type?: Database["public"]["Enums"]["meal_type"];
+          type?: Database["bloom"]["Enums"]["meal_type"];
         };
         Relationships: [
           {
@@ -293,7 +293,7 @@ export type Database = {
       medication_rules: {
         Row: {
           active: boolean;
-          anchor: Database["public"]["Enums"]["meal_anchor"] | null;
+          anchor: Database["bloom"]["Enums"]["meal_anchor"] | null;
           created_at: string;
           deadline: string | null;
           fixed_time: string | null;
@@ -304,14 +304,14 @@ export type Database = {
           medication_id: string;
           min_per_day: number;
           offset_min: number;
-          rule_type: Database["public"]["Enums"]["rule_type"];
+          rule_type: Database["bloom"]["Enums"]["rule_type"];
           slug: string;
           sort: number;
         };
         ComputedFields: never;
         Insert: {
           active?: boolean;
-          anchor?: Database["public"]["Enums"]["meal_anchor"] | null;
+          anchor?: Database["bloom"]["Enums"]["meal_anchor"] | null;
           created_at?: string;
           deadline?: string | null;
           fixed_time?: string | null;
@@ -322,13 +322,13 @@ export type Database = {
           medication_id: string;
           min_per_day?: number;
           offset_min?: number;
-          rule_type: Database["public"]["Enums"]["rule_type"];
+          rule_type: Database["bloom"]["Enums"]["rule_type"];
           slug: string;
           sort?: number;
         };
         Update: {
           active?: boolean;
-          anchor?: Database["public"]["Enums"]["meal_anchor"] | null;
+          anchor?: Database["bloom"]["Enums"]["meal_anchor"] | null;
           created_at?: string;
           deadline?: string | null;
           fixed_time?: string | null;
@@ -339,7 +339,7 @@ export type Database = {
           medication_id?: string;
           min_per_day?: number;
           offset_min?: number;
-          rule_type?: Database["public"]["Enums"]["rule_type"];
+          rule_type?: Database["bloom"]["Enums"]["rule_type"];
           slug?: string;
           sort?: number;
         };
@@ -365,7 +365,7 @@ export type Database = {
           name: string;
           slug: string;
           sort: number;
-          spacing_class: Database["public"]["Enums"]["spacing_class"] | null;
+          spacing_class: Database["bloom"]["Enums"]["spacing_class"] | null;
         };
         ComputedFields: never;
         Insert: {
@@ -379,7 +379,7 @@ export type Database = {
           name: string;
           slug: string;
           sort?: number;
-          spacing_class?: Database["public"]["Enums"]["spacing_class"] | null;
+          spacing_class?: Database["bloom"]["Enums"]["spacing_class"] | null;
         };
         Update: {
           active?: boolean;
@@ -392,7 +392,7 @@ export type Database = {
           name?: string;
           slug?: string;
           sort?: number;
-          spacing_class?: Database["public"]["Enums"]["spacing_class"] | null;
+          spacing_class?: Database["bloom"]["Enums"]["spacing_class"] | null;
         };
         Relationships: [
           {
@@ -413,7 +413,7 @@ export type Database = {
           id: string;
           notify_email: boolean;
           notify_push: boolean;
-          role: Database["public"]["Enums"]["profile_role"];
+          role: Database["bloom"]["Enums"]["profile_role"];
         };
         ComputedFields: never;
         Insert: {
@@ -424,7 +424,7 @@ export type Database = {
           id: string;
           notify_email?: boolean;
           notify_push?: boolean;
-          role: Database["public"]["Enums"]["profile_role"];
+          role: Database["bloom"]["Enums"]["profile_role"];
         };
         Update: {
           created_at?: string;
@@ -434,7 +434,7 @@ export type Database = {
           id?: string;
           notify_email?: boolean;
           notify_push?: boolean;
-          role?: Database["public"]["Enums"]["profile_role"];
+          role?: Database["bloom"]["Enums"]["profile_role"];
         };
         Relationships: [
           {
@@ -492,7 +492,7 @@ export type Database = {
         Row: {
           attempts: number;
           cancelled_at: string | null;
-          channel: Database["public"]["Enums"]["reminder_channel"];
+          channel: Database["bloom"]["Enums"]["reminder_channel"];
           claimed_at: string | null;
           created_at: string;
           dedupe_key: string;
@@ -500,7 +500,7 @@ export type Database = {
           due_at: string;
           household_id: string;
           id: string;
-          kind: Database["public"]["Enums"]["reminder_kind"];
+          kind: Database["bloom"]["Enums"]["reminder_kind"];
           last_error: string | null;
           meal_log_id: string | null;
           payload: NonNullable<Json>;
@@ -511,7 +511,7 @@ export type Database = {
         Insert: {
           attempts?: number;
           cancelled_at?: string | null;
-          channel: Database["public"]["Enums"]["reminder_channel"];
+          channel: Database["bloom"]["Enums"]["reminder_channel"];
           claimed_at?: string | null;
           created_at?: string;
           dedupe_key: string;
@@ -519,7 +519,7 @@ export type Database = {
           due_at: string;
           household_id: string;
           id?: string;
-          kind: Database["public"]["Enums"]["reminder_kind"];
+          kind: Database["bloom"]["Enums"]["reminder_kind"];
           last_error?: string | null;
           meal_log_id?: string | null;
           payload?: NonNullable<Json>;
@@ -529,7 +529,7 @@ export type Database = {
         Update: {
           attempts?: number;
           cancelled_at?: string | null;
-          channel?: Database["public"]["Enums"]["reminder_channel"];
+          channel?: Database["bloom"]["Enums"]["reminder_channel"];
           claimed_at?: string | null;
           created_at?: string;
           dedupe_key?: string;
@@ -537,7 +537,7 @@ export type Database = {
           due_at?: string;
           household_id?: string;
           id?: string;
-          kind?: Database["public"]["Enums"]["reminder_kind"];
+          kind?: Database["bloom"]["Enums"]["reminder_kind"];
           last_error?: string | null;
           meal_log_id?: string | null;
           payload?: NonNullable<Json>;
@@ -654,14 +654,14 @@ export type Database = {
       auth_household_id: { Args: Record<PropertyKey, never>; Returns: string };
       auth_role: {
         Args: Record<PropertyKey, never>;
-        Returns: Database["public"]["Enums"]["profile_role"];
+        Returns: Database["bloom"]["Enums"]["profile_role"];
       };
       claim_due_reminders: {
         Args: { p_limit?: number };
         Returns: {
           attempts: number;
           cancelled_at: string | null;
-          channel: Database["public"]["Enums"]["reminder_channel"];
+          channel: Database["bloom"]["Enums"]["reminder_channel"];
           claimed_at: string | null;
           created_at: string;
           dedupe_key: string;
@@ -669,7 +669,7 @@ export type Database = {
           due_at: string;
           household_id: string;
           id: string;
-          kind: Database["public"]["Enums"]["reminder_kind"];
+          kind: Database["bloom"]["Enums"]["reminder_kind"];
           last_error: string | null;
           meal_log_id: string | null;
           payload: NonNullable<Json>;
@@ -687,15 +687,14 @@ export type Database = {
         Args: {
           p_display_name: string;
           p_name: string;
-          p_role: Database["public"]["Enums"]["profile_role"];
+          p_role: Database["bloom"]["Enums"]["profile_role"];
         };
         Returns: string;
       };
       create_invite: {
-        Args: { p_email: string; p_role: Database["public"]["Enums"]["profile_role"] };
+        Args: { p_email: string; p_role: Database["bloom"]["Enums"]["profile_role"] };
         Returns: string;
       };
-      hook_before_user_created: { Args: { event: Json }; Returns: Json };
       seed_household_defaults: { Args: { p_household: string }; Returns: undefined };
     };
     Enums: {
@@ -820,7 +819,7 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  public: {
+  bloom: {
     Enums: {
       dose_status: ["pending", "taken", "skipped", "snoozed", "missed"],
       meal_anchor: ["breakfast", "lunch", "dinner", "snack", "bedtime"],

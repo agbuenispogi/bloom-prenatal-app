@@ -19,7 +19,8 @@ export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const remember = wantsRemember(request.cookies.get(REMEMBER_COOKIE)?.value);
 
-  const supabase = createServerClient<Database>(publicEnv.supabaseUrl(), publicEnv.supabasePublishableKey(), {
+  const supabase = createServerClient<Database, "bloom">(publicEnv.supabaseUrl(), publicEnv.supabasePublishableKey(), {
+    db: { schema: "bloom" },
     cookieOptions: authCookieOptions,
     cookies: {
       getAll: () => request.cookies.getAll(),

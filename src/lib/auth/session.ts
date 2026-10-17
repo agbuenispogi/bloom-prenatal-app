@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 
-export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
-export type Household = Database["public"]["Tables"]["households"]["Row"];
+export type Profile = Database["bloom"]["Tables"]["profiles"]["Row"];
+export type Household = Database["bloom"]["Tables"]["households"]["Row"];
 
 // Verified identity from the JWT (getClaims validates the signature; never trust getSession on the server).
 export const getAuthUser = cache(async () => {

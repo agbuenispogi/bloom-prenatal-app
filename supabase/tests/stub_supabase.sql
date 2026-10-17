@@ -17,3 +17,8 @@ grant execute on function auth.uid() to anon, authenticated, service_role;
 -- Supabase grants table privileges broadly and relies on RLS; do the same.
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
+
+-- Another app sharing the project: a public table its anonymous visitors can read. Bloom must not affect it.
+create table public.other_app_posts (id int primary key, title text);
+insert into public.other_app_posts values (1, 'hello');
+grant select on public.other_app_posts to anon;

@@ -12,6 +12,6 @@ sleep 1
 run() { docker exec -i $NAME psql -U postgres -v ON_ERROR_STOP=1 -q "$@"; }
 run < supabase/tests/stub_supabase.sql
 for f in supabase/migrations/*.sql; do run < "$f" 2>/dev/null; done
-npx -y supabase@latest gen types typescript --db-url "postgresql://postgres:postgres@localhost:54329/postgres?sslmode=disable" --schema public > src/lib/supabase/database.types.ts
+npx -y supabase@latest gen types typescript --db-url "postgresql://postgres:postgres@localhost:54329/postgres?sslmode=disable" --schema bloom > src/lib/supabase/database.types.ts
 npx -y oxfmt src/lib/supabase/database.types.ts >/dev/null 2>&1 || true
 echo "types regenerated"

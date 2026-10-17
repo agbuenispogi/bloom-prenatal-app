@@ -6,22 +6,24 @@ import { Field, FormMessage, SubmitButton } from "@/components/form";
 import { initialActionState } from "@/lib/auth/action-state";
 import { signIn } from "../actions";
 
-export function LoginForm({ next }: { next: string }) {
+export function LoginForm({ next, magicLink }: { next: string; magicLink: boolean }) {
   const [state, action] = useActionState(signIn, initialActionState);
   return (
     <form action={action} className="flex flex-col gap-5">
       <input type="hidden" name="next" value={next} />
       <Field label="Email" name="email" type="email" autoComplete="email" defaultValue={state.values?.email} />
-      <Field label="Password" name="password" type="password" autoComplete="current-password" required={false} />
+      <Field label="Password" name="password" type="password" autoComplete="current-password" required={!magicLink} />
       <label className="flex min-h-12 items-center gap-3 text-base">
         <input type="checkbox" name="remember" defaultChecked className="size-5 accent-[var(--ribbon-fill)]" />
         Keep me signed in
       </label>
       <FormMessage state={state} />
       <SubmitButton name="intent" value="password">Sign in</SubmitButton>
-      <SubmitButton name="intent" value="magic" variant="quiet">
-        Email me a sign-in link instead
-      </SubmitButton>
+      {magicLink ? (
+        <SubmitButton name="intent" value="magic" variant="quiet">
+          Email me a sign-in link instead
+        </SubmitButton>
+      ) : null}
       <p className="text-[0.9375rem] text-ink-soft">
         First time here? <Link className="underline" href="/signup">Create the household</Link> or open your invite link.
       </p>

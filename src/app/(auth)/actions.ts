@@ -7,6 +7,8 @@ import { publicEnv } from "@/lib/env";
 import type { ActionState } from "@/lib/auth/action-state";
 import { safeNext } from "@/lib/auth/redirect";
 import { REMEMBER_COOKIE } from "@/lib/supabase/cookies";
+import { createHash } from "node:crypto";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 const email = z.string().trim().toLowerCase().email("Please enter a valid email.");
@@ -60,6 +62,9 @@ const signUpSchema = z.object({
   invite: z.string().regex(/^[a-f0-9]{64}$/).optional(),
 });
 
+// Sign-up without email: the Supabase project is shared with another app, so Bloom can't rely on its auth
+// emails or change its settings. The server checks the invite (or that this is the very first household),
+// creates the account already confirmed, and signs her in.
 export async function signUp(_prev: ActionState, form: FormData): Promise<ActionState> {
   const values = { email: form.get("email")?.toString() ?? "" };
   const parsed = signUpSchema.safeParse({
@@ -68,21 +73,34 @@ export async function signUp(_prev: ActionState, form: FormData): Promise<Action
     invite: form.get("invite")?.toString() || undefined,
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message, values };
+  const { email: addr, password: pass, invite } = parsed.data;
+  const admin = createAdminClient();
+
+  if (invite) {
+    const hash = createHash("sha256").update(invite, "utf8").digest("hex");
+    const { data: inv } = await admin.from("household_invites").select("email, expires_at, accepted_at").eq("token_hash", hash).maybeSingle();
+    if (!inv || inv.accepted_at || new Date(inv.expires_at) < new Date()) return { error: "This invite has expired or was already used. Ask for a new link.", values };
+    if (inv.email !== addr) return { error: "This invite was sent to a different email address.", values };
+  } else {
+    const { count } = await admin.from("households").select("id", { count: "exact", head: true });
+    if (count) return { error: "Bloom is invite-only. Ask for an invite link.", values };
+  }
+
+  const next = invite ? `/welcome?invite=${invite}` : "/welcome";
+  const { error } = await admin.auth.admin.createUser({ email: addr, password: pass, email_confirm: true });
+  if (error) {
+    if (/already|registered|exists/i.test(error.message)) {
+      return { error: "This email already has an account. Sign in with its password instead.", values, signInHref: `/login?next=${encodeURIComponent(next)}` };
+    }
+    console.error("sign-up failed", error);
+    return { error: "Couldn't create the account. Try again in a moment.", values };
+  }
 
   await setRemember(true);
   const supabase = await createClient({ remember: true });
-  const next = parsed.data.invite ? `/welcome?invite=${parsed.data.invite}` : "/welcome";
-  const { data, error } = await supabase.auth.signUp({
-    email: parsed.data.email,
-    password: parsed.data.password,
-    options: { emailRedirectTo: confirmUrl(next) },
-  });
-  if (error) {
-    // The invite-only hook rejects strangers with a friendly message; surface it as-is.
-    return { error: error.message || "Couldn't create the account.", values };
-  }
-  if (data.session) redirect(next);
-  return { message: "Check your email to confirm your account, then come back here.", values };
+  const { error: signInError } = await supabase.auth.signInWithPassword({ email: addr, password: pass });
+  if (signInError) return { message: "Account created. Sign in to continue.", values, signInHref: `/login?next=${encodeURIComponent(next)}` };
+  redirect(next);
 }
 
 export async function signOut() {

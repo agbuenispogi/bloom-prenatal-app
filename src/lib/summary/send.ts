@@ -11,7 +11,7 @@ import { sendSummaryEmail, sendWebPush } from "@/lib/reminders/senders";
 import type { Database, Json } from "@/lib/supabase/database.types";
 import { buildSummary, summaryDue } from "./daily";
 
-type Admin = SupabaseClient<Database>;
+type Admin = SupabaseClient<Database, "bloom">;
 const MAX_ATTEMPTS = 5;
 
 // Runs every minute from the dispatcher. For each household whose summary time has passed: builds yesterday's

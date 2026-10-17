@@ -15,8 +15,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { parseHouseholdSettings, type HouseholdSettings } from "./settings";
 
 // Works with the user client (RLS) or the admin client; every query is also scoped to the household explicitly.
-type Client = SupabaseClient<Database>;
-type Row<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
+type Client = SupabaseClient<Database, "bloom">;
+type Row<T extends keyof Database["bloom"]["Tables"]> = Database["bloom"]["Tables"][T]["Row"];
 
 const hhmm = (t: string | null) => (t ? t.slice(0, 5) : null);
 const date = (t: string | null) => (t ? new Date(t) : null);

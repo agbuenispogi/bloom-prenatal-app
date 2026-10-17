@@ -25,7 +25,10 @@ export async function createHousehold(_prev: ActionState, form: FormData): Promi
     p_display_name: parsed.data.displayName,
     p_role: parsed.data.role,
   });
-  if (error) return { error: error.message.includes("already") ? "You're already in a household." : "Couldn't create the household." };
+  if (error) {
+    if (error.message.includes("invite-only")) return { error: "Bloom is invite-only. Ask for an invite link." };
+    return { error: error.message.includes("already") ? "You're already in a household." : "Couldn't create the household." };
+  }
   redirect("/settings/household?created=1");
 }
 

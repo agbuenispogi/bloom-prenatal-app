@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/auth/session";
 import { safeNext } from "@/lib/auth/redirect";
+import { emailEnabled } from "@/lib/reminders/channels";
 import { LoginForm } from "./login-form";
 
 export const metadata = { title: "Sign in · Bloom" };
@@ -16,7 +17,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <h1 className="font-serif text-[2.125rem] leading-[1.1] text-balance">Welcome back</h1>
         <p className="text-[1.0625rem] text-pretty text-ink-soft">Sign in once and Bloom keeps you signed in on this phone.</p>
       </header>
-      <LoginForm next={next} />
+      <LoginForm next={next} magicLink={emailEnabled()} />
     </main>
   );
 }

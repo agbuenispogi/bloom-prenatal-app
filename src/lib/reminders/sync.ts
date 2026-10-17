@@ -6,7 +6,7 @@ import type { Database, Json } from "@/lib/supabase/database.types";
 import { emailEnabled } from "./channels";
 import { desiredReminders } from "./plan";
 
-type Admin = SupabaseClient<Database>;
+type Admin = SupabaseClient<Database, "bloom">;
 
 export async function householdRecipients(admin: Admin, householdId: string): Promise<Recipient[]> {
   const { data, error } = await admin.from("profiles").select("id, role, notify_push, notify_email").eq("household_id", householdId);
