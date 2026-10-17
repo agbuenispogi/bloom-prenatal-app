@@ -1,0 +1,136 @@
+{
+  "title": "Choose Bloom's visual world",
+  "question": "The roll assigned the Baon Tiffin Carrier. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Baon Tiffin Carrier",
+      "kicker": "THE ROLL",
+      "lineage": "stacked enamel lunch carriers (fiambrera) packed in Filipino kitchens",
+      "thesis": "Her day is a stack of meals; every dose clips to the tier it belongs to.",
+      "palette": ["#F6EFE3", "#F2C9C1", "#BFE0D2", "#C7DBEE", "#C9826B", "#1E2C4F"],
+      "materials": ["glossy cream enamel", "pastel tiers per meal", "navy enamel rim as the one accent", "soft-latched lids"],
+      "viewport": "Top: greeting and Week 24. The lifted top tier is the Next up card (big countdown, the why, a thumb-height Done). Below it, the rest of today stacks as tiers: breakfast, lunch, afternoon, dinner, bedtime.",
+      "risk": "If the tiers get literal (handles, latches drawn in), it turns into a costume. It has to stay a clean app with tier-shaped grouping.",
+      "raised": [
+        { "from": "challenger-wayfinding", "raise": "Next up shows one message only, the single next decision, with the time at monumental scale." },
+        { "from": "challenger-emission-rail", "raise": "State is carried by form as well as color: solid = done, dashed = upcoming, struck = skipped, ringed = due now. It reads in the dark and for color-blind eyes." },
+        { "from": "challenger-jcard", "raise": "Every time sits right-aligned in tabular numerals, the actual time beside the target, so lateness reads without words." }
+      ],
+      "wireframe": { "cols": 4, "rows": 12, "regions": [
+        { "label": "greeting · week 24", "x": 0, "y": 0, "w": 4, "h": 1 },
+        { "label": "NEXT UP tier: countdown + why", "x": 0, "y": 1, "w": 4, "h": 4, "accent": true },
+        { "label": "Done (thumb zone)", "x": 0, "y": 5, "w": 4, "h": 1, "accent": true },
+        { "label": "lunch tier · Gaviscon · Caltrate", "x": 0, "y": 6, "w": 4, "h": 2 },
+        { "label": "afternoon tier · Iron + Folic", "x": 0, "y": 8, "w": 4, "h": 1 },
+        { "label": "dinner tier", "x": 0, "y": 9, "w": 4, "h": 2 },
+        { "label": "bedtime tier", "x": 0, "y": 11, "w": 4, "h": 1 }
+      ] }
+    },
+    {
+      "id": "model-pick",
+      "label": "Keepsake Pregnancy Journal",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "clothbound baby and pregnancy memory books",
+      "thesis": "Each care day is a dated journal page, filled in as she goes.",
+      "palette": ["#F7F1E6", "#E8DCC8", "#E9B9AE", "#3A2E2A", "#7A8B5C"],
+      "materials": ["oat paper", "blush cloth spine", "ink handwriting accents"],
+      "viewport": "A dated page header, Next up as the open entry with its countdown, and today's lines below as the journal timeline.",
+      "risk": "This is the literal reading of the brief: cream, serif and journal, which is where most runs in this category land.",
+      "wireframe": { "cols": 4, "rows": 12, "regions": [
+        { "label": "dated page header", "x": 0, "y": 0, "w": 4, "h": 2 },
+        { "label": "open entry: Next up", "x": 0, "y": 2, "w": 4, "h": 4, "accent": true },
+        { "label": "today's lines", "x": 0, "y": 6, "w": 4, "h": 6 }
+      ] }
+    },
+    {
+      "id": "challenger-wayfinding",
+      "label": "Terminal Wayfinding",
+      "verdict": "competitive",
+      "lineage": "airport overhead sign systems",
+      "thesis": "Next up as an overhead sign: one decision, a monumental time, an arrow.",
+      "palette": ["#FFD200", "#111111", "#FFFFFF", "#F6EFE3"],
+      "materials": ["saturated sign panels", "pictograms", "split-flap updates"],
+      "viewport": "A yellow band with Caltrate · 1:42 PM at sign scale, and the timeline as the concourse of decisions ahead.",
+      "case": "The clearest single action, but industrial yellow fights the tender, cream-blush brief and her night use.",
+      "risk": "Reads like transit, not care. It breaks the pinned palette."
+    },
+    {
+      "id": "challenger-emission-rail",
+      "label": "Emission-Line Rail",
+      "verdict": "declined",
+      "lineage": "spectrogram plates",
+      "thesis": "Doses as hairlines on one calibrated rail.",
+      "palette": ["#2A2A2E", "#E8E2D6", "#F5C542"],
+      "materials": ["charcoal continuum", "hairline emission lines"],
+      "viewport": "One rail across the day with each dose as a line.",
+      "case": "Cold, scientific charcoal, opposite to a tender journal.",
+      "kept": "State carried by line form (solid, dashed, struck), not color alone.",
+      "risk": "Clinical."
+    },
+    {
+      "id": "challenger-jcard",
+      "label": "Mixtape J-card",
+      "verdict": "declined",
+      "lineage": "hand-lettered cassette inlays",
+      "thesis": "The day as a timed tracklist.",
+      "palette": ["#FFFFFF", "#2B4C9B", "#C8102E"],
+      "materials": ["ballpoint on lined inlay"],
+      "viewport": "Side A daytime, Side B after shift.",
+      "case": "Charming, but nostalgia is not her world here.",
+      "kept": "Running times right-aligned tight to the margin.",
+      "risk": "Novelty."
+    },
+    {
+      "id": "challenger-labanotation",
+      "label": "Labanotation Score",
+      "verdict": "declined",
+      "lineage": "dance notation",
+      "thesis": "Time flows upward and length equals duration.",
+      "palette": ["#FFFFFF", "#111111", "#BBBBBB"],
+      "materials": ["score paper", "shaded blocks"],
+      "viewport": "A vertical staff of the day.",
+      "case": "Too abstract to read one-handed at 1 AM.",
+      "kept": "Spacing honest to real time gaps.",
+      "risk": "Illegible to her."
+    },
+    {
+      "id": "challenger-jp-density",
+      "label": "High-Density Modules",
+      "verdict": "declined",
+      "lineage": "Japanese portal sites",
+      "thesis": "Pack everything on one screen.",
+      "palette": ["#FFFFFF", "#111111", "#D7000F"],
+      "materials": ["hairline modules"],
+      "viewport": "Dense module mosaic.",
+      "case": "Density contradicts 'one clear action' and calm.",
+      "kept": "A strict hairline border system instead of shadows.",
+      "risk": "Overwhelming."
+    },
+    {
+      "id": "challenger-doujin",
+      "label": "Convention Catalog",
+      "verdict": "declined",
+      "lineage": "doujin event newsprint catalogs",
+      "thesis": "Stamp-sized cells, circled in biro.",
+      "palette": ["#EDEBE4", "#111111", "#E4007F"],
+      "materials": ["newsprint", "biro circles"],
+      "viewport": "A grid of tiny dose cells.",
+      "case": "Too busy; newsprint grays out her calm.",
+      "kept": "Done items struck through, active one circled.",
+      "risk": "Cluttered."
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "buildPath": { "value": "code" },
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A clean medication-reminder app (Medisafe-style), executed impeccably.",
+    "palette": ["#FFFFFF", "#F3F5F7", "#14808A", "#1F2933"],
+    "materials": ["white cards", "teal accent", "pill icons"],
+    "viewport": "A today list of pill cards with checkboxes and a progress ring.",
+    "risk": "Clinical and indistinguishable. Exactly the 'hospital app' the brief rejects."
+  },
+  "steer": true
+}

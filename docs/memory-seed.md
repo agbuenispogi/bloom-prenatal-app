@@ -20,4 +20,7 @@ The Qdrant server loads on the next session in this folder. Store each line belo
 - Decision: nextUp is the earliest open candidate (take/prep_meal/eat/bedtime) and is never all_done while Anmum is below its minimum. An unlogged lunch/dinner is "passed" once a later meal or bedtime exists.
 - Decision: pre-meal dose targets use the planned meal time (no false "late"). After-meal targets use the eaten time.
 - Decision: household settings gained late_grace_min, meal_lead_min and shift_prep_min (migration 0004). Overnight shifts (end < start) are not supported (DB check).
-- Open questions: wife's email, Resend sending domain.
+- Decision: the visual direction is the Keepsake Pregnancy Journal (user's pick from Impeccable roll a76f4478, code-led). DESIGN.md records the system. Fonts are Young Serif + Atkinson Hyperlegible Next.
+- Decision: the patient uses an iPhone, the copy is English, Bloom shows the pregnancy week from households.settings.due_date, and motion stays minimal (she is nausea-sensitive).
+- Decision: the Home UI is shared between live (server actions) and the dev demo (/dev/home, the engine in the browser) via the pure view model src/lib/view/home.ts.
+- Open questions: wife's email, Resend sending domain, her due date.

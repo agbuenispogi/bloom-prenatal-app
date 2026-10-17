@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Young_Serif } from "next/font/google";
 import "./globals.css";
 
-// Fonts and palette are placeholders until the Phase 4 design pass (Impeccable).
-const sans = Geist({ variable: "--font-sans-ui", subsets: ["latin"] });
+// Young Serif: the journal's handset headings. Atkinson Hyperlegible Next: UI and numerals, legible at 1 AM.
+const display = Young_Serif({ variable: "--font-display", weight: "400", subsets: ["latin"] });
+const ui = Atkinson_Hyperlegible_Next({ variable: "--font-ui", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Bloom",
@@ -15,11 +16,15 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4ecdf" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1719" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${sans.variable} h-full antialiased`}>
+    <html lang="en" className={`${display.variable} ${ui.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );

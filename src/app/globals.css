@@ -1,26 +1,181 @@
 @import "tailwindcss";
 
-/* Interim tokens. Phase 4 (Impeccable) replaces the palette and type. */
+/* Bloom: keepsake pregnancy journal. Day pages (light) and night pages (dark), chosen by the device. */
 :root {
-  --background: #fbf7f1;
-  --foreground: #2b2420;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans-ui), system-ui, sans-serif;
+  color-scheme: light;
+  --paper: #f4ecdf;
+  --paper-sunk: #eadfcc;
+  --rule: #d6c6ad;
+  --ink: #3b2b2a;
+  --ink-soft: #6b5650;
+  --cloth: #ebc0b3;
+  --cloth-ink: #3b2226;
+  --cloth-soft: #64393f;
+  --cloth-rule: #d49f92;
+  --ribbon: #8c2f55;
+  --ribbon-ink: #fff6f2;
+  --ribbon-press: #74244a;
+  --ribbon-fill: #8c2f55;
+  --ribbon-fill-ink: #fff6f2;
+  --ribbon-shade: #6a2141;
+  --ribbon-sheen: #a2486f;
+  --cloth-spine: #dba699;
+  --spine-crease: #b8837a;
+  --cloth-texture: url("/textures/cloth-day.png");
+  --margin: #e3b7b2;
+  --tab-mint: #a9d3c0;
+  --tab-sky: #afc8e4;
+  --tab-clay: #d49a7e;
+  --tab-blush: #edb7c0;
+  --tab-oat: #d8c7a8;
+  --selection: #e9c3cf;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1d1916;
-    --foreground: #f1e9df;
+    color-scheme: dark;
+    --paper: #1c1719;
+    --paper-sunk: #241e20;
+    --rule: #3d3235;
+    --ink: #e6dacc;
+    --ink-soft: #b3a398;
+    --cloth: #3e262d;
+    --cloth-ink: #f1ddd8;
+    --cloth-soft: #d2b4b4;
+    --cloth-rule: #5a3a42;
+    --ribbon: #d9799a;
+    --ribbon-ink: #241216;
+    --ribbon-press: #5e2139;
+    --ribbon-fill: #6e2843;
+    --ribbon-fill-ink: #ebd9cf;
+    --ribbon-shade: #4f1b30;
+    --ribbon-sheen: #7d3a55;
+    --cloth-spine: #33212a;
+    --spine-crease: #241519;
+    --cloth-texture: url("/textures/cloth-night.png");
+    --margin: #4a3036;
+    --tab-mint: #5e8576;
+    --tab-sky: #607a96;
+    --tab-clay: #8f604c;
+    --tab-blush: #9a6873;
+    --tab-oat: #7d6f58;
+    --selection: #5a3a48;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-sunk: var(--paper-sunk);
+  --color-rule: var(--rule);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-cloth: var(--cloth);
+  --color-cloth-ink: var(--cloth-ink);
+  --color-cloth-soft: var(--cloth-soft);
+  --color-cloth-rule: var(--cloth-rule);
+  --color-ribbon: var(--ribbon);
+  --color-ribbon-ink: var(--ribbon-ink);
+  --color-ribbon-press: var(--ribbon-press);
+  --color-ribbon-fill: var(--ribbon-fill);
+  --color-ribbon-fill-ink: var(--ribbon-fill-ink);
+  --color-cloth-spine: var(--cloth-spine);
+  --color-margin: var(--margin);
+  /* Interim aliases kept for the Phase 2 auth screens. */
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-ui), system-ui, sans-serif;
+  --font-serif: var(--font-display), Georgia, serif;
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--rule) transparent;
+}
+
+/* Book-cloth: the woven texture under the Next up entry. */
+@utility cloth {
+  background-color: var(--cloth);
+  background-image: var(--cloth-texture);
+  background-size: 192px 192px;
+}
+
+/* The folded cloth spine: a turn of cloth with a hinge crease, shaded across its width. */
+@utility spine {
+  background-color: var(--cloth-spine);
+  background-image: linear-gradient(to right, rgb(255 255 255 / 0.1), transparent 35%, rgb(0 0 0 / 0.08) 70%, rgb(0 0 0 / 0.16) 92%, var(--spine-crease) 92%);
+}
+
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--ribbon);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+input,
+textarea {
+  caret-color: var(--ribbon);
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Hand-inked check: drawn once when a dose is logged. */
+@keyframes ink-draw {
+  from {
+    stroke-dashoffset: var(--ink-len, 60);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.ink-draw {
+  stroke-dasharray: var(--ink-len, 60);
+  animation: ink-draw 700ms var(--ease-out-soft) both;
+}
+
+/* Starts already visible (never from 0), so a throttled or skipped animation can't hide content. */
+@keyframes settle-in {
+  from {
+    opacity: 0.55;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.settle-in {
+  animation: settle-in 420ms var(--ease-out-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
 }

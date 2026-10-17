@@ -61,6 +61,12 @@ summary at 9:00 AM Manila.
 - Pre-meal doses target the planned meal time; after-meal doses target the eaten time.
 - Tests: `src/lib/engine/__tests__/` (scenarios, edge cases, reviewer regressions). Coverage ~99%.
 
+## Design (Impeccable)
+- Product truth: `PRODUCT.md`. Visual system: `DESIGN.md` + `.impeccable/design.json` (the Keepsake Pregnancy Journal: oat paper, blush book-cloth Next up entry, one satin ribbon accent, inked checks, warm plum-brown night pages).
+- Home's direction contract: `.impeccable/surfaces/src-app-page-tsx.md`. Roll record: `.impeccable/decision/roll.md`.
+- Dev-only preview with synthetic data (no Supabase): `/dev/home?s=morning|caltrate|overdue|afternoon|night|anmum|done[&role=caregiver]`. Review captures: `node scripts/capture-review.mjs` (dev server running).
+- Cloth textures are procedural: `python3 scripts/gen-textures.py`, then re-embed provenance.
+
 ## Run / test / deploy
 ```bash
 npm install

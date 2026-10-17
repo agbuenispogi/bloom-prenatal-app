@@ -1,0 +1,811 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T16:00:13+00:00",
+  "title": "Design System: Bloom",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Oat Paper",
+        "canonical": "#f4ecdf",
+        "oklch": "oklch(94.6% 0.019 80.1)",
+        "tonalRamp": [
+          "#0f0a03",
+          "#272117",
+          "#453f34",
+          "#665f54",
+          "#898276",
+          "#aea79a",
+          "#d4cdc0",
+          "#f5ede0"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Page Rule",
+        "canonical": "#d6c6ad",
+        "oklch": "oklch(83.3% 0.038 79.1)",
+        "tonalRamp": [
+          "#120900",
+          "#2b1f0a",
+          "#4b3d28",
+          "#6c5e48",
+          "#90816a",
+          "#b5a58d",
+          "#dbcbb2",
+          "#fdecd2"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Warm-Brown Ink",
+        "canonical": "#3b2b2a",
+        "oklch": "oklch(30.7% 0.024 22.7)",
+        "tonalRamp": [
+          "#140707",
+          "#2c1d1c",
+          "#4c3b3a",
+          "#6e5b5a",
+          "#917e7c",
+          "#b6a2a1",
+          "#ddc8c6",
+          "#fee9e7"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Faded Ink",
+        "canonical": "#6b5650",
+        "oklch": "oklch(47.3% 0.030 36.5)",
+        "tonalRamp": [
+          "#160704",
+          "#2e1d18",
+          "#4e3a35",
+          "#705b55",
+          "#947d77",
+          "#b9a29b",
+          "#e0c8c0",
+          "#fee9e3"
+        ]
+      },
+      "cloth": {
+        "role": "secondary",
+        "displayName": "Blush Book-Cloth",
+        "canonical": "#ebc0b3",
+        "oklch": "oklch(84.2% 0.053 37.5)",
+        "tonalRamp": [
+          "#1b0300",
+          "#37170e",
+          "#58362b",
+          "#7b564b",
+          "#a0796d",
+          "#c69d90",
+          "#eec3b6",
+          "#ffe9e3"
+        ]
+      },
+      "cloth-ink": {
+        "role": "secondary",
+        "displayName": "Cloth Ink",
+        "canonical": "#3b2226",
+        "oklch": "oklch(28.6% 0.039 9.4)",
+        "tonalRamp": [
+          "#180408",
+          "#32191e",
+          "#52373b",
+          "#75585c",
+          "#997a7e",
+          "#bf9ea2",
+          "#e6c4c8",
+          "#ffe8eb"
+        ]
+      },
+      "cloth-soft": {
+        "role": "secondary",
+        "displayName": "Cloth Soft",
+        "canonical": "#64393f",
+        "oklch": "oklch(39.9% 0.061 11.2)",
+        "tonalRamp": [
+          "#1e0005",
+          "#39131a",
+          "#5c3137",
+          "#7f5258",
+          "#a4747a",
+          "#cb989e",
+          "#f3bec4",
+          "#fee8ea"
+        ]
+      },
+      "cloth-rule": {
+        "role": "secondary",
+        "displayName": "Cloth Rule",
+        "canonical": "#d49f92",
+        "oklch": "oklch(74.9% 0.066 34.2)",
+        "tonalRamp": [
+          "#1d0200",
+          "#3b130a",
+          "#5e3228",
+          "#825247",
+          "#a77569",
+          "#ce998c",
+          "#f6bfb1",
+          "#fee9e4"
+        ]
+      },
+      "cloth-spine": {
+        "role": "secondary",
+        "displayName": "Spine",
+        "canonical": "#dba699",
+        "oklch": "oklch(77.1% 0.066 34.2)",
+        "tonalRamp": [
+          "#1d0200",
+          "#3b130a",
+          "#5d3228",
+          "#815347",
+          "#a77569",
+          "#cd998d",
+          "#f5bfb2",
+          "#fde9e4"
+        ],
+        "night": "#33212a"
+      },
+      "spine-crease": {
+        "role": "secondary",
+        "displayName": "Spine Crease",
+        "canonical": "#b8837a",
+        "oklch": "oklch(66.0% 0.067 29.8)",
+        "tonalRamp": [
+          "#1f0000",
+          "#3c120d",
+          "#5e312a",
+          "#82524a",
+          "#a8746b",
+          "#cf988f",
+          "#f7beb4",
+          "#fee9e5"
+        ],
+        "night": "#241519"
+      },
+      "ribbon": {
+        "role": "primary",
+        "displayName": "Plum-Raspberry Satin",
+        "canonical": "#8c2f55",
+        "oklch": "oklch(45.3% 0.131 358.5)",
+        "tonalRamp": [
+          "#1c010b",
+          "#420321",
+          "#71143f",
+          "#983a5f",
+          "#c05e82",
+          "#e983a7",
+          "#fdb7cd",
+          "#ffe7ee"
+        ]
+      },
+      "ribbon-press": {
+        "role": "primary",
+        "displayName": "Pressed Satin",
+        "canonical": "#74244a",
+        "oklch": "oklch(39.5% 0.119 354.6)",
+        "tonalRamp": [
+          "#1d000d",
+          "#410424",
+          "#6c1c43",
+          "#924064",
+          "#b96387",
+          "#e287ac",
+          "#fcb7d1",
+          "#fee7ef"
+        ]
+      },
+      "ribbon-fill-ink": {
+        "role": "primary",
+        "displayName": "Ribbon Cream",
+        "canonical": "#fff6f2",
+        "oklch": "oklch(97.9% 0.011 45.7)",
+        "tonalRamp": [
+          "#0f0a07",
+          "#26201d",
+          "#453e3b",
+          "#665f5b",
+          "#89817e",
+          "#aea6a2",
+          "#d4ccc8",
+          "#f5ece8"
+        ]
+      },
+      "ribbon-shade": {
+        "role": "primary",
+        "displayName": "Satin Shade",
+        "canonical": "#6a2141",
+        "oklch": "oklch(37.1% 0.109 356.7)",
+        "tonalRamp": [
+          "#1c010c",
+          "#420222",
+          "#6a2141",
+          "#904362",
+          "#b66684",
+          "#df8aa9",
+          "#feb6cf",
+          "#fde8ef"
+        ],
+        "night": "#4f1b30"
+      },
+      "ribbon-sheen": {
+        "role": "primary",
+        "displayName": "Satin Sheen",
+        "canonical": "#a2486f",
+        "oklch": "oklch(52.9% 0.127 355.1)",
+        "tonalRamp": [
+          "#1d000c",
+          "#430024",
+          "#6f1843",
+          "#953c64",
+          "#bd6087",
+          "#e584ab",
+          "#fbb8d0",
+          "#fee8ef"
+        ],
+        "night": "#7d3a55"
+      },
+      "margin": {
+        "role": "neutral",
+        "displayName": "Margin Rule",
+        "canonical": "#e3b7b2",
+        "oklch": "oklch(81.7% 0.052 25.8)",
+        "tonalRamp": [
+          "#1c0202",
+          "#371714",
+          "#583531",
+          "#7b5551",
+          "#a07873",
+          "#c69c97",
+          "#eec1bc",
+          "#ffe9e6"
+        ]
+      },
+      "tab-mint": {
+        "role": "tertiary",
+        "displayName": "Mint Index Tab",
+        "canonical": "#a9d3c0",
+        "oklch": "oklch(83.1% 0.052 165.8)",
+        "tonalRamp": [
+          "#000f08",
+          "#00291c",
+          "#224839",
+          "#436a5a",
+          "#668d7c",
+          "#89b3a0",
+          "#afd9c6",
+          "#cffae6"
+        ],
+        "night": "#5e8576"
+      },
+      "tab-sky": {
+        "role": "tertiary",
+        "displayName": "Sky Index Tab",
+        "canonical": "#afc8e4",
+        "oklch": "oklch(82.3% 0.048 251.4)",
+        "tonalRamp": [
+          "#000b1c",
+          "#0f2338",
+          "#2c4158",
+          "#4c637b",
+          "#6e86a0",
+          "#92aac6",
+          "#b7d1ed",
+          "#e4f0fe"
+        ],
+        "night": "#607a96"
+      },
+      "tab-clay": {
+        "role": "tertiary",
+        "displayName": "Clay Index Tab",
+        "canonical": "#d49a7e",
+        "oklch": "oklch(73.5% 0.080 46.8)",
+        "tonalRamp": [
+          "#190500",
+          "#3a1602",
+          "#613016",
+          "#865137",
+          "#ab7459",
+          "#d2987c",
+          "#fbbea1",
+          "#feeae1"
+        ],
+        "night": "#8f604c"
+      },
+      "tab-blush": {
+        "role": "tertiary",
+        "displayName": "Blush Index Tab",
+        "canonical": "#edb7c0",
+        "oklch": "oklch(83.1% 0.063 7.4)",
+        "tonalRamp": [
+          "#1d0107",
+          "#3a121c",
+          "#5c313a",
+          "#80515a",
+          "#a5737c",
+          "#cc98a0",
+          "#f4bdc6",
+          "#fee8eb"
+        ],
+        "night": "#9a6873"
+      },
+      "tab-oat": {
+        "role": "tertiary",
+        "displayName": "Oat Index Tab (fallback)",
+        "canonical": "#d8c7a8",
+        "oklch": "oklch(83.6% 0.046 82.6)",
+        "tonalRamp": [
+          "#110a00",
+          "#2c1f04",
+          "#4c3d23",
+          "#6d5e42",
+          "#918164",
+          "#b6a687",
+          "#ddccac",
+          "#feeccc"
+        ],
+        "night": "#7d6f58"
+      },
+      "selection": {
+        "role": "neutral",
+        "displayName": "Selection Blush",
+        "canonical": "#e9c3cf",
+        "oklch": "oklch(85.3% 0.046 357.2)",
+        "tonalRamp": [
+          "#19030b",
+          "#331822",
+          "#543540",
+          "#765661",
+          "#9b7883",
+          "#c19ca8",
+          "#e8c2ce",
+          "#ffe7ef"
+        ],
+        "night": "#5a3a48"
+      },
+      "night-paper": {
+        "role": "neutral",
+        "displayName": "Night Oat Paper",
+        "canonical": "#1c1719",
+        "oklch": "oklch(21.1% 0.009 351.8)",
+        "tonalRamp": [
+          "#0e0a0c",
+          "#252022",
+          "#443e40",
+          "#655e61",
+          "#888184",
+          "#aca5a8",
+          "#d3cbce",
+          "#f4ecef"
+        ]
+      },
+      "night-rule": {
+        "role": "neutral",
+        "displayName": "Night Page Rule",
+        "canonical": "#3d3235",
+        "oklch": "oklch(33.0% 0.017 359.8)",
+        "tonalRamp": [
+          "#11080b",
+          "#291e21",
+          "#483c3f",
+          "#695d60",
+          "#8c7f83",
+          "#b1a4a7",
+          "#d8c9cd",
+          "#f9eaee"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Warm-Brown Ink",
+        "canonical": "#e6dacc",
+        "oklch": "oklch(89.4% 0.023 71.8)",
+        "tonalRamp": [
+          "#110902",
+          "#292015",
+          "#483e33",
+          "#695f52",
+          "#8c8174",
+          "#b1a698",
+          "#d8ccbe",
+          "#f9ecde"
+        ]
+      },
+      "night-ink-soft": {
+        "role": "neutral",
+        "displayName": "Night Faded Ink",
+        "canonical": "#b3a398",
+        "oklch": "oklch(72.6% 0.024 56.8)",
+        "tonalRamp": [
+          "#130803",
+          "#2b1f16",
+          "#4a3d33",
+          "#6c5d53",
+          "#8f8075",
+          "#b4a499",
+          "#dbcabf",
+          "#fcebdf"
+        ]
+      },
+      "night-cloth": {
+        "role": "secondary",
+        "displayName": "Night Blush Book-Cloth",
+        "canonical": "#3e262d",
+        "oklch": "oklch(30.1% 0.038 0.6)",
+        "tonalRamp": [
+          "#17040a",
+          "#301a21",
+          "#51373f",
+          "#73585f",
+          "#977a82",
+          "#bd9ea6",
+          "#e4c4cc",
+          "#fee8ed"
+        ]
+      },
+      "night-cloth-ink": {
+        "role": "secondary",
+        "displayName": "Night Cloth Ink",
+        "canonical": "#f1ddd8",
+        "oklch": "oklch(91.2% 0.023 34.3)",
+        "tonalRamp": [
+          "#140805",
+          "#2c1e1a",
+          "#4b3c38",
+          "#6d5c58",
+          "#907f7a",
+          "#b6a39e",
+          "#dcc9c4",
+          "#fee9e4"
+        ]
+      },
+      "night-cloth-soft": {
+        "role": "secondary",
+        "displayName": "Night Cloth Soft",
+        "canonical": "#d2b4b4",
+        "oklch": "oklch(79.6% 0.035 17.9)",
+        "tonalRamp": [
+          "#170506",
+          "#301b1b",
+          "#513839",
+          "#735959",
+          "#977b7b",
+          "#bd9f9f",
+          "#e4c5c5",
+          "#fee9e9"
+        ]
+      },
+      "night-cloth-rule": {
+        "role": "secondary",
+        "displayName": "Night Cloth Rule",
+        "canonical": "#5a3a42",
+        "oklch": "oklch(38.8% 0.047 3.1)",
+        "tonalRamp": [
+          "#1a0309",
+          "#34171f",
+          "#55353d",
+          "#78555e",
+          "#9c7880",
+          "#c29ca5",
+          "#eac2cb",
+          "#fee8ed"
+        ]
+      },
+      "night-ribbon": {
+        "role": "primary",
+        "displayName": "Night Satin Pink",
+        "canonical": "#d9799a",
+        "oklch": "oklch(69.1% 0.125 358.9)",
+        "tonalRamp": [
+          "#1d000b",
+          "#430021",
+          "#6f183e",
+          "#963d5f",
+          "#be6082",
+          "#e685a6",
+          "#fbb8cd",
+          "#fee8ee"
+        ]
+      },
+      "night-ribbon-fill": {
+        "role": "primary",
+        "displayName": "Night Satin",
+        "canonical": "#6e2843",
+        "oklch": "oklch(38.8% 0.103 359.1)",
+        "tonalRamp": [
+          "#1d000a",
+          "#410521",
+          "#69233e",
+          "#8e455f",
+          "#b56882",
+          "#dd8ca6",
+          "#fcb7cc",
+          "#ffe8ee"
+        ]
+      },
+      "night-ribbon-fill-ink": {
+        "role": "primary",
+        "displayName": "Night Ribbon Cream",
+        "canonical": "#ebd9cf",
+        "oklch": "oklch(89.7% 0.024 51.1)",
+        "tonalRamp": [
+          "#130803",
+          "#2b1e17",
+          "#4b3c34",
+          "#6c5d54",
+          "#907f76",
+          "#b5a49a",
+          "#dbcac0",
+          "#fdeae0"
+        ]
+      },
+      "night-ribbon-press": {
+        "role": "primary",
+        "displayName": "Night Pressed Satin",
+        "canonical": "#5e2139",
+        "oklch": "oklch(34.7% 0.093 358.6)",
+        "tonalRamp": [
+          "#1d000b",
+          "#410521",
+          "#65273f",
+          "#8a4860",
+          "#b06b82",
+          "#d88fa7",
+          "#fcb7cd",
+          "#fee8ee"
+        ]
+      },
+      "night-margin": {
+        "role": "neutral",
+        "displayName": "Night Margin Rule",
+        "canonical": "#4a3036",
+        "oklch": "oklch(34.2% 0.039 4.2)",
+        "tonalRamp": [
+          "#180409",
+          "#31191f",
+          "#52373d",
+          "#74575e",
+          "#987a80",
+          "#be9ea5",
+          "#e5c4cb",
+          "#ffe8ec"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Monumental Time",
+        "purpose": "The next-dose time in the Next up entry; AM/PM suffix at 1.75rem."
+      },
+      "headline": {
+        "displayName": "Entry Headline",
+        "purpose": "Medicine or action name in Next up, balanced wrap."
+      },
+      "title": {
+        "displayName": "Page Date",
+        "purpose": "The date at the top of the day page."
+      },
+      "section": {
+        "displayName": "Section Heading",
+        "purpose": "Today and other page sections; meal names use the serif at 1.125rem."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base text, row titles (500 for medicine names)."
+      },
+      "label": {
+        "displayName": "Tabular Label",
+        "purpose": "Times, notes, counts, ribbon text; tabular lining numerals."
+      },
+      "action": {
+        "displayName": "Primary Action",
+        "purpose": "Label of the satin primary action."
+      }
+    },
+    "shadows": [],
+    "materials": [
+      {
+        "name": "book-cloth",
+        "value": "background: var(--cloth) url(/textures/cloth-day.png | cloth-night.png); background-size: 192px 192px",
+        "purpose": "Next up entry ground. Procedural plain-weave tiles from scripts/gen-textures.py (384px, 2x), provenance in the PNG text chunk."
+      },
+      {
+        "name": "spine",
+        "value": "linear-gradient(to right, rgb(255 255 255 / 0.1), transparent 35%, rgb(0 0 0 / 0.08) 70%, rgb(0 0 0 / 0.16) 92%, var(--spine-crease) 92%) over var(--cloth-spine)",
+        "purpose": "16px folded spine on the entry's left edge."
+      },
+      {
+        "name": "satin",
+        "value": "vertical gradient: ribbon-shade 0, ribbon-fill 0.22, ribbon-sheen 0.36, ribbon-fill 0.58 to 0.86, ribbon-shade 1",
+        "purpose": "The ribbon bookmark band and swallowtail."
+      },
+      {
+        "name": "hairline-ring",
+        "value": "1px ring var(--cloth-rule)",
+        "purpose": "Edge of the cloth entry, in place of a shadow."
+      },
+      {
+        "name": "ink-veil",
+        "value": "var(--cloth) at 85%",
+        "purpose": "Covers the entry while the inked check draws."
+      }
+    ],
+    "focus": {
+      "value": "outline: 2.5px solid var(--ribbon); outline-offset: 3px; border-radius: 6px",
+      "purpose": "Every focusable element."
+    },
+    "motion": [
+      {
+        "name": "ease-out-soft",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All entrance and ink motion."
+      },
+      {
+        "name": "ink-draw",
+        "value": "700ms ease-out-soft, stroke-dashoffset from path length to 0",
+        "purpose": "The hand-drawn check on Done."
+      },
+      {
+        "name": "ink-hold",
+        "value": "750ms",
+        "purpose": "How long the inked entry stays before the next item settles in."
+      },
+      {
+        "name": "settle-in",
+        "value": "420ms ease-out-soft, from opacity 0.55 and translateY(6px)",
+        "purpose": "Entry arrival; never from zero opacity."
+      },
+      {
+        "name": "press",
+        "value": "150ms background-color and transform, scale(0.985)",
+        "purpose": "Primary action press."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation and transition durations 1ms",
+        "purpose": "Full respect for prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "Gutter grows to 24px."
+      },
+      {
+        "name": "md",
+        "value": "768px",
+        "purpose": "Two columns: sticky Next up (max 26rem) and Today, 40px gap, 1120px container."
+      }
+    ],
+    "openItems": [
+      "No paper tooth on the day page yet.",
+      "Medicine swatches are flat rounded pills, not cloth index tabs.",
+      "No desktop journal spread; desktop is two columns on one page.",
+      "Atkinson Hyperlegible Next's slashed zeros show in small numerals."
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action (Done)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one satin action per entry: full width, 64px, in the thumb zone.",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg> Done</button>",
+      "css": ".ds-btn-primary { display: flex; width: 100%; min-height: 64px; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 10px; background: var(--ribbon-fill, #8c2f55); color: var(--ribbon-fill-ink, #fff6f2); padding: 0 24px; font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1.1875rem; font-weight: 600; transition: background-color 150ms, transform 150ms; cursor: pointer; } .ds-btn-primary:active { background: var(--ribbon-press, #74244a); transform: scale(0.985); } .ds-btn-primary:disabled { opacity: 0.7; } .ds-btn-primary:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
+    },
+    {
+      "name": "Quiet Action (Snooze / Skip)",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary actions on cloth: hairline cloth-rule border over a light cloth tint.",
+      "html": "<div class=\"ds-quiet-row\"><button type=\"button\" class=\"ds-btn-quiet\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2 2\"/><path d=\"M5 3 2 6\"/><path d=\"m22 6-3-3\"/><path d=\"M6.38 18.7 4 21\"/><path d=\"M17.64 18.67 20 21\"/></svg> Snooze</button><button type=\"button\" class=\"ds-btn-quiet\" aria-pressed=\"true\">Skip</button></div>",
+      "css": ".ds-quiet-row { display: flex; gap: 12px; padding: 16px; background: var(--cloth, #ebc0b3); } .ds-btn-quiet { flex: 1; display: flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--cloth-rule, #d49f92); border-radius: 8px; background: rgb(235 192 179 / 0.4); color: var(--cloth-ink, #3b2226); padding: 0 16px; font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1rem; font-weight: 500; transition: background-color 150ms; cursor: pointer; } .ds-btn-quiet[aria-pressed=true] { background: rgb(59 34 38 / 0.1); } .ds-btn-quiet:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
+    },
+    {
+      "name": "Reason Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Optional skip reason on the cloth entry, label stacked above.",
+      "html": "<div class=\"ds-field-wrap\"><label class=\"ds-field-label\">Reason (optional)<input class=\"ds-field\" placeholder=\"e.g. felt nauseous\" /></label></div>",
+      "css": ".ds-field-wrap { padding: 16px; background: var(--cloth, #ebc0b3); } .ds-field-label { display: flex; flex-direction: column; gap: 6px; color: var(--cloth-soft, #64393f); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1rem; } .ds-field { min-height: 48px; border: 1px solid var(--cloth-rule, #d49f92); border-radius: 12px; background: rgb(244 236 223 / 0.6); color: var(--ink, #3b2b2a); padding: 0 16px; font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1rem; caret-color: var(--ribbon, #8c2f55); } .ds-field::placeholder { color: var(--ink-soft, #6b5650); } .ds-field:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
+    },
+    {
+      "name": "Next Up Entry",
+      "kind": "card",
+      "refersTo": "next-up-entry",
+      "description": "The single next action on blush book-cloth with a folded spine and the monumental serif time.",
+      "html": "<section class=\"ds-entry\"><span class=\"ds-entry-spine\" aria-hidden=\"true\"></span><div class=\"ds-entry-head\"><span class=\"ds-tab\" style=\"background:#afc8e4\"></span><div><p class=\"ds-entry-title\">Caltrate</p><p class=\"ds-entry-sub\">after lunch · 1 tablet</p></div></div><p class=\"ds-entry-time\">12:42<span>PM</span></p><p class=\"ds-entry-sub ds-tnum\">in 11 min</p><button type=\"button\" class=\"ds-btn-primary\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg> Done</button></section>",
+      "css": ".ds-entry { position: relative; overflow: hidden; display: flex; flex-direction: column; border-radius: 6px; padding: 24px 24px 24px 36px; background: var(--cloth, #ebc0b3) var(--cloth-texture, none); background-size: 192px 192px; color: var(--cloth-ink, #3b2226); box-shadow: inset 0 0 0 1px var(--cloth-rule, #d49f92); max-width: 26rem; } .ds-entry-spine { position: absolute; inset: 0 auto 0 0; width: 16px; background-color: var(--cloth-spine, #dba699); background-image: linear-gradient(to right, rgb(255 255 255 / 0.1), transparent 35%, rgb(0 0 0 / 0.08) 70%, rgb(0 0 0 / 0.16) 92%, var(--spine-crease, #b8837a) 92%); } .ds-entry-head { display: flex; gap: 12px; align-items: flex-start; } .ds-tab { display: inline-block; width: 10px; height: 24px; margin-top: 8px; border-radius: 3px; flex-shrink: 0; } .ds-entry-title { margin: 0; font-family: var(--font-display, 'Young Serif'), Georgia, serif; font-size: 2.125rem; line-height: 1.1; letter-spacing: -0.01em; } .ds-entry-sub { margin: 6px 0 0; color: var(--cloth-soft, #64393f); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1.0625rem; } .ds-tnum { font-variant-numeric: tabular-nums lining-nums; } .ds-entry-time { margin: 24px 0 0; font-family: var(--font-display, 'Young Serif'), Georgia, serif; font-size: 4.25rem; line-height: 1; letter-spacing: -0.02em; } .ds-entry-time span { margin-left: 8px; font-size: 1.75rem; letter-spacing: normal; } .ds-entry .ds-btn-primary { margin-top: 28px; display: flex; width: 100%; min-height: 64px; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 10px; background: var(--ribbon-fill, #8c2f55); color: var(--ribbon-fill-ink, #fff6f2); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1.1875rem; font-weight: 600; transition: background-color 150ms, transform 150ms; } .ds-entry .ds-btn-primary:active { background: var(--ribbon-press, #74244a); transform: scale(0.985); } .ds-entry .ds-btn-primary:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
+    },
+    {
+      "name": "Ribbon Bookmark",
+      "kind": "custom",
+      "refersTo": "ribbon-bookmark",
+      "description": "The satin band marking now between Today's rows; swallowtail at the page edge, runs off the other edge.",
+      "html": "<div class=\"ds-ribbon-page\"><div class=\"ds-ribbon\"><svg class=\"ds-ribbon-end\" width=\"20\" height=\"32\" viewBox=\"0 0 20 32\" aria-hidden=\"true\"><defs><linearGradient id=\"ds-satin\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"var(--ribbon-shade, #6a2141)\"/><stop offset=\"0.22\" stop-color=\"var(--ribbon-fill, #8c2f55)\"/><stop offset=\"0.36\" stop-color=\"var(--ribbon-sheen, #a2486f)\"/><stop offset=\"0.58\" stop-color=\"var(--ribbon-fill, #8c2f55)\"/><stop offset=\"0.86\" stop-color=\"var(--ribbon-fill, #8c2f55)\"/><stop offset=\"1\" stop-color=\"var(--ribbon-shade, #6a2141)\"/></linearGradient></defs><path d=\"M0 4h20v24H0l9-12z\" fill=\"url(#ds-satin)\"/></svg><svg class=\"ds-ribbon-band\" viewBox=\"0 0 100 32\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><rect x=\"0\" y=\"4\" width=\"100\" height=\"24\" fill=\"url(#ds-satin)\"/></svg><span class=\"ds-ribbon-label\">Now · 12:31 PM</span></div></div>",
+      "css": ".ds-ribbon-page { overflow: hidden; background: var(--paper, #f4ecdf); padding: 16px 0; } .ds-ribbon { position: relative; height: 32px; } .ds-ribbon-end { position: absolute; top: 0; left: 0; width: 20px; height: 32px; } .ds-ribbon-band { position: absolute; top: 0; left: 20px; width: 100%; height: 32px; } .ds-ribbon-label { position: relative; display: flex; height: 100%; align-items: center; padding-left: 32px; color: var(--ribbon-fill-ink, #fff6f2); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 0.9375rem; font-weight: 600; letter-spacing: 0.01em; font-variant-numeric: tabular-nums lining-nums; }"
+    },
+    {
+      "name": "Timeline Row",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Today's line: right-aligned tabular time, a drawn state mark on the margin rule, the entry with its index tab and state word.",
+      "html": "<ol class=\"ds-rows\"><li class=\"ds-row\"><span class=\"ds-row-time\">11:10 AM</span><span class=\"ds-row-mark\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-hidden=\"true\"><path d=\"M2.5 12.6c2 1.3 3.7 3.1 5 5.4.5.8.9.8 1.4 0C11.8 12 15.4 7.2 20 3.6\" fill=\"none\" stroke=\"var(--ink, #3b2b2a)\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><div><p class=\"ds-row-title\"><span class=\"ds-row-tab\" style=\"background:#a9d3c0\"></span>Gaviscon</p><p class=\"ds-row-note\">before lunch</p></div></li><li class=\"ds-row\"><span class=\"ds-row-time ds-est\">~4:30 PM</span><span class=\"ds-row-mark\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"9.25\" fill=\"none\" stroke=\"var(--ink-soft, #6b5650)\" stroke-width=\"1.5\" stroke-dasharray=\"3.2 2.6\"/></svg></span><div><p class=\"ds-row-title\"><span class=\"ds-row-tab\" style=\"background:#a9d3c0\"></span>Gaviscon</p><p class=\"ds-row-note\">before dinner · Coming up</p></div></li></ol>",
+      "css": ".ds-rows { position: relative; list-style: none; margin: 0; padding: 0 20px; background: var(--paper, #f4ecdf); color: var(--ink, #3b2b2a); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; } .ds-row { display: grid; grid-template-columns: 4.5rem 22px 1fr; column-gap: 14px; padding: 12px 0; border-bottom: 1px solid rgb(214 198 173 / 0.7); } .ds-row-time { padding-top: 2px; text-align: right; font-size: 0.9375rem; font-variant-numeric: tabular-nums lining-nums; } .ds-est { color: var(--ink-soft, #6b5650); } .ds-row-mark { padding-top: 2px; background: var(--paper, #f4ecdf); } .ds-row-title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.0625rem; font-weight: 500; line-height: 1.375; } .ds-row-tab { display: inline-block; width: 8px; height: 16px; border-radius: 3px; } .ds-row-note { margin: 0; font-size: 0.9375rem; color: var(--ink-soft, #6b5650); }"
+    },
+    {
+      "name": "Servings Strip",
+      "kind": "card",
+      "refersTo": "servings-strip",
+      "description": "Any-time items with a daily range and a one-tap add.",
+      "html": "<div class=\"ds-strip\"><span class=\"ds-strip-tab\"></span><div class=\"ds-strip-body\"><p class=\"ds-strip-name\">Anmum Materna</p><p class=\"ds-strip-count\">1 of 1–2 today · By 9:00 PM</p></div><button type=\"button\" class=\"ds-strip-btn\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg> Had a glass</button></div>",
+      "css": ".ds-strip { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--rule, #d6c6ad); border-radius: 16px; background: var(--paper, #f4ecdf); color: var(--ink, #3b2b2a); font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; } .ds-strip-tab { width: 10px; height: 24px; border-radius: 3px; background: var(--tab-blush, #edb7c0); flex-shrink: 0; } .ds-strip-body { flex: 1; min-width: 0; } .ds-strip-name { margin: 0; font-weight: 500; } .ds-strip-count { margin: 0; font-size: 0.9375rem; color: var(--ink-soft, #6b5650); font-variant-numeric: tabular-nums lining-nums; } .ds-strip-btn { display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 14px; border: 1px solid var(--rule, #d6c6ad); border-radius: 12px; background: transparent; color: inherit; font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1rem; font-weight: 500; white-space: nowrap; cursor: pointer; } .ds-strip-btn:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
+    },
+    {
+      "name": "Page Header",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Serif date, pregnancy week in faded ink, and a 48px settings target.",
+      "html": "<header class=\"ds-header\"><div><h1 class=\"ds-header-date\">Tuesday, 20 October</h1><p class=\"ds-header-week\">Week 24 · day 4</p></div><a href=\"#\" class=\"ds-header-settings\" aria-label=\"Settings\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 7h-9\"/><path d=\"M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/></svg></a></header>",
+      "css": ".ds-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 20px 16px; background: var(--paper, #f4ecdf); color: var(--ink, #3b2b2a); } .ds-header-date { margin: 0; font-family: var(--font-display, 'Young Serif'), Georgia, serif; font-weight: 400; font-size: 1.75rem; line-height: 1.25; } .ds-header-week { margin: 0; font-family: var(--font-ui, 'Atkinson Hyperlegible Next'), system-ui, sans-serif; font-size: 1rem; color: var(--ink-soft, #6b5650); } .ds-header-settings { display: flex; width: 48px; height: 48px; margin-right: -8px; align-items: center; justify-content: center; border-radius: 9999px; color: var(--ink-soft, #6b5650); } .ds-header-settings:focus-visible { outline: 2.5px solid var(--ribbon, #8c2f55); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Keepsake Pregnancy Journal",
+    "overview": "Each care day is a page in her keepsake journal, filled in as she goes. Day pages are warm oat paper with brown ink; night pages are a deep plum-brown cover with dimmed oat ink. The one thing to do now is set on a blush book-cloth entry with a folded spine, and a single plum-raspberry satin ribbon is the only confident accent: it fills the Done action, rings what is due, and lies across Today's lines as the \"now\" bookmark.\n\nThe system is made of book materials rather than app chrome. Depth comes from hairline rules, the woven cloth texture and the shading inside the materials themselves (the spine's fold, the ribbon's satin sheen), never from drop shadows. State is carried by form so it reads without colour: an inked check, a dashed ring, a ringed dot, a struck line, a hollow ring with its word. Times sit right-aligned in tabular numerals; headings are set in a handset serif.\n\nDensity is calm and one-handed: one entry fills the first viewport on a phone, targets are 48px and up, and motion is slow and small (an ink stroke drawing in, an entry settling 6px). The light and dark pages follow the device and are both first-class; the night page never uses black or white blocks.",
+    "keyCharacteristics": [
+      "Oat paper and warm-brown ink by day; plum-brown cover and dimmed oat ink by night.",
+      "One blush book-cloth entry with a folded spine holds the next action.",
+      "One satin ribbon accent: Done, due, the \"now\" bookmark, focus, warnings' icon.",
+      "State by form, not colour alone.",
+      "Hairlines and material shading instead of shadows.",
+      "Young Serif for headings and the monumental time; Atkinson Hyperlegible Next for UI."
+    ],
+    "rules": [
+      {
+        "name": "The One Ribbon Rule",
+        "body": "The satin is the only saturated colour on the page. It marks what to do now (Done, due, the \"now\" bookmark) and things she should notice (reminder line, error, warning icon); nothing decorative is satin.",
+        "section": "colors"
+      },
+      {
+        "name": "The Night Cover Rule",
+        "body": "Night pages are plum-brown (night-paper), never black, and nothing is pure white. Every token has a night value; the night accent splits into a lighter stroke tone and a darker fill tone.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Time Rule",
+        "body": "Every UI-face number that can change or line up (times, countdowns, counts, snooze minutes) uses tabular lining numerals; timeline times are right-aligned in a fixed 4.5rem column.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Serif for things on the page (date, names, meals, the big time); sans for anything she taps or scans as data. Never set an action in the serif.",
+        "section": "typography"
+      },
+      {
+        "name": "The Material Depth Rule",
+        "body": "Depth is drawn as the material would actually shade (a fold, a satin sheen, a weave), never as a box-shadow that lifts a card off the page.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** give every surface a night value from the night-* tokens and check it on the plum-brown page; the night accent fill is night-ribbon-fill, its strokes and text night-ribbon.",
+      "**Do** keep one satin primary action per entry, full width, 64px tall, in the thumb zone.",
+      "**Do** carry state by form plus a word (check, dashed, ringed, dotted, struck, hollow), never by colour alone.",
+      "**Do** set times and counts in tabular lining numerals and right-align timeline times in the 4.5rem column.",
+      "**Do** keep targets at 48px or larger and motion slow and small: 700ms ink draw, 420ms settle from 55% opacity and 6px, the soft ease-out cubic-bezier(0.16, 1, 0.3, 1), all collapsed under reduced motion.",
+      "**Do** write margin notes and late states kindly and plainly, in faded ink with a hairline, not in alert boxes."
+    ],
+    "donts": [
+      "**Don't** use drop shadows to lift cards; use hairlines, the cloth weave, or shading drawn inside the material.",
+      "**Don't** introduce a second saturated accent or use satin decoratively.",
+      "**Don't** use pure black or pure white surfaces, on day or night pages.",
+      "**Don't** use bounce, spin, parallax or large movement, and never animate content in from zero opacity.",
+      "**Don't** use a medicine's index-tab colour to signal its state."
+    ]
+  }
+}

@@ -91,6 +91,8 @@ function mealState(ctx: Ctx, log: MealLog | undefined, target: Date, skipped: bo
   if (log?.eatenAt) return "done";
   if (skipped) return "skipped";
   if (ctx.dayOver || passed) return "missed";
+  // A meal is only "due" once she's said when; a suggested window is still just coming up.
+  if (!log?.plannedAt) return "upcoming";
   return target <= ctx.now ? "due" : "upcoming";
 }
 

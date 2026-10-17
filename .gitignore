@@ -23,3 +23,8 @@ next-env.d.ts
 # Supabase CLI scratch
 supabase/.temp/
 supabase/.branches/
+
+# Impeccable working files (review captures, question logs, hook cache)
+.impeccable/review/
+.impeccable/questions/
+.impeccable/hook.cache.json

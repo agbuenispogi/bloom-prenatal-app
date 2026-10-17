@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireMember } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { signOut } from "@/app/(auth)/actions";
 import { InviteForm } from "./invite-form";
 
 export const metadata = { title: "Household · Bloom" };
@@ -39,6 +40,10 @@ export default async function HouseholdSettingsPage({ searchParams }: PageProps<
           <InviteForm defaultRole={hasPatient ? "caregiver" : "patient"} />
         </section>
       )}
+
+      <form action={signOut}>
+        <button type="submit" className="min-h-12 rounded-xl px-1 underline">Sign out</button>
+      </form>
     </main>
   );
 }
