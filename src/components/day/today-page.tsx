@@ -9,8 +9,8 @@ function Row({ row }: { row: TimelineRow }) {
   const quiet = row.state === "skipped" || row.state === "missed";
   const late = row.lateByMin && row.targetLabel ? `${row.lateByMin} min late (planned ${row.targetLabel})` : null;
   return (
-    <li className="grid grid-cols-[4.5rem_22px_1fr] gap-x-3.5 py-3">
-      <span className={`tnum pt-0.5 text-right text-[0.9375rem] ${row.estimated ? "text-ink-soft" : "text-ink"}`}>
+    <li className="grid grid-cols-[5.25rem_22px_1fr] gap-x-3.5 py-3">
+      <span className={`tnum pt-0.5 text-right text-[0.9375rem] whitespace-nowrap ${row.estimated ? "text-ink-soft" : "text-ink"}`}>
         {row.timeLabel ? (row.estimated ? `~${row.timeLabel}` : row.timeLabel) : "Any time"}
       </span>
       <span className="relative z-10 bg-paper pt-0.5">
@@ -64,7 +64,7 @@ export function TodayPage({
       {children ? <div className="mb-3">{children}</div> : null}
       <ol className="relative divide-y divide-rule/70">
         {/* The journal's margin rule, running down the page between the times and the entries. */}
-        <span aria-hidden className="absolute inset-y-0 left-[calc(4.5rem+0.875rem+10px)] w-px bg-margin" />
+        <span aria-hidden className="absolute inset-y-0 left-[calc(5.25rem+0.875rem+10px)] w-px bg-margin" />
         {rows.map((row) => (
           <Fragment key={row.key}>
             {nowLabel && ribbonBefore === row.key ? <Ribbon label={nowLabel} /> : null}

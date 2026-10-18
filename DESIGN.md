@@ -250,7 +250,7 @@ A warm, low-glare paper-and-cloth palette with a single deep satin accent, mirro
 - **Action** (600, 1.1875rem): the primary action label; quiet actions use 1rem at 500.
 
 ### Named Rules
-**The Tabular Time Rule.** Every UI-face number that can change or line up (times, countdowns, counts, snooze minutes) uses tabular lining numerals; timeline times are right-aligned in a fixed 4.5rem column.
+**The Tabular Time Rule.** Every UI-face number that can change or line up (times, countdowns, counts, snooze minutes) uses tabular lining numerals; timeline times are right-aligned in a fixed 5.25rem column.
 
 **The Two Voices Rule.** Serif for things on the page (date, names, meals, the big time); sans for anything she taps or scans as data. Never set an action in the serif.
 
@@ -260,7 +260,7 @@ Mobile-first at 390px, one-handed. The page has a 20px gutter (24px from 640px).
 
 From 768px the page becomes two columns inside a 1120px container: Next up at up to 26rem, sticky 24px from the top, and Today in the remaining width, with a 40px column gap. The entry then sizes to its content.
 
-Today is a three-column grid: a 4.5rem right-aligned time column, a 22px state-mark column, and the entry, with 14px between them and 12px of vertical padding per row. The margin rule runs down through the mark column; each mark sits on a paper cut-out so the rule passes behind it. Stacks of controls use 12px gaps. The header respects the safe-area insets.
+Today is a three-column grid: a 5.25rem right-aligned time column, a 22px state-mark column, and the entry, with 14px between them and 12px of vertical padding per row. The margin rule runs down through the mark column; each mark sits on a paper cut-out so the rule passes behind it. Stacks of controls use 12px gaps. The header respects the safe-area insets.
 
 Each section keeps its own page column: Home 1120px, History 720px, Settings 640px, Onboarding 448px, all with the same 20px/24px gutter and a 1.25rem (or safe-area) top. On a phone the page reserves 4rem plus the bottom safe-area inset for the tab bar; from 768px that reserve drops and navigation moves into the page's top-right corner, aligned to that section's column edge.
 
@@ -352,7 +352,7 @@ Procedural, drawn from the materials: a blush book-cloth journal with a satin sw
 - **Do** give every surface a night value from the night-* tokens and check it on the plum-brown page; the night accent fill is night-ribbon-fill, its strokes and text night-ribbon.
 - **Do** keep one satin primary action per entry, full width, 64px tall, in the thumb zone.
 - **Do** carry state by form plus a word (check, dashed, ringed, dotted, struck, hollow), never by colour alone.
-- **Do** set times and counts in tabular lining numerals and right-align timeline times in the 4.5rem column.
+- **Do** set times and counts in tabular lining numerals and right-align timeline times in the 5.25rem column.
 - **Do** keep targets at 48px or larger and motion slow and small: 700ms ink draw, 420ms settle from 55% opacity and 6px, the soft ease-out cubic-bezier(0.16, 1, 0.3, 1), all collapsed under reduced motion.
 - **Do** write margin notes and late states kindly and plainly, in faded ink with a hairline, not in alert boxes.
 

@@ -84,6 +84,9 @@ export interface HomeView {
   meals: { meal: MainMeal; eaten: boolean; eatenLabel: string | null; planned: boolean; skipped: boolean; preMealOpen: boolean; leadMin: number }[];
 }
 
+// Minimum gap between suggested meals (no "~10 AM lunch" right after a 9:38 breakfast).
+const MEAL_GAP_MIN = 180;
+
 const TABS: ReadonlySet<string> = new Set(["mint", "sky", "clay", "blush", "oat"]);
 const tabOf = (color: string): Tab => (TABS.has(color) ? (color as Tab) : "oat");
 
@@ -154,20 +157,44 @@ export function toHomeView(
       });
     }
   }
-  // Suggested (estimated) times that have already slipped by are re-anchored to now, so the page never shows
-  // "~6:30 AM · Coming up" at 9 AM. A pre-meal dose leads its meal by the rule's offset.
+  // Suggested (estimated) meal times are chained so the page reads in a sensible order:
+  //  - a suggestion that has already slipped by moves to now (+ the pre-meal lead), never "~6:30 AM" at 9 AM;
+  //  - a later meal is never suggested before an earlier one: at least MEAL_GAP_MIN after it;
+  //  - estimated doses tied to a meal move with it (pre-meal = meal - lead, after-meal = meal + offset).
+  // These are only display estimates: no reminders are planned for estimated times.
   const open = (r: TimelineRow) => r.state === "due" || r.state === "upcoming" || r.state === "snoozed";
+  const doseByKey = new Map(schedule.timeline.filter((i): i is DoseItem => i.kind === "dose").map((d) => [d.key, d]));
   const leadFor = new Map<string, number>();
-  for (const i of schedule.timeline) {
-    if (i.kind === "dose" && i.rule.ruleType === "before_meal" && i.rule.anchor && (i.state === "upcoming" || i.state === "due")) {
-      leadFor.set(`meal:${i.rule.anchor}`, Math.abs(i.rule.offsetMin));
-    }
+  for (const d of doseByKey.values()) {
+    if (d.rule.ruleType === "before_meal" && d.rule.anchor && (d.state === "upcoming" || d.state === "due")) leadFor.set(d.rule.anchor, Math.abs(d.rule.offsetMin));
   }
-  for (const r of rows) {
-    if (!open(r) || !r.estimated || !r.at || new Date(r.at) >= now) continue;
-    const t = new Date(now.getTime() + (leadFor.get(r.key) ?? 0) * 60_000);
+  const setTime = (r: TimelineRow, t: Date) => {
     r.at = t.toISOString();
     r.timeLabel = clock(t);
+  };
+  const mealAt = new Map<string, Date>();
+  let prev: Date | null = null;
+  for (const meal of ["breakfast", "lunch", "dinner"] as const) {
+    const r = rows.find((x) => x.key === `meal:${meal}`);
+    if (!r || !r.at) continue;
+    let t = new Date(r.at);
+    if (r.estimated && open(r)) {
+      if (t < now) t = new Date(now.getTime() + (leadFor.get(meal) ?? 0) * 60_000);
+      if (prev && t.getTime() < prev.getTime() + MEAL_GAP_MIN * 60_000) t = new Date(prev.getTime() + MEAL_GAP_MIN * 60_000);
+      setTime(r, t);
+    }
+    mealAt.set(meal, t);
+    if (r.state !== "skipped" && r.state !== "missed") prev = t;
+  }
+  for (const r of rows) {
+    if (r.kind !== "dose" || !open(r) || !r.estimated || !r.at) continue;
+    const d = doseByKey.get(r.key);
+    const anchorAt = d?.rule.anchor ? mealAt.get(d.rule.anchor) : undefined;
+    if (d && anchorAt && (d.rule.ruleType === "before_meal" || d.rule.ruleType === "after_meal")) {
+      setTime(r, new Date(anchorAt.getTime() + d.rule.offsetMin * 60_000));
+    } else if (new Date(r.at) < now) {
+      setTime(r, now);
+    }
   }
   rows.sort((a, b) => (a.at ? new Date(a.at).getTime() : Infinity) - (b.at ? new Date(b.at).getTime() : Infinity));
   // The ribbon sits by time: above the first open item at or after now. Overdue items stay above it, ringed.
