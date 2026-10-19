@@ -8,43 +8,12 @@ import { requireMember } from "@/lib/auth/session";
 import { loadDay, type LoadedDay } from "@/lib/data/day";
 import { replanQuietly } from "@/lib/reminders/runtime";
 import { createClient } from "@/lib/supabase/server";
+import { actionSchema, dayActionsSchema } from "@/lib/view/action-schema";
 import { SNACK_MATCH_MS } from "@/lib/view/apply";
 import type { DayAction, DayActionResult } from "@/lib/view/home";
 
 // One endpoint for every change to today's page. The screen has already applied the actions optimistically
 // (src/lib/view/apply.ts); this saves them, then re-plans reminders AFTER the response so taps never wait.
-
-const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
-const uuid = z.string().uuid();
-const occurrence = z.number().int().min(1).max(10);
-const meal = z.enum(["breakfast", "lunch", "dinner"]);
-const iso = z.string().datetime({ offset: true });
-
-const actionSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("take"), ruleId: uuid, occurrence, time: hhmm.optional() }),
-  z.object({ type: z.literal("snooze"), ruleId: uuid, occurrence, minutes: z.union([z.literal(10), z.literal(20), z.literal(30)]) }),
-  z.object({ type: z.literal("skip"), ruleId: uuid, occurrence, reason: z.string().trim().max(200).optional() }),
-  z.object({ type: z.literal("resetDose"), ruleId: uuid, occurrence }),
-  z.object({ type: z.literal("intend"), meal, minutes: z.number().int().min(0).max(180).optional() }),
-  z.object({ type: z.literal("eat"), meal, time: hhmm.optional() }),
-  z.object({ type: z.literal("resetMeal"), meal }),
-  z.object({ type: z.literal("snack"), time: hhmm.optional() }),
-  z.object({ type: z.literal("removeSnack"), eatenAt: iso }),
-  z.object({ type: z.literal("skipBreakfast") }),
-  z.object({ type: z.literal("bed") }),
-  z.object({ type: z.literal("serving"), ruleId: uuid, time: hhmm.optional() }),
-  z.object({
-    type: z.literal("putDose"),
-    ruleId: uuid,
-    occurrence,
-    status: z.enum(["taken", "skipped", "snoozed", "pending", "missed"]),
-    takenAt: iso.nullable(),
-    snoozedUntil: iso.nullable(),
-    reason: z.string().max(200).nullable(),
-  }),
-  z.object({ type: z.literal("putMeal"), meal, plannedAt: iso.nullable(), eatenAt: iso.nullable() }),
-  z.object({ type: z.literal("putCareDay"), breakfastSkipped: z.boolean(), bedtimeAt: iso.nullable() }),
-]);
 
 type Ctx = {
   supabase: Awaited<ReturnType<typeof createClient>>;
@@ -91,10 +60,16 @@ async function putDose(ctx: Ctx, ruleId: string, occ: number, fields: DoseFields
   if (error) throw error;
 }
 
-// "Not taken yet": the log row goes away (allowed since migration 0008).
-async function deleteDose(ctx: Ctx, ruleId: string, occ: number) {
+// "Not taken yet": the row stays but goes back to pending, which the schedule treats exactly like no log.
+// An update, the same write as logging it, so Undo works wherever Done does.
+async function resetDose(ctx: Ctx, ruleId: string, occ: number) {
   if (!ctx.day.careDayId) return;
-  const { error } = await ctx.supabase.from("dose_logs").delete().eq("care_day_id", ctx.day.careDayId).eq("rule_id", ruleId).eq("occurrence", occ);
+  const { error } = await ctx.supabase
+    .from("dose_logs")
+    .update({ status: "pending", taken_at: null, snoozed_until: null, reason: null, logged_by: ctx.profileId })
+    .eq("care_day_id", ctx.day.careDayId)
+    .eq("rule_id", ruleId)
+    .eq("occurrence", occ);
   if (error) throw error;
 }
 
@@ -134,9 +109,9 @@ async function applyOne(ctx: Ctx, a: z.infer<typeof actionSchema>) {
     case "skip":
       return putDose(ctx, a.ruleId, a.occurrence, { status: "skipped", reason: a.reason || null });
     case "resetDose":
-      return deleteDose(ctx, a.ruleId, a.occurrence);
+      return resetDose(ctx, a.ruleId, a.occurrence);
     case "putDose":
-      if (a.status === "pending") return deleteDose(ctx, a.ruleId, a.occurrence);
+      if (a.status === "pending") return resetDose(ctx, a.ruleId, a.occurrence);
       return putDose(ctx, a.ruleId, a.occurrence, { status: a.status, taken_at: a.takenAt, snoozed_until: a.snoozedUntil, reason: a.reason });
     case "intend": {
       const plan = planMealIntent(ctx.day.input, a.meal, a.minutes);
@@ -186,8 +161,11 @@ async function applyOne(ctx: Ctx, a: z.infer<typeof actionSchema>) {
 }
 
 export async function runDayActions(raw: DayAction[]): Promise<DayActionResult> {
-  const parsed = z.array(actionSchema).min(1).max(5).safeParse(raw);
-  if (!parsed.success) return { ok: false, error: "That didn't save. Please try again." };
+  const parsed = dayActionsSchema.safeParse(raw);
+  if (!parsed.success) {
+    console.error("day action rejected", JSON.stringify(raw), parsed.error.issues);
+    return { ok: false, error: "That didn't save. Please try again. (bad request)" };
+  }
 
   const { profile, household } = await requireMember();
   const supabase = await createClient();
@@ -219,8 +197,10 @@ export async function runDayActions(raw: DayAction[]): Promise<DayActionResult> 
     for (const a of parsed.data) await applyOne(ctx, a);
   } catch (e) {
     if (e instanceof RangeError) return { ok: false, error: "Pick a time earlier today, not in the future." };
-    console.error("day action failed", e);
-    return { ok: false, error: "That didn't save. Check your connection and try again." };
+    console.error("day action failed", JSON.stringify(parsed.data), e);
+    // A short code (e.g. 42501 = not allowed) so a screenshot is enough to tell what went wrong.
+    const code = e && typeof e === "object" && "code" in e && e.code ? ` (${String(e.code)})` : "";
+    return { ok: false, error: `That didn't save. Check your connection and try again.${code}` };
   }
 
   // Withdraw nags for what she just logged and schedule the next item's reminders, after the response is sent.

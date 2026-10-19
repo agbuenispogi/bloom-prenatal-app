@@ -147,6 +147,17 @@ select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
 select pg_temp.check((select count(*) from bloom.dose_logs) = 1, 'a read-only caregiver cannot delete her logs');
 delete from bloom.meal_logs where type = 'lunch';
 select pg_temp.check((select count(*) from bloom.meal_logs where type = 'lunch') = 0, 'she can undo her own meal log');
+-- Undo of a dose that already has reminders planned (the usual case: replan runs right after Done).
+reset role;
+insert into bloom.reminders (household_id, dose_log_id, kind, recipient_id, channel, due_at, dedupe_key)
+  select household_id, id, 'nag', '00000000-0000-0000-0000-00000000000b', 'push', now() + interval '15 minutes', 'undo-test'
+    from bloom.dose_logs limit 1;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+delete from bloom.dose_logs;
+select pg_temp.check((select count(*) from bloom.dose_logs) = 0, 'she can undo a dose that has reminders');
+reset role;
+select pg_temp.check((select count(*) from bloom.reminders where dedupe_key = 'undo-test') = 0, 'its reminders go with it');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
 
 -- 8. Anonymous users see nothing.
 reset role;
