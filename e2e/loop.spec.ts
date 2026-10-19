@@ -46,7 +46,7 @@ test.describe("the care-day loop", () => {
     await expect(card(page)).toContainText("12:41");
     await expect(page.getByRole("listitem").filter({ hasText: "Caltrate" }).first()).toContainText("Snoozed");
 
-    await page.getByRole("button", { name: "Skip" }).click();
+    await page.getByRole("button", { name: "Skip", exact: true }).click();
     await page.getByLabel("Reason (optional)").fill("felt nauseous");
     await page.getByRole("button", { name: "Skip this dose" }).click();
     await expect(page.getByRole("listitem").filter({ hasText: "felt nauseous" })).toContainText("Skipped");
@@ -142,5 +142,30 @@ test.describe("around the app", () => {
     expect((await request.post("/api/reminders/dispatch", { headers: { Authorization: "Bearer wrong" } })).status()).toBe(401);
     expect((await request.post("/api/notify-action", { data: { token: "x".repeat(20), action: "taken" } })).status()).toBe(401);
     expect((await request.get("/api/ics?t=forged")).status()).toBe(410);
+  });
+
+  test("any row can be logged out of order, and Undo puts it back", async ({ page }) => {
+    await openHome(page, "s=morning");
+    const iron = page.getByRole("listitem").filter({ hasText: "Ferrous sulfate" });
+    await expect(page.getByText(/^\d+ of \d+ done$/)).toBeVisible();
+    const before = await page.getByText(/^\d+ of \d+ done$/).textContent();
+
+    // Afternoon iron, logged first thing in the morning: no waiting on the order.
+    await iron.getByRole("button").click();
+    await page.getByRole("dialog").getByRole("button", { name: "Taken now" }).click();
+    await expect(page.getByText("Ferrous sulfate logged")).toBeVisible();
+    await expect(page.getByText(/^\d+ of \d+ done$/)).not.toHaveText(before!);
+
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expect(page.getByText(/^\d+ of \d+ done$/)).toHaveText(before!);
+
+    // A snack eaten earlier, then removed from its row.
+    await page.getByRole("button", { name: "Log a meal" }).click();
+    await page.getByText("Snack", { exact: true }).click();
+    await page.getByRole("button", { name: "Log snack" }).click();
+    await expect(page.getByText("Snack logged")).toBeVisible();
+    await page.getByRole("listitem").filter({ hasText: "Snack" }).getByRole("button").click();
+    await page.getByRole("dialog").getByRole("button", { name: "Remove this snack" }).click();
+    await expect(page.getByRole("listitem").filter({ hasText: /^.*Snack/ })).toHaveCount(0);
   });
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { AlarmClock, Check, Moon, Utensils } from "lucide-react";
-import { useId, useState, useTransition } from "react";
+import { useId, useState } from "react";
 import type { DayAction, DayActionResult, NextUpView } from "@/lib/view/home";
 import { Countdown } from "./countdown";
 import { InkCheck, MedTab } from "./marks";
@@ -70,7 +70,7 @@ export function NextUpCard({
   const [panel, setPanel] = useState<Panel>("none");
   const [error, setError] = useState<string | null>(null);
   const [reason, setReason] = useState("");
-  const [pending, startTransition] = useTransition();
+  const pending = false;
 
   // Every action: optional ink moment, then the server (or demo) call. The card re-keys on the new next item.
   const act = (action: DayAction, inkLabel?: string) => {
@@ -79,8 +79,7 @@ export function NextUpCard({
       vibrate();
       onInk(inkLabel);
     }
-    startTransition(async () => {
-      const result = await run(action);
+    void run(action).then((result) => {
       if (!result.ok) {
         onInk(null);
         setError(result.error);

@@ -1,71 +1,84 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 import { careDayBounds, planMealIntent, wallTime, type DoseItem, type MainMeal } from "@/lib/engine";
 import { requireMember } from "@/lib/auth/session";
 import { loadDay, type LoadedDay } from "@/lib/data/day";
 import { replanQuietly } from "@/lib/reminders/runtime";
 import { createClient } from "@/lib/supabase/server";
+import { SNACK_MATCH_MS } from "@/lib/view/apply";
+import type { DayAction, DayActionResult } from "@/lib/view/home";
 
-// Every action re-reads the day on the server, authorizes, writes, and revalidates Home.
-// Reminder rows (push/email/nag/escalation) are planned here in Phase 5.
+// One endpoint for every change to today's page. The screen has already applied the actions optimistically
+// (src/lib/view/apply.ts); this saves them, then re-plans reminders AFTER the response so taps never wait.
 
-import type { DayActionResult } from "@/lib/view/home";
+const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+const uuid = z.string().uuid();
+const occurrence = z.number().int().min(1).max(10);
+const meal = z.enum(["breakfast", "lunch", "dinner"]);
+const iso = z.string().datetime({ offset: true });
 
-const mainMeal = z.enum(["breakfast", "lunch", "dinner"]);
-const ruleRef = z.object({ ruleId: z.string().uuid(), occurrence: z.number().int().min(1).max(10) });
+const actionSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("take"), ruleId: uuid, occurrence, time: hhmm.optional() }),
+  z.object({ type: z.literal("snooze"), ruleId: uuid, occurrence, minutes: z.union([z.literal(10), z.literal(20), z.literal(30)]) }),
+  z.object({ type: z.literal("skip"), ruleId: uuid, occurrence, reason: z.string().trim().max(200).optional() }),
+  z.object({ type: z.literal("resetDose"), ruleId: uuid, occurrence }),
+  z.object({ type: z.literal("intend"), meal, minutes: z.number().int().min(0).max(180).optional() }),
+  z.object({ type: z.literal("eat"), meal, time: hhmm.optional() }),
+  z.object({ type: z.literal("resetMeal"), meal }),
+  z.object({ type: z.literal("snack"), time: hhmm.optional() }),
+  z.object({ type: z.literal("removeSnack"), eatenAt: iso }),
+  z.object({ type: z.literal("skipBreakfast") }),
+  z.object({ type: z.literal("bed") }),
+  z.object({ type: z.literal("serving"), ruleId: uuid, time: hhmm.optional() }),
+  z.object({
+    type: z.literal("putDose"),
+    ruleId: uuid,
+    occurrence,
+    status: z.enum(["taken", "skipped", "snoozed", "pending", "missed"]),
+    takenAt: iso.nullable(),
+    snoozedUntil: iso.nullable(),
+    reason: z.string().max(200).nullable(),
+  }),
+  z.object({ type: z.literal("putMeal"), meal, plannedAt: iso.nullable(), eatenAt: iso.nullable() }),
+  z.object({ type: z.literal("putCareDay"), breakfastSkipped: z.boolean(), bedtimeAt: iso.nullable() }),
+]);
 
-async function withDay(work: (ctx: { supabase: Awaited<ReturnType<typeof createClient>>; day: LoadedDay; profileId: string; householdId: string; now: Date; careDayId: () => Promise<string> }) => Promise<void>): Promise<DayActionResult> {
-  const { profile, household } = await requireMember();
-  const supabase = await createClient();
-  const now = new Date();
-  const day = await loadDay(supabase, household, profile, now);
-  if (!day.canLog) return { ok: false, error: "Only she can log doses right now. She can allow you in Settings." };
+type Ctx = {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  day: LoadedDay;
+  profileId: string;
+  householdId: string;
+  now: Date;
+  careDayId: () => Promise<string>;
+};
 
-  let cached = day.careDayId;
-  const careDayId = async () => {
-    if (cached) return cached;
-    const { data, error } = await supabase
-      .from("care_days")
-      .upsert({ household_id: household.id, date: day.input.careDay.date }, { onConflict: "household_id,date" })
-      .select("id")
-      .single();
-    if (error) throw error;
-    cached = data.id;
-    return cached;
-  };
-
-  try {
-    await work({ supabase, day, profileId: profile.id, householdId: household.id, now, careDayId });
-  } catch (e) {
-    if (e instanceof RangeError) return { ok: false, error: "Pick a time earlier today, not in the future." };
-    console.error("day action failed", e);
-    return { ok: false, error: "That didn't save. Check your connection and try again." };
-  }
-  // Withdraw nags for what she just logged and schedule the next item's reminders (target: under 2 s).
-  await replanQuietly(household.id);
-  revalidatePath("/");
-  return { ok: true };
+// "HH:mm" within the current care day → instant. Must not be in the future (a minute of slack for clocks).
+function resolveTime(day: LoadedDay, now: Date, time?: string): Date {
+  if (!time) return now;
+  const { tz, careDayStarts } = day.input.settings;
+  const at = wallTime(day.input.careDay.date, time, tz, careDayStarts);
+  const { start } = careDayBounds(day.input.careDay.date, tz, careDayStarts);
+  if (at < start || at.getTime() > now.getTime() + 60_000) throw new RangeError("time outside today");
+  return at;
 }
 
-function findDose(day: LoadedDay, ruleId: string, occurrence: number): DoseItem | undefined {
-  return day.schedule.timeline.find((i): i is DoseItem => i.kind === "dose" && i.rule.id === ruleId && i.occurrence === occurrence);
+function findDose(day: LoadedDay, ruleId: string, occ: number): DoseItem | undefined {
+  return day.schedule.timeline.find((i): i is DoseItem => i.kind === "dose" && i.rule.id === ruleId && i.occurrence === occ);
 }
 
-async function upsertDose(
-  ctx: Parameters<Parameters<typeof withDay>[0]>[0],
-  ruleId: string,
-  occurrence: number,
-  fields: { status: "taken" | "skipped" | "snoozed"; taken_at?: string | null; snoozed_until?: string | null; reason?: string | null },
-) {
-  const item = findDose(ctx.day, ruleId, occurrence);
+type DoseFields = { status: "taken" | "skipped" | "snoozed" | "pending" | "missed"; taken_at?: string | null; snoozed_until?: string | null; reason?: string | null };
+
+async function putDose(ctx: Ctx, ruleId: string, occ: number, fields: DoseFields) {
+  const item = findDose(ctx.day, ruleId, occ);
   const { error } = await ctx.supabase.from("dose_logs").upsert(
     {
       household_id: ctx.householdId,
       care_day_id: await ctx.careDayId(),
       rule_id: ruleId,
-      occurrence,
+      occurrence: occ,
       target_at: item?.targetAt && !item.estimated ? item.targetAt.toISOString() : null,
       logged_by: ctx.profileId,
       taken_at: null,
@@ -78,113 +91,140 @@ async function upsertDose(
   if (error) throw error;
 }
 
-export async function takeDose(ref: { ruleId: string; occurrence: number }): Promise<DayActionResult> {
-  const { ruleId, occurrence } = ruleRef.parse(ref);
-  return withDay(async (ctx) => {
-    await upsertDose(ctx, ruleId, occurrence, { status: "taken", taken_at: ctx.now.toISOString() });
-  });
-}
-
-export async function snoozeDose(ref: { ruleId: string; occurrence: number; minutes: number }): Promise<DayActionResult> {
-  const { ruleId, occurrence } = ruleRef.parse(ref);
-  const minutes = z.union([z.literal(10), z.literal(20), z.literal(30)]).parse(ref.minutes);
-  return withDay(async (ctx) => {
-    const until = new Date(ctx.now.getTime() + minutes * 60_000);
-    await upsertDose(ctx, ruleId, occurrence, { status: "snoozed", snoozed_until: until.toISOString() });
-  });
-}
-
-export async function skipDose(ref: { ruleId: string; occurrence: number; reason?: string }): Promise<DayActionResult> {
-  const { ruleId, occurrence } = ruleRef.parse(ref);
-  const reason = z.string().trim().max(200).optional().parse(ref.reason) || null;
-  return withDay(async (ctx) => {
-    await upsertDose(ctx, ruleId, occurrence, { status: "skipped", reason });
-  });
-}
-
-// One more serving of an any-time item (Anmum).
-export async function logServing(ref: { ruleId: string }): Promise<DayActionResult> {
-  const ruleId = z.string().uuid().parse(ref.ruleId);
-  return withDay(async (ctx) => {
-    const status = ctx.day.schedule.anmum.find((a) => a.rule.id === ruleId);
-    if (!status?.canTakeMore) return;
-    await upsertDose(ctx, ruleId, status.taken + 1, { status: "taken", taken_at: ctx.now.toISOString() });
-  });
-}
-
-async function upsertMainMeal(ctx: Parameters<Parameters<typeof withDay>[0]>[0], meal: MainMeal, fields: { planned_at?: string; eaten_at?: string }) {
-  const careDayId = await ctx.careDayId();
-  // meal_logs has a partial unique index (one per main meal), which PostgREST upsert can't target: read, then write.
-  const { data: existing, error: readError } = await ctx.supabase
-    .from("meal_logs")
-    .select("id")
-    .eq("care_day_id", careDayId)
-    .eq("type", meal)
-    .maybeSingle();
-  if (readError) throw readError;
-  const { error } = existing
-    ? await ctx.supabase.from("meal_logs").update(fields).eq("id", existing.id)
-    : await ctx.supabase.from("meal_logs").insert({ household_id: ctx.householdId, care_day_id: careDayId, type: meal, logged_by: ctx.profileId, ...fields });
+// "Not taken yet": the log row goes away (allowed since migration 0008).
+async function deleteDose(ctx: Ctx, ruleId: string, occ: number) {
+  if (!ctx.day.careDayId) return;
+  const { error } = await ctx.supabase.from("dose_logs").delete().eq("care_day_id", ctx.day.careDayId).eq("rule_id", ruleId).eq("occurrence", occ);
   if (error) throw error;
 }
 
-// "I'm eating in ~30 min": logs the pre-meal dose now and plans the meal.
-export async function intendMeal(ref: { meal: MainMeal; minutes?: number }): Promise<DayActionResult> {
-  const meal = mainMeal.parse(ref.meal);
-  const minutes = z.number().int().min(0).max(180).optional().parse(ref.minutes);
-  return withDay(async (ctx) => {
-    const plan = planMealIntent(ctx.day.input, meal, minutes);
-    await upsertMainMeal(ctx, meal, { planned_at: plan.plannedAt.toISOString() });
-    if (plan.preMealDose) {
-      await upsertDose(ctx, plan.preMealDose.ruleId, plan.preMealDose.occurrence, { status: "taken", taken_at: ctx.now.toISOString() });
+// meal_logs has a partial unique index (one per main meal), which PostgREST upsert can't target: read, then write.
+// Fields left out keep their value; when neither time remains the row is deleted ("not eaten yet").
+async function putMeal(ctx: Ctx, type: MainMeal, fields: { planned_at?: string | null; eaten_at?: string | null }) {
+  const careDayId = await ctx.careDayId();
+  const { data: existing, error: readError } = await ctx.supabase.from("meal_logs").select("id, planned_at, eaten_at").eq("care_day_id", careDayId).eq("type", type).maybeSingle();
+  if (readError) throw readError;
+  const planned = "planned_at" in fields ? (fields.planned_at ?? null) : (existing?.planned_at ?? null);
+  const eaten = "eaten_at" in fields ? (fields.eaten_at ?? null) : (existing?.eaten_at ?? null);
+  if (!planned && !eaten) {
+    if (!existing) return;
+    const { error } = await ctx.supabase.from("meal_logs").delete().eq("id", existing.id);
+    if (error) throw error;
+    return;
+  }
+  const { error } = existing
+    ? await ctx.supabase.from("meal_logs").update({ planned_at: planned, eaten_at: eaten }).eq("id", existing.id)
+    : await ctx.supabase.from("meal_logs").insert({ household_id: ctx.householdId, care_day_id: careDayId, type, planned_at: planned, eaten_at: eaten, logged_by: ctx.profileId });
+  if (error) throw error;
+}
+
+async function updateCareDay(ctx: Ctx, fields: { breakfast_skipped?: boolean; bedtime_at?: string | null }) {
+  const { error } = await ctx.supabase.from("care_days").update(fields).eq("id", await ctx.careDayId());
+  if (error) throw error;
+}
+
+async function applyOne(ctx: Ctx, a: z.infer<typeof actionSchema>) {
+  const nowIso = ctx.now.toISOString();
+  const at = (time?: string) => resolveTime(ctx.day, ctx.now, time).toISOString();
+  switch (a.type) {
+    case "take":
+      return putDose(ctx, a.ruleId, a.occurrence, { status: "taken", taken_at: at(a.time) });
+    case "snooze":
+      return putDose(ctx, a.ruleId, a.occurrence, { status: "snoozed", snoozed_until: new Date(ctx.now.getTime() + a.minutes * 60_000).toISOString() });
+    case "skip":
+      return putDose(ctx, a.ruleId, a.occurrence, { status: "skipped", reason: a.reason || null });
+    case "resetDose":
+      return deleteDose(ctx, a.ruleId, a.occurrence);
+    case "putDose":
+      if (a.status === "pending") return deleteDose(ctx, a.ruleId, a.occurrence);
+      return putDose(ctx, a.ruleId, a.occurrence, { status: a.status, taken_at: a.takenAt, snoozed_until: a.snoozedUntil, reason: a.reason });
+    case "intend": {
+      const plan = planMealIntent(ctx.day.input, a.meal, a.minutes);
+      await putMeal(ctx, a.meal, { planned_at: plan.plannedAt.toISOString() });
+      if (plan.preMealDose) await putDose(ctx, plan.preMealDose.ruleId, plan.preMealDose.occurrence, { status: "taken", taken_at: nowIso });
+      return;
     }
-  });
+    case "eat":
+      return putMeal(ctx, a.meal, { eaten_at: at(a.time) });
+    case "resetMeal":
+      await putMeal(ctx, a.meal, { planned_at: null, eaten_at: null });
+      if (a.meal === "breakfast" && ctx.day.input.careDay.breakfastSkipped) await updateCareDay(ctx, { breakfast_skipped: false });
+      return;
+    case "putMeal":
+      return putMeal(ctx, a.meal, { planned_at: a.plannedAt, eaten_at: a.eatenAt });
+    case "snack": {
+      const { error } = await ctx.supabase.from("meal_logs").insert({ household_id: ctx.householdId, care_day_id: await ctx.careDayId(), type: "snack", eaten_at: at(a.time), logged_by: ctx.profileId });
+      if (error) throw error;
+      return;
+    }
+    case "removeSnack": {
+      // The screen's clock and the server's differ by a few seconds: remove the nearest snack within a couple of minutes.
+      if (!ctx.day.careDayId) return;
+      const { data: snacks, error } = await ctx.supabase.from("meal_logs").select("id, eaten_at").eq("care_day_id", ctx.day.careDayId).eq("type", "snack");
+      if (error) throw error;
+      const want = new Date(a.eatenAt).getTime();
+      const target = (snacks ?? [])
+        .filter((s) => s.eaten_at && Math.abs(new Date(s.eaten_at).getTime() - want) <= SNACK_MATCH_MS)
+        .sort((x, y) => Math.abs(new Date(x.eaten_at!).getTime() - want) - Math.abs(new Date(y.eaten_at!).getTime() - want))[0];
+      if (!target) return;
+      const { error: delError } = await ctx.supabase.from("meal_logs").delete().eq("id", target.id);
+      if (delError) throw delError;
+      return;
+    }
+    case "skipBreakfast":
+      return updateCareDay(ctx, { breakfast_skipped: true });
+    case "bed":
+      return updateCareDay(ctx, { bedtime_at: nowIso });
+    case "putCareDay":
+      return updateCareDay(ctx, { breakfast_skipped: a.breakfastSkipped, bedtime_at: a.bedtimeAt });
+    case "serving": {
+      const status = ctx.day.schedule.anmum.find((x) => x.rule.id === a.ruleId);
+      if (!status?.canTakeMore) return;
+      return putDose(ctx, a.ruleId, status.taken + 1, { status: "taken", taken_at: at(a.time) });
+    }
+  }
 }
 
-const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+export async function runDayActions(raw: DayAction[]): Promise<DayActionResult> {
+  const parsed = z.array(actionSchema).min(1).max(5).safeParse(raw);
+  if (!parsed.success) return { ok: false, error: "That didn't save. Please try again." };
 
-// "HH:mm" within the current care day → instant. Must not be in the future (a minute of slack for clocks).
-function resolveTime(day: LoadedDay, now: Date, time?: string): Date {
-  if (!time) return now;
-  const { tz, careDayStarts } = day.input.settings;
-  const at = wallTime(day.input.careDay.date, hhmm.parse(time), tz, careDayStarts);
-  const { start } = careDayBounds(day.input.careDay.date, tz, careDayStarts);
-  if (at < start || at.getTime() > now.getTime() + 60_000) throw new RangeError("time outside today");
-  return at;
-}
+  const { profile, household } = await requireMember();
+  const supabase = await createClient();
+  const now = new Date();
+  const day = await loadDay(supabase, household, profile, now);
+  if (!day.canLog) return { ok: false, error: "Only she can log right now. She can allow you in Settings." };
 
-export async function eatMeal(ref: { meal: MainMeal; time?: string }): Promise<DayActionResult> {
-  const meal = mainMeal.parse(ref.meal);
-  return withDay(async (ctx) => {
-    const at = resolveTime(ctx.day, ctx.now, ref.time);
-    await upsertMainMeal(ctx, meal, { eaten_at: at.toISOString() });
-  });
-}
+  let cached = day.careDayId;
+  const ctx: Ctx = {
+    supabase,
+    day,
+    profileId: profile.id,
+    householdId: household.id,
+    now,
+    careDayId: async () => {
+      if (cached) return cached;
+      const { data, error } = await supabase
+        .from("care_days")
+        .upsert({ household_id: household.id, date: day.input.careDay.date }, { onConflict: "household_id,date" })
+        .select("id")
+        .single();
+      if (error) throw error;
+      cached = data.id;
+      return cached;
+    },
+  };
 
-export async function logSnack(ref: { time?: string } = {}): Promise<DayActionResult> {
-  return withDay(async (ctx) => {
-    const at = resolveTime(ctx.day, ctx.now, ref.time);
-    const { error } = await ctx.supabase.from("meal_logs").insert({
-      household_id: ctx.householdId,
-      care_day_id: await ctx.careDayId(),
-      type: "snack",
-      eaten_at: at.toISOString(),
-      logged_by: ctx.profileId,
-    });
-    if (error) throw error;
-  });
-}
+  try {
+    for (const a of parsed.data) await applyOne(ctx, a);
+  } catch (e) {
+    if (e instanceof RangeError) return { ok: false, error: "Pick a time earlier today, not in the future." };
+    console.error("day action failed", e);
+    return { ok: false, error: "That didn't save. Check your connection and try again." };
+  }
 
-export async function skipBreakfast(): Promise<DayActionResult> {
-  return withDay(async (ctx) => {
-    const { error } = await ctx.supabase.from("care_days").update({ breakfast_skipped: true }).eq("id", await ctx.careDayId());
-    if (error) throw error;
-  });
-}
-
-export async function goingToBed(): Promise<DayActionResult> {
-  return withDay(async (ctx) => {
-    const { error } = await ctx.supabase.from("care_days").update({ bedtime_at: ctx.now.toISOString() }).eq("id", await ctx.careDayId());
-    if (error) throw error;
-  });
+  // Withdraw nags for what she just logged and schedule the next item's reminders, after the response is sent.
+  after(() => replanQuietly(household.id));
+  revalidatePath("/");
+  return { ok: true };
 }

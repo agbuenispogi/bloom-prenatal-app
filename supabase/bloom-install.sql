@@ -1,4 +1,4 @@
--- Bloom install bundle (7 migrations). Run ONCE in Supabase → SQL Editor on a project
+-- Bloom install bundle (8 migrations). Run ONCE in Supabase → SQL Editor on a project
 -- that has no `bloom` schema yet. It only creates objects in the `bloom` schema, plus the pg_cron job
 -- 'bloom-dispatch-reminders'. It doesn't touch `public` or other apps.
 begin;
@@ -644,5 +644,15 @@ begin
     (p_household, 6, null, null);
 end $$;
 revoke all on function bloom.seed_household_defaults(uuid) from public, anon, authenticated;
+
+-- ===== 20261019000008_log_corrections.sql =====
+-- Corrections: Undo and "mark as not taken / not eaten" remove a log row. Same rule as writing:
+-- the patient (or the caregiver, if she allowed it), inside her own household.
+grant delete on bloom.meal_logs, bloom.dose_logs to authenticated;
+
+create policy meal_logs_delete on bloom.meal_logs for delete to authenticated
+  using (household_id = bloom.auth_household_id() and bloom.auth_can_log());
+create policy dose_logs_delete on bloom.dose_logs for delete to authenticated
+  using (household_id = bloom.auth_household_id() and bloom.auth_can_log());
 
 commit;

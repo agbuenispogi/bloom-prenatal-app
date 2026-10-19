@@ -2,15 +2,39 @@
 
 import { formatInTimeZone } from "date-fns-tz";
 import { Snowflake } from "lucide-react";
-import { useEffect, useState } from "react";
-import type { DayAction, DayActionResult, HomeView as View, NextUpView } from "@/lib/view/home";
+import { useCallback, useEffect, useState } from "react";
+import type { DayAction, DayActionResult, HomeView as View, NextUpView, TimelineRow } from "@/lib/view/home";
 import { AlarmPrompt } from "./alarm-prompt";
+import { ItemSheet } from "./item-sheet";
 import { LogMealSheet } from "./log-meal-sheet";
 import { INK_MS, NextUpCard } from "./next-up-card";
 import { ServingsStrip } from "./servings-strip";
 import { TodayPage } from "./today-page";
+import { UndoToast } from "./undo-toast";
+import type { Toast } from "./use-day";
 
-export function HomeView({ view, tz, run, calendarHref, alarmNow = false }: { view: View; tz: string; run: (a: DayAction) => Promise<DayActionResult>; calendarHref?: string; alarmNow?: boolean }) {
+export function HomeView({
+  view,
+  tz,
+  run,
+  toast = null,
+  onUndo = () => {},
+  onDismiss = () => {},
+  calendarHref,
+  alarmNow = false,
+}: {
+  view: View;
+  tz: string;
+  run: (a: DayAction) => Promise<DayActionResult>;
+  toast?: Toast | null;
+  onUndo?: () => void;
+  onDismiss?: () => void;
+  calendarHref?: string;
+  alarmNow?: boolean;
+}) {
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const openRow: TimelineRow | null = view.rows.find((r) => r.key === openKey) ?? null;
+  const closeSheet = useCallback(() => setOpenKey(null), []);
   const nowLabel = formatInTimeZone(new Date(view.now), tz, "h:mm a");
   // While the check is being inked, keep showing the card she tapped; then the next item settles in.
   const [ink, setInk] = useState<{ view: NextUpView; label: string } | null>(null);
@@ -69,10 +93,19 @@ export function HomeView({ view, tz, run, calendarHref, alarmNow = false }: { vi
             calendarHref={calendarHref}
           />
         </div>
-        <TodayPage rows={view.rows} ribbonBefore={view.ribbonBefore} nowLabel={nowLabel} action={<LogMealSheet view={view} tz={tz} run={run} />}>
+        <TodayPage
+          rows={view.rows}
+          ribbonBefore={view.ribbonBefore}
+          nowLabel={nowLabel}
+          progress={view.progress}
+          onOpen={view.canLog ? (row) => setOpenKey(row.key) : undefined}
+          action={<LogMealSheet view={view} tz={tz} run={run} />}
+        >
           <ServingsStrip servings={view.servings} canLog={view.canLog} run={run} />
         </TodayPage>
       </div>
+      <ItemSheet row={openRow} tz={tz} now={view.now} run={run} onClose={closeSheet} />
+      <UndoToast toast={toast} onUndo={onUndo} onDismiss={onDismiss} />
       {alarmFor && alarmFor === view.nextUp.key ? <AlarmPrompt view={view.nextUp} run={run} onClose={() => setAlarmFor(null)} /> : null}
     </div>
     </div>

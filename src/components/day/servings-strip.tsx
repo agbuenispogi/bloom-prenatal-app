@@ -1,13 +1,12 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import type { DayAction, DayActionResult, ServingView } from "@/lib/view/home";
 import { MedTab } from "./marks";
 
 // Any-time items (Anmum Materna): a count, a gentle note after the deadline, one tap to add a serving.
 export function ServingsStrip({ servings, canLog, run }: { servings: ServingView[]; canLog: boolean; run: (a: DayAction) => Promise<DayActionResult> }) {
-  const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   if (servings.length === 0) return null;
   return (
@@ -33,14 +32,11 @@ export function ServingsStrip({ servings, canLog, run }: { servings: ServingView
             {canLog && s.canTakeMore ? (
               <button
                 type="button"
-                disabled={pending}
-                onClick={() =>
-                  start(async () => {
-                    setError(null);
-                    const r = await run({ type: "serving", ruleId: s.ruleId });
-                    if (!r.ok) setError(r.error);
-                  })
-                }
+                onClick={async () => {
+                  setError(null);
+                  const r = await run({ type: "serving", ruleId: s.ruleId });
+                  if (!r.ok) setError(r.error);
+                }}
                 className="flex min-h-12 shrink-0 items-center gap-1.5 rounded-xl border border-rule px-3.5 text-base font-medium whitespace-nowrap disabled:opacity-60"
               >
                 <Plus aria-hidden className="size-5" /> Had {s.doseLabel.startsWith("1 ") ? `a ${s.doseLabel.slice(2)}` : "one"}

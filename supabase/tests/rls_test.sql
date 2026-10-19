@@ -134,12 +134,19 @@ do $$ begin
   raise exception 'FAIL: client wrote a reminder';
 exception when insufficient_privilege then raise notice 'ok - reminders are server-only';
 end $$;
-do $$ begin
-  delete from bloom.dose_logs;
-  if found then raise exception 'FAIL: deleted a dose log'; end if;
-  raise exception 'FAIL: delete was not rejected';
-exception when insufficient_privilege then raise notice 'ok - logs cannot be deleted';
-end $$;
+-- Corrections (undo): a member who can log may delete their own household's logs; others can't touch them.
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000e');
+delete from bloom.dose_logs;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check((select count(*) from bloom.dose_logs) = 1, 'another household cannot delete her logs');
+reset role;
+update bloom.households set settings = jsonb_set(settings, '{caregiver_can_log}', 'false') where id = current_setting('bloom.hh_a')::uuid;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+delete from bloom.dose_logs;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check((select count(*) from bloom.dose_logs) = 1, 'a read-only caregiver cannot delete her logs');
+delete from bloom.meal_logs where type = 'lunch';
+select pg_temp.check((select count(*) from bloom.meal_logs where type = 'lunch') = 0, 'she can undo her own meal log');
 
 -- 8. Anonymous users see nothing.
 reset role;

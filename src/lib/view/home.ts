@@ -1,20 +1,27 @@
 // Pure view model for Home: engine output → serializable, display-ready rows. Runs on server or client.
 import { formatInTimeZone } from "date-fns-tz";
-import { describeNextUp, formatClock, type DaySchedule, type DoseItem, type EngineInput, type ItemState, type MainMeal, type MealItem } from "@/lib/engine";
+import { describeNextUp, formatClock, type DaySchedule, type DoseItem, type EngineInput, type ItemState, type MainMeal, type MealItem, type MealType } from "@/lib/engine";
 import { pregnancyWeek } from "@/lib/pregnancy";
 
 export type Tab = "mint" | "sky" | "clay" | "blush" | "oat";
 
 export type DayAction =
-  | { type: "take"; ruleId: string; occurrence: number }
+  | { type: "take"; ruleId: string; occurrence: number; time?: string } // time: "HH:mm" earlier today; default now
   | { type: "snooze"; ruleId: string; occurrence: number; minutes: 10 | 20 | 30 }
   | { type: "skip"; ruleId: string; occurrence: number; reason?: string }
+  | { type: "resetDose"; ruleId: string; occurrence: number } // back to "not taken yet"
   | { type: "intend"; meal: MainMeal; minutes?: number }
-  | { type: "eat"; meal: MainMeal; time?: string } // time: "HH:mm" earlier today (care day), default now
+  | { type: "eat"; meal: MainMeal; time?: string }
+  | { type: "resetMeal"; meal: MainMeal } // back to "not eaten yet"
   | { type: "snack"; time?: string }
+  | { type: "removeSnack"; eatenAt: string } // ISO time of the logged snack
   | { type: "skipBreakfast" }
   | { type: "bed" }
-  | { type: "serving"; ruleId: string };
+  | { type: "serving"; ruleId: string; time?: string }
+  // Exact puts, used by undo to put a row back the way it was (times are ISO).
+  | { type: "putDose"; ruleId: string; occurrence: number; status: "taken" | "skipped" | "snoozed" | "pending" | "missed"; takenAt: string | null; snoozedUntil: string | null; reason: string | null }
+  | { type: "putMeal"; meal: MainMeal; plannedAt: string | null; eatenAt: string | null }
+  | { type: "putCareDay"; breakfastSkipped: boolean; bedtimeAt: string | null };
 
 export type DayActionResult = { ok: true } | { ok: false; error: string };
 
@@ -53,6 +60,12 @@ export interface TimelineRow {
   targetLabel: string | null;
   reason: string | null;
   warning: string | null;
+  // What a tap on the row can change (the item sheet).
+  ruleId: string | null;
+  occurrence: number | null;
+  meal: MealType | null;
+  loggedAt: string | null; // ISO: when it was taken / eaten
+  autoSkipped: boolean;    // skipped by the app (breakfast skipped), not by her
 }
 
 export interface ServingView {
@@ -81,6 +94,7 @@ export interface HomeView {
   canLog: boolean;
   role: "patient" | "caregiver";
   snowflake: { title: string; week: number | null; dateLabel: string; href: string } | null;
+  progress: { done: number; total: number }; // today's checklist: doses, main meals and minimum servings
   meals: { meal: MainMeal; eaten: boolean; eatenLabel: string | null; planned: boolean; skipped: boolean; preMealOpen: boolean; leadMin: number }[];
 }
 
@@ -138,6 +152,11 @@ export function toHomeView(
         reason: item.reason === "breakfast skipped" ? null : item.reason,
         note: item.reason === "breakfast skipped" ? "skipped with breakfast" : item.rule.label,
         warning: warningFor.get(item.key) ?? null,
+        ruleId: item.rule.id,
+        occurrence: item.occurrence,
+        meal: null,
+        loggedAt: item.takenAt?.toISOString() ?? null,
+        autoSkipped: item.reason === "breakfast skipped",
       });
     } else {
       rows.push({
@@ -154,6 +173,11 @@ export function toHomeView(
         targetLabel: null,
         reason: null,
         warning: null,
+        ruleId: null,
+        occurrence: null,
+        meal: item.meal,
+        loggedAt: item.eatenAt?.toISOString() ?? null,
+        autoSkipped: item.meal === "breakfast" && item.state === "skipped",
       });
     }
   }
@@ -233,6 +257,14 @@ export function toHomeView(
     nextUp = { ...base, key: "bedtime", medName: a.dose.medication.name, doseLabel: a.dose.medication.doseLabel, tab: tabOf(a.dose.medication.color), at: a.estimatedAt.toISOString(), timeLabel: clock(a.estimatedAt), estimated: true, ruleId: a.dose.rule.id, occurrence: a.dose.occurrence };
   }
 
+  // Everything she means to do today, so nothing slips: snacks are extra, and items the app set aside with a
+  // skipped breakfast don't count. A dose she skipped herself still counts (it's not done).
+  const counted = rows.filter((r) => r.meal !== "snack" && !r.autoSkipped);
+  const progress = {
+    done: counted.filter((r) => r.state === "done").length + schedule.anmum.reduce((n, s) => n + Math.min(s.taken, s.min), 0),
+    total: counted.length + schedule.anmum.reduce((n, s) => n + s.min, 0),
+  };
+
   const week = pregnancyWeek(opts.dueDate, schedule.careDate);
   const [y, m, d] = schedule.careDate.split("-").map(Number);
   const dateLabel = formatInTimeZone(new Date(Date.UTC(y!, m! - 1, d!, 12)), "UTC", "EEEE, d MMMM");
@@ -261,6 +293,7 @@ export function toHomeView(
     })),
     canLog: opts.canLog,
     role: opts.role,
+    progress,
     snowflake: opts.snowflake
       ? {
           title: opts.snowflake.title,

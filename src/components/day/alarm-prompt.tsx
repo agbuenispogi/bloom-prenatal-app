@@ -1,7 +1,7 @@
 "use client";
 
 import { AlarmClock, Check } from "lucide-react";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { DayAction, DayActionResult, NextUpView } from "@/lib/view/home";
 import { MedTab } from "./marks";
 
@@ -36,7 +36,7 @@ function chime() {
 // Full-screen in-app alarm when a timed dose comes due while Bloom is open.
 export function AlarmPrompt({ view, run, onClose }: { view: NextUpView; run: (a: DayAction) => Promise<DayActionResult>; onClose: () => void }) {
   const done = useRef<HTMLButtonElement>(null);
-  const [pending, start] = useTransition();
+  const pending = false;
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,12 +49,11 @@ export function AlarmPrompt({ view, run, onClose }: { view: NextUpView; run: (a:
 
   if (!view.ruleId || !view.occurrence) return null;
   const ref = { ruleId: view.ruleId, occurrence: view.occurrence };
-  const act = (a: DayAction) =>
-    start(async () => {
-      const r = await run(a);
-      if (r.ok) onClose();
-      else setError(r.error);
-    });
+  const act = async (a: DayAction) => {
+    const r = await run(a);
+    if (r.ok) onClose();
+    else setError(r.error);
+  };
 
   return (
     <div role="alertdialog" aria-modal="true" aria-labelledby="alarm-title" aria-describedby="alarm-why" className="fixed inset-0 z-50 flex flex-col bg-paper px-5 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">

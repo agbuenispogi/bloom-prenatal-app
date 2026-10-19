@@ -4,12 +4,12 @@ import type { TimelineRow } from "@/lib/view/home";
 import { MedTab, StateMark, STATE_WORD } from "./marks";
 import { Ribbon } from "./ribbon";
 
-function Row({ row }: { row: TimelineRow }) {
+function Row({ row, onOpen }: { row: TimelineRow; onOpen?: (row: TimelineRow) => void }) {
   const struck = row.state === "skipped";
   const quiet = row.state === "skipped" || row.state === "missed";
   const late = row.lateByMin && row.targetLabel ? `${row.lateByMin} min late (planned ${row.targetLabel})` : null;
-  return (
-    <li className="grid grid-cols-[5.25rem_22px_1fr] gap-x-3.5 py-3">
+  const body = (
+    <>
       <span className={`tnum pt-0.5 text-right text-[0.9375rem] whitespace-nowrap ${row.estimated ? "text-ink-soft" : "text-ink"}`}>
         {row.timeLabel ? (row.estimated ? `~${row.timeLabel}` : row.timeLabel) : "Any time"}
       </span>
@@ -34,6 +34,24 @@ function Row({ row }: { row: TimelineRow }) {
           </p>
         ) : null}
       </div>
+    </>
+  );
+  const grid = "grid grid-cols-[5.25rem_22px_1fr] gap-x-3.5 py-3";
+  return (
+    <li>
+      {onOpen ? (
+        // The whole row is the button: tap to log it, change its time, or put it back.
+        <button
+          type="button"
+          onClick={() => onOpen(row)}
+          aria-haspopup="dialog"
+          className={`${grid} -mx-2 w-[calc(100%+1rem)] rounded-[8px] px-2 text-left transition-colors duration-150 active:bg-cloth/40`}
+        >
+          {body}
+        </button>
+      ) : (
+        <div className={grid}>{body}</div>
+      )}
     </li>
   );
 }
@@ -44,6 +62,8 @@ export function TodayPage({
   nowLabel,
   children,
   action,
+  onOpen,
+  progress,
   title = "Today",
 }: {
   rows: TimelineRow[];
@@ -51,14 +71,23 @@ export function TodayPage({
   nowLabel: string | null;
   children?: ReactNode;
   action?: ReactNode;
+  onOpen?: (row: TimelineRow) => void;
+  progress?: { done: number; total: number };
   title?: string;
 }) {
   return (
     <section aria-labelledby="today-heading" className="px-5 sm:px-6">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 id="today-heading" className="font-serif text-2xl">
-          {title}
-        </h2>
+        <div>
+          <h2 id="today-heading" className="font-serif text-2xl">
+            {title}
+          </h2>
+          {progress && progress.total ? (
+            <p className="tnum text-[0.9375rem] text-ink-soft">
+              {progress.done >= progress.total ? `All ${progress.total} done today` : `${progress.done} of ${progress.total} done`}
+            </p>
+          ) : null}
+        </div>
         {action}
       </div>
       {children ? <div className="mb-3">{children}</div> : null}
@@ -68,7 +97,7 @@ export function TodayPage({
         {rows.map((row) => (
           <Fragment key={row.key}>
             {nowLabel && ribbonBefore === row.key ? <Ribbon label={nowLabel} /> : null}
-            <Row row={row} />
+            <Row row={row} onOpen={onOpen} />
           </Fragment>
         ))}
         {nowLabel && ribbonBefore === null ? <Ribbon label={nowLabel} /> : null}

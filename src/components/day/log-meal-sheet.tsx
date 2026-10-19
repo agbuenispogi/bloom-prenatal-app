@@ -2,7 +2,7 @@
 
 import { Check, Plus, Utensils, X } from "lucide-react";
 import { formatInTimeZone } from "date-fns-tz";
-import { useEffect, useId, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { MainMeal } from "@/lib/engine";
 import type { DayAction, DayActionResult, HomeView } from "@/lib/view/home";
 
@@ -31,7 +31,7 @@ export function LogMealSheet({ view, tz, run }: { view: HomeView; tz: string; ru
   const [when, setWhen] = useState<When>("now");
   const [time, setTime] = useState(() => formatInTimeZone(new Date(view.now), tz, "HH:mm"));
   const [error, setError] = useState<string | null>(null);
-  const [pending, start] = useTransition();
+  const pending = false;
 
   const info = meal === "snack" ? null : view.meals.find((m) => m.meal === meal)!;
   const canSoon = Boolean(info && !info.eaten);
@@ -58,8 +58,7 @@ export function LogMealSheet({ view, tz, run }: { view: HomeView; tz: string; ru
     if (meal === "snack") action = { type: "snack", time: effectiveWhen === "earlier" ? time : undefined };
     else if (effectiveWhen === "soon") action = { type: "intend", meal };
     else action = { type: "eat", meal, time: effectiveWhen === "earlier" ? time : undefined };
-    start(async () => {
-      const r = await run(action);
+    void run(action).then((r) => {
       if (!r.ok) setError(r.error);
       else dialog.current?.close();
     });
