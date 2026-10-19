@@ -2,11 +2,11 @@ import { Body, Button, Column, Container, Head, Heading, Hr, Html, Preview, Row,
 import type { SummaryPayload } from "@/lib/summary/daily";
 
 // The 9 AM email: yesterday's journal page, in the app's voice. Inline styles for email clients.
-const paper = "#f4ecdf";
-const ink = "#3b2b2a";
-const soft = "#6b5650";
-const satin = "#8c2f55";
-const rule = "#d6c6ad";
+const paper = "#fffbfd";
+const ink = "#5b4664";
+const soft = "#6a5673";
+const satin = "#ffc4dc";
+const rule = "#f1dce7";
 const serif = "'Young Serif', Georgia, 'Times New Roman', serif";
 const sans = "'Atkinson Hyperlegible Next', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
 const tnum = { fontVariantNumeric: "tabular-nums" as const };
@@ -73,7 +73,7 @@ export function SummaryEmail({ summary: s, recipientName, appUrl }: { summary: S
           )}
 
           <Section style={{ margin: "28px 0" }}>
-            <Button href={appUrl} style={{ backgroundColor: satin, color: "#fff6f2", fontSize: 17, fontWeight: 600, padding: "16px 24px", borderRadius: 10, display: "block", textAlign: "center" }}>
+            <Button href={appUrl} style={{ backgroundColor: satin, color: "#4a3553", fontSize: 17, fontWeight: 600, padding: "16px 24px", borderRadius: 999, display: "block", textAlign: "center" }}>
               Open Bloom
             </Button>
           </Section>

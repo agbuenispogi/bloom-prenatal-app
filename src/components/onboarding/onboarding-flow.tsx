@@ -55,7 +55,7 @@ function Primary({ onClick, children, disabled }: { onClick: () => void; childre
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-[10px] bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink transition-[background-color,transform] duration-150 active:scale-[0.985] active:bg-ribbon-press disabled:opacity-70"
+      className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-full bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink transition-[background-color,transform] duration-150 active:scale-[0.985] active:bg-ribbon-press disabled:opacity-70"
     >
       {children}
     </button>
@@ -64,7 +64,7 @@ function Primary({ onClick, children, disabled }: { onClick: () => void; childre
 
 function Quiet({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
   return (
-    <button type="button" onClick={onClick} className="min-h-12 w-full rounded-[8px] border border-rule px-5 text-base font-medium text-ink">
+    <button type="button" onClick={onClick} className="min-h-12 w-full rounded-[14px] border border-rule px-5 text-base font-medium text-ink">
       {children}
     </button>
   );
@@ -156,7 +156,7 @@ export function OnboardingFlow({ name, vapidKey, save, todayHref = "/", calendar
               <li className="flex items-center gap-4 py-4">
                 <span aria-hidden className="flex size-7 shrink-0 items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/icons/icon-192.png" alt="" className="size-7 rounded-[6px]" />
+                  <img src="/icons/icon-192.png" alt="" className="size-7 rounded-[26px]" />
                 </span>
                 <span>
                   Open <strong className="font-semibold">Bloom</strong> from your Home Screen and sign in once there.
@@ -226,7 +226,7 @@ export function OnboardingFlow({ name, vapidKey, save, todayHref = "/", calendar
               </Primary>
             )}
             {calendarUrl ? (
-              <a href={calendarUrl} className="flex min-h-12 w-full items-center justify-center rounded-[8px] border border-rule px-5 text-base font-medium text-ink">
+              <a href={calendarUrl} className="flex min-h-12 w-full items-center justify-center rounded-[14px] border border-rule px-5 text-base font-medium text-ink">
                 {alarm === "on" ? "Also add Calendar alarms (backup)" : "Use Calendar alarms instead"}
               </a>
             ) : null}
@@ -262,7 +262,7 @@ export function OnboardingFlow({ name, vapidKey, save, todayHref = "/", calendar
           <div className="mt-auto">
             <Link
               href={todayHref}
-              className="flex min-h-16 w-full items-center justify-center rounded-[10px] bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink"
+              className="flex min-h-16 w-full items-center justify-center rounded-full bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink"
             >
               Open today&apos;s page
             </Link>

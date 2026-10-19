@@ -8,7 +8,7 @@ import { Toggle } from "./settings-page";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const ORDER = [1, 2, 3, 4, 5, 6, 0]; // Monday first, as she reads her week
-const timeInput = "tnum min-h-12 w-full min-w-0 rounded-[12px] border border-rule bg-paper px-3 text-base text-ink";
+const timeInput = "tnum min-h-12 w-full min-w-0 rounded-[16px] border border-rule bg-paper px-3 text-base text-ink";
 const show = (t: string | null) => (t === "24:00" ? "00:00" : (t ?? ""));
 
 function DayRow({ day }: { day: ShiftDay }) {

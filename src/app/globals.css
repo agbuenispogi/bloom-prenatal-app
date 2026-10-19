@@ -1,65 +1,74 @@
 @import "tailwindcss";
 
-/* Bloom: keepsake pregnancy journal. Day pages (light) and night pages (dark), chosen by the device. */
+/* Bloom, in the Baby Snowflake family: a cream page with pink and lilac washes, round white cards, pastel
+   pills, Fredoka headings. Day (light) and night (deep plum) pages, chosen by the device. */
 :root {
   color-scheme: light;
-  --paper: #f4ecdf;
-  --paper-sunk: #eadfcc;
-  --rule: #d6c6ad;
-  --ink: #3b2b2a;
-  --ink-soft: #6b5650;
-  --cloth: #ebc0b3;
-  --cloth-ink: #3b2226;
-  --cloth-soft: #64393f;
-  --cloth-rule: #d49f92;
-  --ribbon: #8c2f55;
-  --ribbon-ink: #fff6f2;
-  --ribbon-press: #74244a;
-  --ribbon-fill: #8c2f55;
-  --ribbon-fill-ink: #fff6f2;
-  --ribbon-shade: #6a2141;
-  --ribbon-sheen: #a2486f;
-  --cloth-spine: #dba699;
-  --spine-crease: #b8837a;
-  --cloth-texture: url("/textures/cloth-day.png");
-  --margin: #e3b7b2;
-  --tab-mint: #a9d3c0;
-  --tab-sky: #afc8e4;
-  --tab-clay: #d49a7e;
-  --tab-blush: #edb7c0;
-  --tab-oat: #d8c7a8;
-  --selection: #e9c3cf;
+  --paper: #fffbfd;
+  --paper-sunk: #fff3f8;
+  --card: #ffffff;
+  --rule: #f1dce7;
+  --ink: #5b4664;
+  --ink-soft: #6a5673;
+  --cloth: #ffffff;
+  --cloth-ink: #5b4664;
+  --cloth-soft: #6a5673;
+  --cloth-rule: #ffd6e6;
+  --ribbon: #a8457a;
+  --ribbon-ink: #ffffff;
+  --ribbon-press: #f5a3c6;
+  --ribbon-fill: #ffc4dc;
+  --ribbon-fill-ink: #4a3553;
+  --fill-a: #ffb3d0;
+  --fill-b: #cdb9f2;
+  --wash-a: #ffd6e6;
+  --wash-b: #e4dafa;
+  --lemon: #fff0cf;
+  --mint: #cdf0df;
+  --mint-ink: #2b6e55;
+  --shadow: 0 6px 26px rgb(180 140 175 / 0.16);
+  --margin: #f3c9dc;
+  --tab-mint: #8fd9b9;
+  --tab-sky: #9fd3f2;
+  --tab-clay: #f2b49a;
+  --tab-blush: #f7a8c8;
+  --tab-oat: #ecd9a0;
+  --selection: #ffd6e6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --paper: #1c1719;
-    --paper-sunk: #241e20;
-    --rule: #3d3235;
-    --ink: #e6dacc;
-    --ink-soft: #b3a398;
-    --cloth: #3e262d;
-    --cloth-ink: #f1ddd8;
-    --cloth-soft: #d2b4b4;
-    --cloth-rule: #5a3a42;
-    --ribbon: #d9799a;
-    --ribbon-ink: #241216;
-    --ribbon-press: #5e2139;
-    --ribbon-fill: #6e2843;
-    --ribbon-fill-ink: #ebd9cf;
-    --ribbon-shade: #4f1b30;
-    --ribbon-sheen: #7d3a55;
-    --cloth-spine: #33212a;
-    --spine-crease: #241519;
-    --cloth-texture: url("/textures/cloth-night.png");
-    --margin: #4a3036;
-    --tab-mint: #5e8576;
-    --tab-sky: #607a96;
-    --tab-clay: #8f604c;
-    --tab-blush: #9a6873;
-    --tab-oat: #7d6f58;
-    --selection: #5a3a48;
+    --paper: #241c29;
+    --paper-sunk: #2b2131;
+    --card: #31263a;
+    --rule: #463852;
+    --ink: #f6e9f2;
+    --ink-soft: #c7b4cf;
+    --cloth: #31263a;
+    --cloth-ink: #f6e9f2;
+    --cloth-soft: #d9c6df;
+    --cloth-rule: #4a3a57;
+    --ribbon: #ffb3d0;
+    --ribbon-ink: #2a1a28;
+    --ribbon-press: #d98aae;
+    --ribbon-fill: #e79bbe;
+    --ribbon-fill-ink: #2a1a28;
+    --fill-a: #e79bbe;
+    --fill-b: #b7a2e6;
+    --wash-a: #3d2a3f;
+    --wash-b: #2f2849;
+    --lemon: #40382a;
+    --mint: #21423a;
+    --mint-ink: #8fe0c0;
+    --shadow: 0 6px 26px rgb(0 0 0 / 0.35);
+    --margin: #4a3550;
+    --tab-mint: #6fb89a;
+    --tab-sky: #77a9c8;
+    --tab-clay: #c48a72;
+    --tab-blush: #c983a2;
+    --tab-oat: #b8a670;
+    --selection: #5a3a58;
   }
 }
 
@@ -80,11 +89,15 @@
   --color-ribbon-fill-ink: var(--ribbon-fill-ink);
   --color-cloth-spine: var(--cloth-spine);
   --color-margin: var(--margin);
+  --color-card: var(--card);
+  --color-lemon: var(--lemon);
+  --color-mint: var(--mint);
+  --color-mint-ink: var(--mint-ink);
   /* Interim aliases kept for the Phase 2 auth screens. */
   --color-background: var(--paper);
   --color-foreground: var(--ink);
   --font-sans: var(--font-ui), system-ui, sans-serif;
-  --font-serif: var(--font-display), Georgia, serif;
+  --font-serif: var(--font-display), ui-rounded, system-ui, sans-serif;
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -93,22 +106,42 @@ html {
   scrollbar-color: var(--rule) transparent;
 }
 
-/* Book-cloth: the woven texture under the Next up entry. */
+/* The card: a round white sheet floating on the cream page (the name is kept from the journal days). */
 @utility cloth {
-  background-color: var(--cloth);
-  background-image: var(--cloth-texture);
-  background-size: 192px 192px;
+  background-color: var(--card);
+  box-shadow: var(--shadow);
 }
 
-/* The folded cloth spine: a turn of cloth with a hinge crease, shaded across its width. */
-@utility spine {
-  background-color: var(--cloth-spine);
-  background-image: linear-gradient(to right, rgb(255 255 255 / 0.1), transparent 35%, rgb(0 0 0 / 0.08) 70%, rgb(0 0 0 / 0.16) 92%, var(--spine-crease) 92%);
+/* The soft pink-to-lilac band used on primary buttons and the top edge of the Next up card. */
+@utility wash {
+  background-image: linear-gradient(100deg, var(--fill-a), var(--fill-b));
 }
 
+@utility soft-shadow {
+  box-shadow: var(--shadow);
+}
+
+/* Primary buttons everywhere: a pastel pink-to-lilac pill with dark plum text. */
+.bg-ribbon-fill {
+  background-image: linear-gradient(100deg, var(--fill-a), var(--fill-b));
+}
+.bg-ribbon-fill:active {
+  filter: brightness(0.96);
+}
+
+/* Headings in Fredoka, rounded and friendly like Baby Snowflake. */
+.font-serif {
+  font-weight: 600;
+  letter-spacing: 0;
+}
 
 body {
-  background: var(--paper);
+  /* Two soft washes in the corners, like the family site. */
+  background:
+    radial-gradient(28rem 22rem at 100% 0%, var(--wash-a), transparent 70%),
+    radial-gradient(24rem 20rem at 0% 22rem, var(--wash-b), transparent 70%),
+    var(--paper);
+  background-repeat: no-repeat;
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 1.0625rem;

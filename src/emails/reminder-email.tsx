@@ -1,10 +1,10 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
 
 // Email in the journal's voice: oat paper, serif heading, one satin action. Inline styles (email clients).
-const paper = "#f4ecdf";
-const ink = "#3b2b2a";
-const soft = "#6b5650";
-const satin = "#8c2f55";
+const paper = "#fffbfd";
+const ink = "#5b4664";
+const soft = "#6a5673";
+const satin = "#ffc4dc";
 const serif = "'Young Serif', Georgia, 'Times New Roman', serif";
 const sans = "'Atkinson Hyperlegible Next', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
 
@@ -36,7 +36,7 @@ export function ReminderEmail({ kind, recipientName, title, body, appUrl, calend
             </Text>
           ) : null}
           <Section style={{ margin: "24px 0" }}>
-            <Button href={appUrl} style={{ backgroundColor: satin, color: "#fff6f2", fontSize: 17, fontWeight: 600, padding: "16px 24px", borderRadius: 10, display: "block", textAlign: "center" }}>
+            <Button href={appUrl} style={{ backgroundColor: satin, color: "#4a3553", fontSize: 17, fontWeight: 600, padding: "16px 24px", borderRadius: 999, display: "block", textAlign: "center" }}>
               Open Bloom
             </Button>
           </Section>
@@ -48,7 +48,7 @@ export function ReminderEmail({ kind, recipientName, title, body, appUrl, calend
               <span style={{ color: soft }}>for a phone alarm</span>
             </Text>
           ) : null}
-          <Hr style={{ borderColor: "#d6c6ad", margin: "24px 0 12px" }} />
+          <Hr style={{ borderColor: "#f1dce7", margin: "24px 0 12px" }} />
           <Text style={{ fontSize: 13, color: soft, margin: 0 }}>Bloom is a reminder and logging tool, not medical advice. Changes to the regimen come from the OB.</Text>
         </Container>
       </Body>

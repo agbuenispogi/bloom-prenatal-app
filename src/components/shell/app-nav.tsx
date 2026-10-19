@@ -26,7 +26,7 @@ export function AppNav({ hrefPrefix = "" }: { hrefPrefix?: string }) {
     <nav
       aria-label="Main"
       style={{ ["--col" as string]: `${columnWidth(local)}px` }}
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-paper pb-[env(safe-area-inset-bottom)] md:absolute md:inset-x-auto md:top-[max(1.25rem,env(safe-area-inset-top))] md:right-[max(0.75rem,calc((100vw-var(--col))/2+0.75rem))] md:bottom-auto md:border-0 md:bg-transparent md:pb-0"
+      className="fixed inset-x-0 bottom-0 z-30 rounded-t-[24px] bg-card pb-[env(safe-area-inset-bottom)] soft-shadow md:absolute md:inset-x-auto md:top-[max(1.25rem,env(safe-area-inset-top))] md:right-[max(0.75rem,calc((100vw-var(--col))/2+0.75rem))] md:bottom-auto md:border-0 md:bg-transparent md:pb-0"
     >
       <ul className="mx-auto flex max-w-md md:gap-1">
         {ITEMS.map(({ href, label, icon: Icon, match }) => {
@@ -36,10 +36,12 @@ export function AppNav({ hrefPrefix = "" }: { hrefPrefix?: string }) {
               <Link
                 href={hrefPrefix ? `${hrefPrefix}${href === "/" ? "/home" : href}` : href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-16 flex-col items-center justify-center gap-0.5 text-[0.8125rem] md:min-h-12 md:flex-row md:gap-2 md:px-3 md:text-base ${active ? "font-semibold text-ink" : "text-ink-soft"}`}
+                className={`flex min-h-16 flex-col items-center justify-center gap-0.5 font-serif text-[0.8125rem] font-medium md:min-h-11 md:flex-row md:gap-2 md:rounded-full md:px-4 md:text-base ${active ? "text-ink md:bg-ribbon-fill md:text-ribbon-fill-ink" : "text-ink-soft"}`}
               >
-                <Icon aria-hidden className="size-6 md:size-5" strokeWidth={active ? 2.2 : 1.8} />
-                <span className={active ? "underline decoration-2 underline-offset-[0.35em] md:decoration-1" : ""}>{label}</span>
+                <span className={`flex h-8 w-14 items-center justify-center rounded-full md:h-auto md:w-auto ${active ? "bg-ribbon-fill text-ribbon-fill-ink md:bg-transparent" : ""}`}>
+                  <Icon aria-hidden className="size-5" strokeWidth={active ? 2.2 : 1.8} />
+                </span>
+                <span>{label}</span>
               </Link>
             </li>
           );

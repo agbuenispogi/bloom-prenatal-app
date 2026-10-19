@@ -24,7 +24,7 @@ export function TabPicker({ name, value }: { name: string; value: string }) {
       <legend className="mb-1.5 text-[0.9375rem] text-ink-soft">Colour tab</legend>
       <div className="flex gap-2">
         {tabs.map((t) => (
-          <label key={t} className="relative flex size-12 cursor-pointer items-center justify-center rounded-[8px] border border-rule has-[:checked]:border-ink has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ribbon">
+          <label key={t} className="relative flex size-12 cursor-pointer items-center justify-center rounded-[14px] border border-rule has-[:checked]:border-ink has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ribbon">
             <input type="radio" name={name} value={t} defaultChecked={value === t} className="sr-only" />
             <span aria-hidden className="h-6 w-2.5 rounded-[3px]" style={{ background: `var(--tab-${t})` }} />
             <span className="sr-only">{t}</span>

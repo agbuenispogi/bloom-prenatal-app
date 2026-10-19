@@ -82,7 +82,7 @@ export function AlarmPrompt({ view, run, onClose }: { view: NextUpView; run: (a:
             type="button"
             disabled={pending}
             onClick={() => act({ type: "take", ...ref })}
-            className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-[10px] bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink active:bg-ribbon-press disabled:opacity-70"
+            className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-full bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink active:bg-ribbon-press disabled:opacity-70"
           >
             <Check aria-hidden className="size-6" strokeWidth={2.5} /> Done
           </button>
@@ -90,7 +90,7 @@ export function AlarmPrompt({ view, run, onClose }: { view: NextUpView; run: (a:
             type="button"
             disabled={pending}
             onClick={() => act({ type: "snooze", ...ref, minutes: 10 })}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[8px] border border-rule text-base font-medium text-ink"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[14px] border border-rule text-base font-medium text-ink"
           >
             <AlarmClock aria-hidden className="size-5" /> Snooze 10 min
           </button>

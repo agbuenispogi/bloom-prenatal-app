@@ -47,7 +47,7 @@ export function Field({
         min={min}
         max={max}
         aria-describedby={hint ? `${id}-hint` : undefined}
-        className="tnum min-h-12 w-full rounded-[12px] border border-rule bg-paper px-4 text-base text-ink placeholder:text-ink-soft"
+        className="tnum min-h-12 w-full rounded-[16px] border border-rule bg-paper px-4 text-base text-ink placeholder:text-ink-soft"
       />
       {hint ? (
         <p id={`${id}-hint`} className="text-[0.875rem] text-ink-soft">
@@ -72,8 +72,8 @@ export function SubmitButton({
   const { pending } = useFormStatus();
   const look =
     variant === "primary"
-      ? "min-h-14 rounded-[10px] bg-ribbon-fill px-6 text-[1.0625rem] font-semibold text-ribbon-fill-ink active:bg-ribbon-press"
-      : "min-h-12 rounded-[8px] border border-rule px-5 text-base font-medium text-ink";
+      ? "min-h-14 rounded-full bg-ribbon-fill px-6 text-[1.0625rem] font-semibold text-ribbon-fill-ink active:bg-ribbon-press"
+      : "min-h-12 rounded-[14px] border border-rule px-5 text-base font-medium text-ink";
   return (
     <button type="submit" name={name} value={value} disabled={pending} aria-busy={pending} className={`${look} transition-[background-color,transform] duration-150 active:scale-[0.985] disabled:opacity-60`}>
       {children}

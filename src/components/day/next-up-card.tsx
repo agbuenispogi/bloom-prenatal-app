@@ -25,7 +25,7 @@ function PrimaryButton({ children, onClick, disabled }: { children: React.ReactN
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-[10px] bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink transition-[background-color,transform] duration-150 active:scale-[0.985] active:bg-ribbon-press disabled:opacity-70"
+      className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-full bg-ribbon-fill px-6 font-serif text-[1.25rem] text-ribbon-fill-ink soft-shadow transition-transform duration-150 active:scale-[0.985] disabled:opacity-70"
     >
       {children}
     </button>
@@ -39,7 +39,7 @@ function QuietButton({ children, onClick, pressed, disabled }: { children: React
       onClick={onClick}
       aria-pressed={pressed}
       disabled={disabled}
-      className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-[8px] border border-cloth-rule bg-cloth/40 px-4 text-base font-medium text-cloth-ink transition-colors duration-150 aria-pressed:bg-cloth-ink/10 disabled:opacity-60"
+      className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border-2 border-cloth-rule bg-transparent px-4 font-serif text-base font-medium text-cloth-ink transition-colors duration-150 active:bg-paper-sunk aria-pressed:bg-paper-sunk disabled:opacity-60"
     >
       {children}
     </button>
@@ -108,13 +108,13 @@ export function NextUpCard({
     <section
       aria-labelledby={headingId}
       aria-busy={pending}
-      className={`cloth settle-in relative flex ${view.kind === "all_done" ? "" : "min-h-[min(55svh,32rem)]"} flex-col overflow-hidden rounded-[6px] py-6 pr-6 pl-9 text-cloth-ink ring-1 ring-cloth-rule md:min-h-0`}
+      className={`cloth settle-in relative flex ${view.kind === "all_done" ? "" : "min-h-[min(55svh,32rem)]"} flex-col overflow-hidden rounded-[26px] px-6 pt-7 pb-6 text-cloth-ink md:min-h-0`}
     >
-      {/* The cloth spine of the journal, folded over the entry's left edge. */}
-      <span aria-hidden className="spine absolute inset-y-0 left-0 w-4" />
-      <h2 className="sr-only">Next up</h2>
+      {/* The pink-to-lilac band along the card's top edge, as on the family site's cards. */}
+      <span aria-hidden className="wash absolute inset-x-0 top-0 h-1.5" />
+      <h2 className="font-serif text-[0.8125rem] font-medium tracking-[0.06em] text-cloth-soft uppercase">Next up</h2>
 
-      <div className="flex items-start gap-3">
+      <div className="mt-2 flex items-start gap-3">
         {view.kind !== "all_done" && view.kind !== "eat" ? <MedTab tab={view.tab} className="mt-2" /> : null}
         <div className="min-w-0">
           <p id={headingId} className="font-serif text-[2.125rem] leading-[1.1] tracking-[-0.01em] text-balance">
@@ -140,14 +140,14 @@ export function NextUpCard({
       {view.overdue ? <p className="mt-2 text-base text-cloth-soft">Whenever you&apos;re ready. Late is still good.</p> : null}
 
       {inked ? (
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 bg-cloth/85" role="status">
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 bg-card/90" role="status">
           <InkCheck className="h-24 w-32 text-ribbon" />
           <p className="settle-in font-serif text-2xl">{inked}</p>
         </div>
       ) : null}
 
       {error ? (
-        <p role="alert" className="mt-4 rounded-xl bg-paper/70 px-4 py-3 text-base text-ink">
+        <p role="alert" className="mt-4 rounded-[16px] bg-paper-sunk px-4 py-3 text-base text-ink">
           {error}
         </p>
       ) : null}
@@ -211,12 +211,12 @@ export function NextUpCard({
                       onChange={(e) => setReason(e.target.value)}
                       maxLength={200}
                       placeholder="e.g. felt nauseous"
-                      className="min-h-12 rounded-xl border border-cloth-rule bg-paper/60 px-4 text-base text-ink placeholder:text-ink-soft"
+                      className="min-h-12 rounded-[16px] border border-cloth-rule bg-paper px-4 text-base text-ink placeholder:text-ink-soft"
                     />
                   </label>
                   <div className="flex gap-3">
                     <QuietButton onClick={() => setPanel("none")}>Keep it</QuietButton>
-                    <button type="submit" disabled={pending} className="flex min-h-12 flex-1 items-center justify-center rounded-xl bg-cloth-ink px-4 text-base font-semibold text-cloth">
+                    <button type="submit" disabled={pending} className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-cloth-ink px-4 text-base font-semibold text-cloth">
                       Skip this dose
                     </button>
                   </div>

@@ -10,16 +10,16 @@ function Row({ row, onOpen }: { row: TimelineRow; onOpen?: (row: TimelineRow) =>
   const late = row.lateByMin && row.targetLabel ? `${row.lateByMin} min late (planned ${row.targetLabel})` : null;
   const body = (
     <>
-      <span className={`tnum pt-0.5 text-right text-[0.9375rem] whitespace-nowrap ${row.estimated ? "text-ink-soft" : "text-ink"}`}>
+      <span className={`tnum pt-1 text-[0.875rem] font-bold whitespace-nowrap ${row.estimated ? "text-ink-soft" : "text-ink"}`}>
         {row.timeLabel ? (row.estimated ? `~${row.timeLabel}` : row.timeLabel) : "Any time"}
       </span>
-      <span className="relative z-10 bg-paper pt-0.5">
+      <span className="pt-0.5">
         <StateMark state={row.state} />
       </span>
       <div className="min-w-0">
         <p className={`flex items-center gap-2 text-[1.0625rem] leading-snug ${quiet ? "text-ink-soft" : "text-ink"} ${struck ? "line-through decoration-1" : ""}`}>
           {row.kind === "dose" ? <MedTab tab={row.tab} className="h-4 w-2" /> : null}
-          <span className={row.kind === "meal" ? "font-serif text-lg" : "font-medium"}>{row.title}</span>
+          <span className={row.kind === "meal" ? "font-serif text-lg" : "font-bold"}>{row.title}</span>
         </p>
         <p className="text-[0.9375rem] text-ink-soft">
           {[row.note, row.state === "done" || row.note === "skipped with breakfast" ? null : STATE_WORD[row.state], late, row.reason ? `“${row.reason}”` : null]
@@ -36,7 +36,7 @@ function Row({ row, onOpen }: { row: TimelineRow; onOpen?: (row: TimelineRow) =>
       </div>
     </>
   );
-  const grid = "grid grid-cols-[5.25rem_22px_1fr] gap-x-3.5 py-3";
+  const grid = "grid grid-cols-[4.75rem_26px_1fr] items-start gap-x-3 rounded-[18px] bg-card px-3.5 py-3 soft-shadow";
   return (
     <li>
       {onOpen ? (
@@ -45,7 +45,7 @@ function Row({ row, onOpen }: { row: TimelineRow; onOpen?: (row: TimelineRow) =>
           type="button"
           onClick={() => onOpen(row)}
           aria-haspopup="dialog"
-          className={`${grid} -mx-2 w-[calc(100%+1rem)] rounded-[8px] px-2 text-left transition-colors duration-150 active:bg-cloth/40`}
+          className={`${grid} w-full text-left transition-transform duration-150 active:scale-[0.99]`}
         >
           {body}
         </button>
@@ -83,17 +83,20 @@ export function TodayPage({
             {title}
           </h2>
           {progress && progress.total ? (
-            <p className="tnum text-[0.9375rem] text-ink-soft">
+            <p className="tnum text-[0.9375rem] font-bold text-ink-soft">
               {progress.done >= progress.total ? `All ${progress.total} done today` : `${progress.done} of ${progress.total} done`}
             </p>
           ) : null}
         </div>
         {action}
       </div>
+      {progress && progress.total ? (
+        <div aria-hidden className="mb-4 h-2.5 overflow-hidden rounded-full bg-paper-sunk ring-1 ring-cloth-rule">
+          <div className="wash h-full rounded-full transition-[width] duration-500" style={{ width: `${Math.round((100 * Math.min(progress.done, progress.total)) / progress.total)}%` }} />
+        </div>
+      ) : null}
       {children ? <div className="mb-3">{children}</div> : null}
-      <ol className="relative divide-y divide-rule/70">
-        {/* The journal's margin rule, running down the page between the times and the entries. */}
-        <span aria-hidden className="absolute inset-y-0 left-[calc(5.25rem+0.875rem+10px)] w-px bg-margin" />
+      <ol className="flex flex-col gap-2">
         {rows.map((row) => (
           <Fragment key={row.key}>
             {nowLabel && ribbonBefore === row.key ? <Ribbon label={nowLabel} /> : null}

@@ -16,7 +16,7 @@ const RULE_TYPES: { value: RuleData["ruleType"]; label: string }[] = [
 ];
 const MEALS = ["breakfast", "lunch", "dinner", "snack"] as const;
 
-const selectClass = "min-h-12 w-full rounded-[12px] border border-rule bg-paper px-3 text-base text-ink";
+const selectClass = "min-h-12 w-full rounded-[16px] border border-rule bg-paper px-3 text-base text-ink";
 
 export function describeRule(r: RuleData): string {
   switch (r.ruleType) {

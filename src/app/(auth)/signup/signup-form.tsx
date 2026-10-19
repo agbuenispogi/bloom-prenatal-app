@@ -21,7 +21,7 @@ export function SignupForm({ invite, email }: { invite?: string; email?: string 
       />
       <FormMessage state={state} />
       {state.signInHref ? (
-        <Link href={state.signInHref} className="flex min-h-12 items-center justify-center rounded-[8px] border border-rule px-5 text-base font-medium text-ink">
+        <Link href={state.signInHref} className="flex min-h-12 items-center justify-center rounded-[14px] border border-rule px-5 text-base font-medium text-ink">
           Sign in instead
         </Link>
       ) : null}

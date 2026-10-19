@@ -5,8 +5,8 @@ import { Check, Clock, RotateCcw, SkipForward, Utensils, X } from "lucide-react"
 import { useEffect, useId, useRef, useState } from "react";
 import type { DayAction, DayActionResult, TimelineRow } from "@/lib/view/home";
 
-const btn = "flex min-h-14 w-full items-center gap-3 rounded-[10px] border border-rule px-4 text-left text-[1.0625rem] text-ink transition-colors duration-150 active:bg-cloth/40";
-const primary = "flex min-h-16 w-full items-center justify-center gap-2.5 rounded-[10px] bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink transition-[background-color,transform] duration-150 active:scale-[0.985] active:bg-ribbon-press";
+const btn = "flex min-h-14 w-full items-center gap-3 rounded-[18px] bg-card px-4 text-left text-[1.0625rem] font-semibold text-ink soft-shadow transition-colors duration-150 active:bg-paper-sunk";
+const primary = "flex min-h-16 w-full items-center justify-center gap-2.5 rounded-full bg-ribbon-fill px-6 font-serif text-[1.25rem] text-ribbon-fill-ink soft-shadow transition-transform duration-150 active:scale-[0.985]";
 
 // Tap any row on Today to log it, in any order: taken now, taken earlier, skip, or put it back to "not yet".
 export function ItemSheet({ row, tz, now, run, onClose }: { row: TimelineRow | null; tz: string; now: string; run: (a: DayAction) => Promise<DayActionResult>; onClose: () => void }) {
@@ -60,7 +60,7 @@ export function ItemSheet({ row, tz, now, run, onClose }: { row: TimelineRow | n
     <dialog
       ref={dialog}
       aria-labelledby={titleId}
-      className="m-0 mt-auto w-full max-w-none rounded-t-[16px] border-t border-rule bg-paper p-0 text-ink backdrop:bg-[rgb(28_23_25/0.45)] sm:m-auto sm:max-w-md sm:rounded-[16px] sm:border"
+      className="m-0 mt-auto w-full max-w-none rounded-t-[28px] border-t border-rule bg-paper p-0 text-ink backdrop:bg-[rgb(91_70_100/0.4)] sm:m-auto sm:max-w-md sm:rounded-[28px] sm:border"
     >
       {r ? (
         <div className="settle-in flex flex-col gap-5 px-5 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
@@ -101,9 +101,9 @@ export function ItemSheet({ row, tz, now, run, onClose }: { row: TimelineRow | n
                 >
                   <label className="flex flex-1 flex-col gap-1.5 text-base text-ink-soft">
                     {done ? `${verb} at` : isDose ? "Taken at" : "Ate at"}
-                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required autoFocus className="tnum min-h-12 rounded-[12px] border border-rule bg-paper px-4 text-base text-ink" />
+                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required autoFocus className="tnum min-h-12 rounded-[16px] border border-rule bg-paper px-4 text-base text-ink" />
                   </label>
-                  <button type="submit" className="min-h-12 rounded-[10px] bg-cloth-ink px-5 text-base font-semibold text-cloth">
+                  <button type="submit" className="min-h-12 rounded-full bg-ink px-5 text-base font-bold text-paper">
                     Save
                   </button>
                 </form>

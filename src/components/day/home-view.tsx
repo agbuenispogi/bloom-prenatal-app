@@ -65,8 +65,8 @@ export function HomeView({
     <div className="mx-auto w-full max-w-[1120px] pb-[max(2rem,env(safe-area-inset-bottom))]">
       <header className="flex items-start justify-between gap-4 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 sm:px-6">
         <div>
-          <h1 className="font-serif text-[1.75rem] leading-tight">{view.dateLabel}</h1>
-          {view.weekLabel ? <p className="text-base text-ink-soft">{view.weekLabel}</p> : null}
+          <h1 className="font-serif text-[1.875rem] leading-tight">{view.dateLabel}</h1>
+          {view.weekLabel ? <p className="mt-1.5 inline-flex rounded-full bg-lemon px-3 py-1 font-serif text-[0.9375rem] font-medium text-ink">{view.weekLabel}</p> : null}
           {view.snowflake ? (
             <a href={view.snowflake.href} target="_blank" rel="noopener" className="mt-1 inline-flex min-h-10 items-center gap-1.5 text-[0.9375rem] text-ink-soft underline decoration-rule underline-offset-4">
               <Snowflake aria-hidden className="size-4 shrink-0" />

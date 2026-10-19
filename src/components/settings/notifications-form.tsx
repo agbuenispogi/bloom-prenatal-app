@@ -62,7 +62,7 @@ export function NotificationsForm({
           <p className="text-[0.9375rem] text-pretty text-ink-soft">
             Adds a private &ldquo;Bloom&rdquo; calendar to this phone. Its own alerts ring for each upcoming dose, even if a notification is missed. Taken doses drop off by themselves.
           </p>
-          <a href={calendarUrl} className="flex min-h-12 items-center justify-center rounded-[8px] border border-rule px-5 text-base font-medium text-ink">
+          <a href={calendarUrl} className="flex min-h-12 items-center justify-center rounded-[14px] border border-rule px-5 text-base font-medium text-ink">
             Add to my phone&apos;s Calendar
           </a>
           <p className="text-[0.875rem] text-pretty text-ink-soft">On iPhone: tap Subscribe. To keep it fresh, set Settings → Calendar → Accounts → Fetch New Data to every 15 minutes.</p>

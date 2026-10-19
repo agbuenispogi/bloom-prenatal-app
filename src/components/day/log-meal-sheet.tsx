@@ -14,7 +14,7 @@ const LABEL: Record<MealChoice, string> = { breakfast: "Breakfast", lunch: "Lunc
 function Choice({ name, value, checked, onChange, disabled, children }: { name: string; value: string; checked: boolean; onChange: () => void; disabled?: boolean; children: React.ReactNode }) {
   return (
     <label
-      className={`relative flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-[8px] border px-3 text-center text-base transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ribbon ${checked ? "cloth border-cloth-rule font-semibold text-cloth-ink" : "border-rule text-ink"} ${disabled ? "cursor-not-allowed opacity-70" : ""}`}
+      className={`relative flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-[14px] border px-3 text-center text-base transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ribbon ${checked ? "border-transparent bg-ribbon-fill font-bold text-ribbon-fill-ink" : "border-rule bg-card text-ink"} ${disabled ? "cursor-not-allowed opacity-70" : ""}`}
     >
       <input type="radio" name={name} value={value} checked={checked} onChange={onChange} disabled={disabled} className="sr-only" />
       {children}
@@ -68,14 +68,14 @@ export function LogMealSheet({ view, tz, run }: { view: HomeView; tz: string; ru
 
   return (
     <>
-      <button type="button" onClick={open} className="-mr-2 flex min-h-12 items-center gap-1.5 rounded-[8px] px-2 text-base font-medium text-ink">
+      <button type="button" onClick={open} className="-mr-2 flex min-h-12 items-center gap-1.5 rounded-[14px] px-2 text-base font-medium text-ink">
         <Plus aria-hidden className="size-5" /> Log a meal
       </button>
 
       <dialog
         ref={dialog}
         aria-labelledby={titleId}
-        className="m-0 mt-auto w-full max-w-none rounded-t-[16px] border-t border-rule bg-paper p-0 text-ink backdrop:bg-[rgb(28_23_25/0.45)] sm:m-auto sm:max-w-md sm:rounded-[16px] sm:border"
+        className="m-0 mt-auto w-full max-w-none rounded-t-[28px] border-t border-rule bg-paper p-0 text-ink backdrop:bg-[rgb(91_70_100/0.4)] sm:m-auto sm:max-w-md sm:rounded-[28px] sm:border"
       >
         <form onSubmit={submit} className="settle-in flex flex-col gap-6 px-5 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <div className="flex items-center justify-between">
@@ -136,7 +136,7 @@ export function LogMealSheet({ view, tz, run }: { view: HomeView; tz: string; ru
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   required
-                  className="tnum min-h-12 rounded-[12px] border border-rule bg-paper px-4 text-base text-ink"
+                  className="tnum min-h-12 rounded-[16px] border border-rule bg-paper px-4 text-base text-ink"
                 />
               </label>
             ) : null}
@@ -151,7 +151,7 @@ export function LogMealSheet({ view, tz, run }: { view: HomeView; tz: string; ru
           <button
             type="submit"
             disabled={pending}
-            className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-[10px] bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink transition-[background-color,transform] duration-150 active:scale-[0.985] active:bg-ribbon-press disabled:opacity-70"
+            className="flex min-h-16 w-full items-center justify-center gap-2.5 rounded-full bg-ribbon-fill px-6 text-[1.1875rem] font-semibold text-ribbon-fill-ink transition-[background-color,transform] duration-150 active:scale-[0.985] active:bg-ribbon-press disabled:opacity-70"
           >
             <Utensils aria-hidden className="size-6" />
             {effectiveWhen === "soon" ? `Eating ${LABEL[meal].toLowerCase()} soon` : `Log ${LABEL[meal].toLowerCase()}`}

@@ -21,7 +21,7 @@ export function ServingsStrip({ servings, canLog, run }: { servings: ServingView
               ? "All done for today"
               : `By ${s.deadlineLabel}`;
         return (
-          <div key={s.ruleId} className="flex items-center gap-3 rounded-2xl border border-rule px-4 py-3">
+          <div key={s.ruleId} className="flex items-center gap-3 rounded-[20px] bg-card px-4 py-3 soft-shadow">
             <MedTab tab={s.tab} />
             <div className="min-w-0 flex-1">
               <p className="font-medium leading-snug">{s.name}</p>
@@ -37,7 +37,7 @@ export function ServingsStrip({ servings, canLog, run }: { servings: ServingView
                   const r = await run({ type: "serving", ruleId: s.ruleId });
                   if (!r.ok) setError(r.error);
                 }}
-                className="flex min-h-12 shrink-0 items-center gap-1.5 rounded-xl border border-rule px-3.5 text-base font-medium whitespace-nowrap disabled:opacity-60"
+                className="flex min-h-12 shrink-0 items-center gap-1.5 rounded-[16px] border border-rule px-3.5 text-base font-medium whitespace-nowrap disabled:opacity-60"
               >
                 <Plus aria-hidden className="size-5" /> Had {s.doseLabel.startsWith("1 ") ? `a ${s.doseLabel.slice(2)}` : "one"}
               </button>

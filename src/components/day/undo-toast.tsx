@@ -11,15 +11,15 @@ export function UndoToast({ toast, onUndo, onDismiss }: { toast: Toast | null; o
         <div
           key={toast.id}
           role={toast.error ? "alert" : undefined}
-          className="settle-in pointer-events-auto flex min-h-14 w-full max-w-md items-center gap-2 rounded-[12px] border border-rule bg-paper py-1.5 pr-1.5 pl-4 text-ink shadow-[0_8px_24px_rgb(28_23_25/0.18)]"
+          className="settle-in pointer-events-auto flex min-h-14 w-full max-w-md items-center gap-2 rounded-full bg-ink py-1.5 pr-1.5 pl-5 font-bold text-paper soft-shadow"
         >
-          <p className={`min-w-0 flex-1 text-base ${toast.error ? "text-ribbon" : ""}`}>{toast.label}</p>
+          <p className={`min-w-0 flex-1 text-base ${toast.error ? "text-[var(--fill-a)]" : ""}`}>{toast.label}</p>
           {toast.undo?.length ? (
-            <button type="button" onClick={onUndo} className="flex min-h-12 items-center gap-1.5 rounded-[8px] px-3 text-base font-semibold text-ribbon">
+            <button type="button" onClick={onUndo} className="flex min-h-11 items-center gap-1.5 rounded-full bg-ribbon-fill px-4 font-serif text-base text-ribbon-fill-ink">
               <Undo2 aria-hidden className="size-5" /> Undo
             </button>
           ) : (
-            <button type="button" onClick={onDismiss} aria-label="Dismiss" className="flex size-12 items-center justify-center rounded-full text-ink-soft">
+            <button type="button" onClick={onDismiss} aria-label="Dismiss" className="flex size-12 items-center justify-center rounded-full text-paper">
               <X aria-hidden className="size-5" />
             </button>
           )}

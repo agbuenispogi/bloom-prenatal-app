@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible_Next, Young_Serif } from "next/font/google";
+import { Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
 
-// Young Serif: the journal's handset headings. Atkinson Hyperlegible Next: UI and numerals, legible at 1 AM.
-const display = Young_Serif({ variable: "--font-display", weight: "400", subsets: ["latin"] });
-const ui = Atkinson_Hyperlegible_Next({ variable: "--font-ui", subsets: ["latin"], adjustFontFallback: false });
+// The Baby Snowflake pair: Fredoka for rounded headings, Nunito for everything else.
+const display = Fredoka({ variable: "--font-display", subsets: ["latin"] });
+const ui = Nunito({ variable: "--font-ui", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Bloom",
@@ -18,8 +18,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4ecdf" },
-    { media: "(prefers-color-scheme: dark)", color: "#1c1719" },
+    { media: "(prefers-color-scheme: light)", color: "#fffbfd" },
+    { media: "(prefers-color-scheme: dark)", color: "#241c29" },
   ],
 };
 

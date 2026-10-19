@@ -1,9 +1,9 @@
 import type { ItemState } from "@/lib/engine";
 import type { Tab } from "@/lib/view/home";
 
-// Cloth index tab: each medicine's swatch, like the coloured tabs in a keepsake book.
+// Each medicine's pastel swatch.
 export function MedTab({ tab, className = "" }: { tab: Tab; className?: string }) {
-  return <span aria-hidden className={`inline-block h-6 w-2.5 shrink-0 rounded-[3px] ${className}`} style={{ background: `var(--tab-${tab})` }} />;
+  return <span aria-hidden className={`inline-block h-6 w-2.5 shrink-0 rounded-full ${className}`} style={{ background: `var(--tab-${tab})` }} />;
 }
 
 // State is carried by form, not colour alone: solid ink = done, dashed = upcoming, ringed = due,
@@ -12,10 +12,11 @@ export function StateMark({ state }: { state: ItemState }) {
   const common = { width: 22, height: 22, viewBox: "0 0 22 22", "aria-hidden": true as const };
   switch (state) {
     case "done":
-      // The same hand-inked check drawn on Done, left on the page in ink.
+      // A soft mint dot with a check, as on the family site.
       return (
         <svg {...common}>
-          <path d="M2.5 12.6c2 1.3 3.7 3.1 5 5.4.5.8.9.8 1.4 0C11.8 12 15.4 7.2 20 3.6" fill="none" stroke="var(--ink)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="11" cy="11" r="11" fill="var(--mint)" />
+          <path d="M6.5 11.4l3 3 6-6.4" fill="none" stroke="var(--mint-ink)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case "due":
