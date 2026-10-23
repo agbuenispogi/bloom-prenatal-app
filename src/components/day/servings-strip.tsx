@@ -5,7 +5,8 @@ import { useState } from "react";
 import type { DayAction, DayActionResult, ServingView } from "@/lib/view/home";
 import { MedTab } from "./marks";
 
-// Any-time items (Anmum Materna): a count, a gentle note after the deadline, one tap to add a serving.
+// Any-time items (Anmum Materna, an as-needed medicine, a vitamin): a count, a gentle note after the
+// reminder time, one tap to log one. Drinks are "had by the glass"; medicines are "taken".
 export function ServingsStrip({ servings, canLog, run }: { servings: ServingView[]; canLog: boolean; run: (a: DayAction) => Promise<DayActionResult> }) {
   const [error, setError] = useState<string | null>(null);
   if (servings.length === 0) return null;
@@ -16,7 +17,7 @@ export function ServingsStrip({ servings, canLog, run }: { servings: ServingView
         const note = s.skipped
           ? "Skipped today"
           : s.needsReminder
-            ? "Not yet today. A glass before bed?"
+            ? s.nudge
             : s.taken >= s.max
               ? "All done for today"
               : `By ${s.deadlineLabel}`;
@@ -39,7 +40,7 @@ export function ServingsStrip({ servings, canLog, run }: { servings: ServingView
                 }}
                 className="flex min-h-12 shrink-0 items-center gap-1.5 rounded-[16px] border border-rule px-3.5 text-base font-medium whitespace-nowrap disabled:opacity-60"
               >
-                <Plus aria-hidden className="size-5" /> Had {s.doseLabel.startsWith("1 ") ? `a ${s.doseLabel.slice(2)}` : "one"}
+                <Plus aria-hidden className="size-5" /> {s.button}
               </button>
             ) : null}
           </div>

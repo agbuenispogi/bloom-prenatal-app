@@ -54,7 +54,7 @@ export function HistoryPage({ view, hrefFor, emailNote }: { view: HistoryView; h
                     <span className="block text-[0.9375rem] text-ink-soft">
                       {d.empty
                         ? "Nothing logged"
-                        : [shortTally(d), d.summary.anmumMissed ? "no Anmum" : null].filter(Boolean).join(" · ")}
+                        : [shortTally(d), d.summary.servingsMissed ? `no ${d.summary.servings.filter((x) => x.missed).map((x) => x.name).join(", ")}` : null].filter(Boolean).join(" · ")}
                     </span>
                   </span>
                   <ChevronRight aria-hidden className="size-5 text-ink-soft" />

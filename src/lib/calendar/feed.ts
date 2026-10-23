@@ -1,6 +1,7 @@
 // Calendar-feed events from schedules: every open dose with a known time (logged meals, fixed times, snoozes,
 // a tapped bedtime), plus the Anmum check-in while it's below its minimum. Taken or skipped doses disappear
 // from the feed, so the phone's alarm for them goes away on the next refresh. Pure.
+import { servingWords } from "@/lib/servings-words";
 import type { DaySchedule, DoseItem } from "@/lib/engine";
 import type { IcsEvent } from "@/lib/reminders/ics";
 
@@ -26,7 +27,7 @@ export function feedEvents(schedules: DaySchedule[], now: Date, appUrl: string):
     }
     for (const a of s.anmum) {
       if (a.taken >= a.min || a.skipped || a.deadline.getTime() < now.getTime() - 60 * 60_000) continue;
-      events.push({ uid: `${s.careDate}-${a.rule.id}-anmum@bloom`, title: `${a.medication.name} today?`, description: "None logged yet today. A glass before bed counts.", start: a.deadline, durationMin: 10, url: appUrl, now });
+      events.push({ uid: `${s.careDate}-${a.rule.id}-anmum@bloom`, title: `${a.medication.name} today?`, description: servingWords(a.medication.name, a.medication.doseLabel).drink ? "None logged yet today. A glass before bed counts." : "None logged yet today. Taking it before bed counts.", start: a.deadline, durationMin: 10, url: appUrl, now });
     }
   }
   return events.sort((x, y) => x.start.getTime() - y.start.getTime());

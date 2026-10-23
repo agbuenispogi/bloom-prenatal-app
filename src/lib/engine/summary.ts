@@ -1,3 +1,4 @@
+import { servingWords } from "@/lib/servings-words";
 import type { DaySchedule, DoseItem } from "./types";
 
 // A care day's adherence, for History and the 9 AM summary email. Pure.
@@ -10,10 +11,9 @@ export interface DaySummary {
   missed: number;
   open: number;          // still pending (today, not over yet)
   adherencePct: number;  // on time / scheduled, 0–100
-  anmumTaken: number;
-  anmumMin: number;
-  anmumMissed: boolean;  // below minimum and not skipped (only meaningful once the day is over)
-  clean: boolean;        // nothing missed and Anmum met (or deliberately skipped)
+  servings: { name: string; doseLabel: string; taken: number; min: number; missed: boolean }[]; // any-time items
+  servingsMissed: boolean; // some any-time item below its minimum and not skipped (meaningful once the day is over)
+  clean: boolean;          // nothing missed and every any-time item met (or deliberately skipped)
 }
 
 export function summarizeDay(schedule: DaySchedule): DaySummary {
@@ -25,10 +25,14 @@ export function summarizeDay(schedule: DaySchedule): DaySummary {
   const skipped = doses.filter((d) => d.state === "skipped").length;
   const missed = doses.filter((d) => d.state === "missed").length;
   const open = doses.length - onTime - late - skipped - missed;
-  const anmum = schedule.anmum[0];
-  const anmumTaken = anmum?.taken ?? 0;
-  const anmumMin = anmum?.min ?? 0;
-  const anmumMissed = Boolean(anmum && !anmum.skipped && anmum.taken < anmum.min);
+  const servings = schedule.anmum.map((a) => ({
+    name: a.medication.name,
+    doseLabel: a.medication.doseLabel,
+    taken: a.taken,
+    min: a.min,
+    missed: !a.skipped && a.taken < a.min,
+  }));
+  const servingsMissed = servings.some((x) => x.missed);
   return {
     careDate: schedule.careDate,
     scheduled: doses.length,
@@ -38,11 +42,15 @@ export function summarizeDay(schedule: DaySchedule): DaySummary {
     missed,
     open,
     adherencePct: doses.length ? Math.round((onTime / doses.length) * 100) : 100,
-    anmumTaken,
-    anmumMin,
-    anmumMissed,
-    clean: missed === 0 && open === 0 && !anmumMissed,
+    servings,
+    servingsMissed,
+    clean: missed === 0 && open === 0 && !servingsMissed,
   };
+}
+
+// One line per any-time item: "Anmum Materna: 1 glass", "Gaviscon: not taken".
+export function servingLines(s: DaySummary): { text: string; missed: boolean }[] {
+  return s.servings.map((x) => ({ text: x.missed ? `${x.name}: not taken` : `${x.name}: ${servingWords(x.name, x.doseLabel).count(x.taken)}`, missed: x.missed }));
 }
 
 // Consecutive clean days, counting back from the most recent finished day. `days` newest first.
@@ -62,13 +70,13 @@ export function gentleNote(s: DaySummary, streakDays: number, when: "recent" | "
   if (when === "past") {
     if (s.clean && s.late === 0) return "Every dose on time that day.";
     if (s.clean) return "Everything taken that day, a few a little late.";
-    if (s.missed <= 1 && !s.anmumMissed) return "One slipped by that day, and that's okay.";
+    if (s.missed <= 1 && !s.servingsMissed) return "One slipped by that day, and that's okay.";
     return "A few things slipped by that day. It happens.";
   }
   if (s.clean && s.late === 0) {
     return streakDays > 1 ? `Every dose on time, ${streakDays} days in a row. You and baby are in good rhythm.` : "Every dose on time. That's a beautiful page.";
   }
   if (s.clean) return "Everything taken, a few a little late. Late still counts. Well done.";
-  if (s.missed <= 1 && !s.anmumMissed) return "Nearly everything taken. One slipped by, and that's okay. Today is a fresh page.";
+  if (s.missed <= 1 && !s.servingsMissed) return "Nearly everything taken. One slipped by, and that's okay. Today is a fresh page.";
   return "Some doses slipped by. That happens. Today is a fresh page, and Bloom will be right there with you.";
 }

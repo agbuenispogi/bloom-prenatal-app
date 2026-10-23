@@ -1,3 +1,4 @@
+import { servingLines } from "@/lib/engine";
 import { tally, type DayCard } from "@/lib/view/history";
 
 export { shortTally, tally } from "@/lib/view/history";
@@ -13,9 +14,11 @@ export function DaySummaryBlock({ card }: { card: DayCard }) {
         <p className="min-w-0 font-serif text-xl leading-snug text-pretty">{card.note}</p>
       </div>
       <p className="tnum border-t border-rule pt-3 text-[1.0625rem]">{tally(card)}</p>
-      <p className={`text-[1.0625rem] ${s.anmumMissed ? "text-ribbon" : "text-ink"}`}>
-        {s.anmumMissed ? "Anmum Materna: not taken this day" : `Anmum Materna: ${s.anmumTaken} ${s.anmumTaken === 1 ? "glass" : "glasses"}`}
-      </p>
+      {servingLines(s).map((l) => (
+        <p key={l.text} className={`text-[1.0625rem] ${l.missed ? "text-ribbon" : "text-ink"}`}>
+          {l.missed ? `${l.text} this day` : l.text}
+        </p>
+      ))}
     </div>
   );
 }

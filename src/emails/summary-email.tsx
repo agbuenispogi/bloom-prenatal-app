@@ -14,7 +14,8 @@ const tnum = { fontVariantNumeric: "tabular-nums" as const };
 export function summarySubject(s: SummaryPayload): string {
   if (s.empty) return "Yesterday's page in Bloom";
   const parts = [`Yesterday: ${s.tally.split(" · ")[0]}`];
-  if (s.anmumMissed) parts.push("Anmum not taken");
+  const notTaken = s.servingLines.filter((l) => l.missed).map((l) => l.text.split(":")[0]);
+  if (notTaken.length) parts.push(`${notTaken.join(", ")} not taken`);
   return parts.join(" · ");
 }
 
@@ -52,7 +53,9 @@ export function SummaryEmail({ summary: s, recipientName, appUrl }: { summary: S
               </Section>
               <Hr style={{ borderColor: rule, margin: "16px 0 12px" }} />
               <Text style={{ fontSize: 16, margin: "0 0 6px", ...tnum }}>{s.tally}</Text>
-              <Text style={{ fontSize: 16, margin: "0 0 6px", color: s.anmumMissed ? satin : ink, fontWeight: s.anmumMissed ? 600 : 400 }}>{s.anmumLine}</Text>
+              {s.servingLines.map((l) => (
+                <Text key={l.text} style={{ fontSize: 16, margin: "0 0 6px", color: l.missed ? satin : ink, fontWeight: l.missed ? 600 : 400 }}>{l.text}</Text>
+              ))}
               {s.streak > 1 ? <Text style={{ fontSize: 16, margin: "0 0 6px", color: soft }}>{s.streak} clean days in a row</Text> : null}
 
               <Section style={{ margin: "20px 0 0" }}>

@@ -1,5 +1,5 @@
 // The 9 AM daily summary: when it's due and what it says. Pure (no I/O); the dispatcher sends it.
-import { addDays, careDateOf, wallTime, type DaySchedule, type EngineInput, type ItemState } from "@/lib/engine";
+import { addDays, careDateOf, servingLines, wallTime, type DaySchedule, type EngineInput, type ItemState } from "@/lib/engine";
 import { dayRows, tally, toHistoryView } from "@/lib/view/history";
 
 const STATE_WORD: Record<ItemState, string> = { done: "Taken", due: "Not logged", upcoming: "Not logged", snoozed: "Not logged", skipped: "Skipped", missed: "Missed" };
@@ -22,8 +22,8 @@ export interface SummaryPayload {
   tally: string;         // "6 on time · none late, skipped or missed"
   note: string;          // the gentle note
   streak: number;
-  anmumLine: string;
-  anmumMissed: boolean;
+  servingLines: { text: string; missed: boolean }[]; // "Anmum Materna: 1 glass", one per any-time item
+  servingsMissed: boolean;
   empty: boolean;
   rows: SummaryRow[];
 }
@@ -60,8 +60,8 @@ export function buildSummary(days: { input: EngineInput; schedule: DaySchedule }
     tally: tally(card),
     note: card.note,
     streak: history.streak,
-    anmumLine: s.anmumMissed ? "Anmum Materna: not taken" : `Anmum Materna: ${s.anmumTaken} ${s.anmumTaken === 1 ? "glass" : "glasses"}`,
-    anmumMissed: s.anmumMissed,
+    servingLines: servingLines(s),
+    servingsMissed: s.servingsMissed,
     empty: card.empty,
     rows,
   };

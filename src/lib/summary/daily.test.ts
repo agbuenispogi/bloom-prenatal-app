@@ -39,7 +39,7 @@ describe("summaryDue", () => {
 describe("buildSummary", () => {
   it("lists every dose and meal with actual times, and the Anmum count", () => {
     const s = buildSummary([day(TUE, WED, [taken("r-anmum", at(TUE, "15:00"))]), day(MON, TUE, [taken("r-anmum", at(MON, "15:00"))])], "2027-02-05");
-    expect(s).toMatchObject({ careDate: TUE, longLabel: "Tuesday, 20 October", pct: 100, streak: 2, anmumMissed: false, anmumLine: "Anmum Materna: 1 glass" });
+    expect(s).toMatchObject({ careDate: TUE, longLabel: "Tuesday, 20 October", pct: 100, streak: 2, servingsMissed: false, servingLines: [{ text: "Anmum Materna: 1 glass", missed: false }] });
     expect(s.tally).toBe("6 on time · none late, skipped or missed");
     expect(s.rows.map((r) => `${r.time} ${r.title} ${r.stateWord}`.trim())).toEqual([
       "Breakfast Skipped",
@@ -58,8 +58,8 @@ describe("buildSummary", () => {
     const late = taken("r-cal-l", at(TUE, "12:50"));
     const input = day(TUE, WED, [late], ["r-cal-d", "r-cal-l"]);
     const s = buildSummary([input], null);
-    expect(s.anmumMissed).toBe(true);
-    expect(s.anmumLine).toBe("Anmum Materna: not taken");
+    expect(s.servingsMissed).toBe(true);
+    expect(s.servingLines).toEqual([{ text: "Anmum Materna: not taken", missed: true }]);
     expect(s.rows.find((r) => r.time === "8:00 PM")?.stateWord).toBe("Missed");
     expect(s.rows.find((r) => r.title === "Caltrate" && r.stateWord.includes("late"))?.stateWord).toBe("50 min late");
     expect(s.note).not.toMatch(/fail|forgot|should/i);

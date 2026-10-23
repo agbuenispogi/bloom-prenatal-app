@@ -2,6 +2,7 @@
 import { formatInTimeZone } from "date-fns-tz";
 import { describeNextUp, formatClock, type DaySchedule, type DoseItem, type EngineInput, type ItemState, type MainMeal, type MealItem, type MealType } from "@/lib/engine";
 import { pregnancyWeek } from "@/lib/pregnancy";
+import { servingWords } from "@/lib/servings-words";
 
 export type Tab = "mint" | "sky" | "clay" | "blush" | "oat";
 
@@ -80,6 +81,9 @@ export interface ServingView {
   needsReminder: boolean;
   canTakeMore: boolean;
   skipped: boolean;
+  drink: boolean;   // milk by the glass, vs a medicine taken by the tablet or dose
+  nudge: string;    // after the reminder time, still below the minimum
+  button: string;   // "Had a glass" / "Took a tablet"
 }
 
 export interface HomeView {
@@ -290,6 +294,10 @@ export function toHomeView(
       needsReminder: s.needsReminder,
       canTakeMore: s.canTakeMore,
       skipped: s.skipped,
+      ...(() => {
+        const w = servingWords(s.medication.name, s.medication.doseLabel);
+        return { drink: w.drink, nudge: w.nudge, button: w.button };
+      })(),
     })),
     canLog: opts.canLog,
     role: opts.role,

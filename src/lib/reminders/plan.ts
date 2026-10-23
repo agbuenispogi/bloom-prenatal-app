@@ -1,6 +1,7 @@
 // Turns one care day's schedule into the exact set of reminder rows that should exist right now. Pure.
 // Syncing (sync.ts) then cancels unsent rows that are no longer wanted and inserts the missing ones,
 // so logging, snoozing or skipping a dose automatically withdraws its pending nags.
+import { servingWords } from "@/lib/servings-words";
 import {
   formatClock,
   planAnmumReminder,
@@ -103,7 +104,7 @@ export function desiredReminders(
   for (const a of schedule.anmum) {
     if (a.taken >= a.min || a.skipped) continue;
     for (const r of planAnmumReminder(careDate, a.rule.slug, a.deadline, recipients)) {
-      out.push({ ...r, payload: { title: `${a.medication.name} today?`, body: `None yet today. A glass before bed counts.`, url: "/", tag: `anmum:${careDate}`, careDate, itemKey: a.rule.slug, dueLabel: formatClock(a.deadline, tz), actionable: false } });
+      out.push({ ...r, payload: { title: `${a.medication.name} today?`, body: servingWords(a.medication.name, a.medication.doseLabel).drink ? "None yet today. A glass before bed counts." : "None yet today. Taking it before bed counts.", url: "/", tag: `anmum:${careDate}`, careDate, itemKey: a.rule.slug, dueLabel: formatClock(a.deadline, tz), actionable: false } });
     }
   }
 
